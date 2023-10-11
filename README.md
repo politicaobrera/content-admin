@@ -1,5 +1,5 @@
 # news-admin
 
-Nextjs admin for Plítica Obrera content
+Nextjs admin for Política Obrera content
 
 

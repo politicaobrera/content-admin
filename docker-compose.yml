@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  admin:
+    build: .
+    # depends_on:
+    #   - mongo
+    ports:
+      - 3000:3000
+    expose:
+      - '3000'
+
+networks:
+  default:
+    name: backend
+    external: true

@@ -1,5 +1,6 @@
 'use client'
 
+import createSection from "@/app/actions/data/sections/createSection";
 import GenericForm, { GenericProps } from "@/app/components/Form";
 
 const SectionForm: React.FC = () => {
@@ -9,8 +10,7 @@ const formProps: GenericProps = {
       name: ''
     },
     onSumbit: (data) => {
-      // Lógica para manejar la presentación de datos del formulario
-      console.log(data);
+        createSection(data);
     },
     inputs: [
       { label: 'Nombre de Sección', id: 'name', type: 'text', placeHolder: 'Movimiento Obrero' },

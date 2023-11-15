@@ -2,7 +2,7 @@
 
 import createSection from "@/app/actions/data/sections/createSection";
 import GenericForm, { GenericProps } from "@/app/components/Form/GenericForm";
-import useGenericForm from "@/app/hooks/useGenericForm";
+import useGenericForm, { InputData } from "@/app/hooks/useGenericForm";
 import { useRouter } from "next/navigation"
 import { FieldValues, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -23,17 +23,25 @@ const onSumbit = async (data: any) => {
   }
 }
 
-const inputs = [
+const inputs : InputData[] = [
   { 
     label: 'Nombre de Sección', 
     id: 'name', 
     type: 'text', 
     placeHolder: 'Movimiento Obrero',
-    required: true
+    required: true,
+    default: 'Nombre por default'
   },
   {
-    label: 'Color',
-    id: 'color',
+    label: 'Color Fuente',
+    id: 'styles_color',
+    type: 'color',
+    required: true,
+    default: '#ffffff'
+  },
+  {
+    label: 'Color Fondo',
+    id: 'styles_backgroundColor',
     type: 'color',
     required: true,
     default: '#ffffff'

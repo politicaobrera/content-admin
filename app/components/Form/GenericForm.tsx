@@ -22,7 +22,9 @@ export type GenericProps = {
     const onSubmitHandler = props.useFormObject.handleSubmit((data) => {
       props.onSumbit(data);
     });
-  
+
+    //console.log(props.useFormObject.getValues())
+
     return (
       <div className="mt-8 sm:mx-auto sm:w-fullseparator sm:max-w-md">
         <div className="bg-white px-4 py-8 sm:rounded-lg sm:px-10 shadow">

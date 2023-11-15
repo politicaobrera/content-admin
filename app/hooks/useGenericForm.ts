@@ -12,9 +12,9 @@ export type InputData= {
 }
 
 export default function useGenericForm(inputs: InputData[]) : UseFormReturn {
-  const schema = yup.object({});
+  const schemaObject: Record<string, yup.AnySchema> = {};
   const defaultValues: { [key: string]: any } = {};
-
+  
   inputs.forEach((input) => {
     let fieldSchema;
     switch (input.type) {
@@ -25,7 +25,7 @@ export default function useGenericForm(inputs: InputData[]) : UseFormReturn {
         fieldSchema = yup.number();
         break;
     case "color":
-        fieldSchema = yup.string().matches(/^#[0-9A-Fa-f]{6}$/, "Invalid color format");
+        fieldSchema = yup.string()/* .matches(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"); */
         break;
     default:
         fieldSchema = yup.string();
@@ -34,18 +34,17 @@ export default function useGenericForm(inputs: InputData[]) : UseFormReturn {
     if (input.required) {
       fieldSchema = fieldSchema.required(`${input.label} es requerido`);
     }
+    defaultValues[input.id] = input.default /* || (input.type === 'text' ? '' : input.type === 'color' ? '#ffffff' : ''); */
+    
+    schemaObject[input.id] = fieldSchema;
 
-    defaultValues[input.id] = input.default || input.type === 'text' ? '' : input.type === 'color' ? '#ffffff' : '';
+  }); 
 
-    schema.shape({
-      [input.id]: fieldSchema,
-    });
-  });
-
+  const schema = yup.object().shape(schemaObject);
 
   const useFormObject = useForm({
     resolver: yupResolver(schema),
-    defaultValues
+    defaultValues: defaultValues
   })
 
   return useFormObject;

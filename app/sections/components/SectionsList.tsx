@@ -5,44 +5,49 @@ import ErrorMessage from "@/app/components/ErrorMessage"
 import SectionItem from "./SectionItem"
 import Button from "@/app/components/Button"
 import Link from "next/link"
+import useSectionHook from "../hooks/useSectionHook"
+import { useRouter } from "next/navigation"
 
 const SectionsList:React.FC = async () => {
   const {data, error}:iResponse<Section> = await getSections()
-  
+
   if (error) {
     return <ErrorMessage error={error}/>
   }
 
-  if (data?.length === 0) {
-    return <div>No hay Secciones</div>
-  }
 
   return (
-    <div
-      className="
-        px-4
-        py-8
-        sm:px-6
-        lg:px-8
-        h-full
-        flex
-        justify-center
-        items-center
-        bg-gray-100
-      "
-    >
-      <div className="flex items-center text-center flex-col">
-        <ul>
-            {
-              data?.map((section) => (
-                <SectionItem
-                  key={section.id}
-                  section={section} 
-                />
-              ))
-            }
-        </ul>
+    <>
+    {
+    data?.length === 0 ? 
+        <div>No hay Secciones</div>
+        :   
+      <div
+        className="
+          px-4
+          py-8
+          sm:px-6
+          lg:px-8
+          flex
+          justify-center
+          items-center
+          bg-gray-100
+        "
+      >
+        <div className="flex items-center text-center flex-col">     
+          <ul>
+          {    
+            data?.map((section) => (
+              <SectionItem
+                key={section.id}
+                section={section}
+              />
+            ))
+          }
+          </ul>
+        </div>
       </div>
+      }
       <div>
         <Link href={'sections/new'}>
           <Button>
@@ -50,7 +55,7 @@ const SectionsList:React.FC = async () => {
           </Button>
         </Link>
       </div>
-    </div>
+    </>
   )
 }
 

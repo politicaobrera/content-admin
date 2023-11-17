@@ -1,11 +1,11 @@
 'use server'
-import { Section } from "@/types/sections"
 import { iResponse } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
+import { Section } from "@/app/sections/types/sections"
 
 const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'
 
-const createSection = async function (data: any):Promise<iResponse<Section>> {
+const createSection = async function (data: Section):Promise<iResponse<Section>> {
   const auth = await getAuthorizationHeader()
   const headers = {...auth, 'Content-Type': 'application/json'}
   console.log('data',data);

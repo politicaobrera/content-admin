@@ -6,22 +6,16 @@ import useGenericForm, { InputData } from "@/app/hooks/useGenericForm";
 import { useRouter } from "next/navigation"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { Section, SectionFormType } from "../types/sections";
+import useSectionHook from "../hooks/useSectionHook";
 
-const SectionForm: React.FC = () => {
+const SectionForm: React.FC<SectionFormType> = (props: SectionFormType) => {
 
 const router = useRouter();
 
-const onSumbit: SubmitHandler<any> = async (data: any) => {
-  const result = await createSection(data);
-  if (result?.error) {
-    toast.error(result.error.message)
-  }
-  else{
-    toast.success("Seccion creada")
-    router.push('/sections')
-    router.refresh()
-  }
-}
+const {create, edit} = useSectionHook();
+
+const onSumbit = props.edit && props.editInfo ? edit : create; 
 
 const inputs : InputData[] = [
   { 
@@ -30,30 +24,30 @@ const inputs : InputData[] = [
     type: 'text', 
     placeHolder: 'Movimiento Obrero',
     required: true,
-    default: 'Nombre por default'
+    default: props.edit ? props.editInfo?.name : 'Nombre por default'
   },
   {
     label: 'Color Fuente',
-    id: 'styles_color',
+    id: 'style_color',
     type: 'color',
     required: true,
-    default: '#000000'
+    default: props.edit ? props.editInfo?.style.color : '#000000'
   },
   {
     label: 'Color Fondo',
-    id: 'styles_backgroundColor',
+    id: 'style_backgroundColor',
     type: 'color',
     required: true,
-    default: '#ffffff'
+    default: props.edit ? props.editInfo?.style.backgroundColor :'#ffffff'
   },
 ]
 
-const {onSubmit: onSubmitTransformed, ...sectionsFormObject} = useGenericForm(inputs, onSumbit)
+const {onSubmit: onSubmitTransformed, ...sectionsFormObject} = useGenericForm(inputs, onSumbit, props.editInfo?.id)
 
 
   return (
     <div>
-      <GenericForm inputs={inputs} onSumbit={onSubmitTransformed} useFormObject={sectionsFormObject} />
+      <GenericForm inputs={inputs} onSumbit={onSubmitTransformed} useFormObject={sectionsFormObject} edit={props.edit}/>
     </div>
   );
 };

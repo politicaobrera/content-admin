@@ -1,3 +1,4 @@
+'use client'
 import { SubmitHandler, UseFormReturn, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -11,7 +12,7 @@ export type InputData= {
     default?: any
 }
 
-export default function useGenericForm(inputs: InputData[], onSubmit: SubmitHandler<any>) {
+export default function useGenericForm(inputs: InputData[], onSubmit: any, id?:string) {
   const schemaObject: Record<string, yup.AnySchema> = {};
   const defaultValues: { [key: string]: any } = {};
   
@@ -50,7 +51,9 @@ export default function useGenericForm(inputs: InputData[], onSubmit: SubmitHand
   
   const onSubmitHandler : SubmitHandler<any> = useFormObject.handleSubmit((data) => {
     const transformedData = flatValuesToFinalObject(data);
-    onSubmit(transformedData); 
+    console.log('id seccion:', id);
+    if(id) onSubmit(id, transformedData);
+    else onSubmit(transformedData); 
   });
 
 

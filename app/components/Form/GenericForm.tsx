@@ -11,7 +11,8 @@ import { InputData } from "@/app/hooks/useGenericForm";
 export type GenericProps = {
     onSumbit: SubmitHandler<FieldValues>,
     inputs : InputData[],
-    useFormObject: UseFormReturn
+    useFormObject: UseFormReturn,
+    edit?: boolean
   };
 
   const GenericForm = (props: GenericProps) => {
@@ -48,7 +49,7 @@ export type GenericProps = {
                 fullWidth
                 disabled={loading}
               >
-                Crear
+                {props.edit ? 'Editar' : 'Crear'}
               </Button>
             </div>
           </form>

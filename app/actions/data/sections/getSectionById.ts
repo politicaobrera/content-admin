@@ -6,23 +6,22 @@ const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'
 
 const getSections = async function (id: string):Promise<iResponse<Section>> {
   const headers = await getAuthorizationHeader()
-//   const response = await fetch(`${sectionsApi}/${id}`, {headers: headers, cache: 'no-store'})
+  const response = await fetch(`${sectionsApi}/${id}`, {headers: headers, cache: 'no-store'})
 
-//   if(!response.ok) {
-//     console.log(`Error al obtener las secciones (${response.status}): ${response.statusText}`)
-//     return {
-//       error: {
-//         status: response.status,
-//         statusText: response.statusText,
-//         message: `Error al obtener las secciones (${response.status}): ${response.statusText}`,
-//       },
-//       data: []
-//     }
-//   }
+  if(!response.ok) {
+    console.log(`Error al obtener las secciones (${response.status}): ${response.statusText}`)
+    return {
+      error: {
+        status: response.status,
+        statusText: response.statusText,
+        message: `Error al obtener las secciones (${response.status}): ${response.statusText}`,
+      },
+      data: []
+    }
+  }
   
   return {
-    //data: await response.json()
-    data: [{id: '6557d0b27456a865542555df', name: 'Juventud', style: {color: '#000000', backgroundColor: '#99c1f1'}}]
+    data: await response.json()
   }
 }
 

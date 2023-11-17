@@ -11,31 +11,30 @@ const editSection = async function (id:string, data: Section):Promise<iResponse<
   const headers = {...auth, 'Content-Type': 'application/json'}
   console.log('id',id);
   console.log('data',data);
-  // const response = await fetch(`${sectionsApi}/${id}`,
-  //  {
-  //   headers: headers,
-  //   cache: 'no-store',
-  //   method: 'PATCH', 
-  //   body: JSON.stringify(data)
-  // })
+  const response = await fetch(`${sectionsApi}/${id}`,
+   {
+    headers: headers,
+    cache: 'no-store',
+    method: 'PATCH', 
+    body: JSON.stringify(data)
+  })
 
   
 
-  // if(!response.ok) {
-  //   console.log(`Error al editar la sección (${response.status}): ${response.statusText}`)
-  //   return {
-  //     error: {
-  //       status: response.status,
-  //       statusText: response.statusText,
-  //       message: `Error al crear las secciones (${response.status}): ${response.statusText}`,
-  //     },
-  //     data: []
-  //   }
-  // }
+  if(!response.ok) {
+    console.log(`Error al editar la sección (${response.status}): ${response.statusText}`)
+    return {
+      error: {
+        status: response.status,
+        statusText: response.statusText,
+        message: `Error al crear las secciones (${response.status}): ${response.statusText}`,
+      },
+      data: []
+    }
+  }
   
   return {
-    //data: await response.json()
-    data: [data]
+    data: await response.json()
   }
 }
 

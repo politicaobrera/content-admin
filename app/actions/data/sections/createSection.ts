@@ -8,7 +8,7 @@ const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'
 const createSection = async function (data: any):Promise<iResponse<Section>> {
   const auth = await getAuthorizationHeader()
   const headers = {...auth, 'Content-Type': 'application/json'}
-  console.log(data);
+  console.log('data',data);
   const response = await fetch(sectionsApi,
    {
     headers: headers,

@@ -1,4 +1,4 @@
-import { UseFormReturn, useForm } from "react-hook-form";
+import { SubmitHandler, UseFormReturn, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
@@ -11,7 +11,7 @@ export type InputData= {
     default?: any
 }
 
-export default function useGenericForm(inputs: InputData[]) : UseFormReturn {
+export default function useGenericForm(inputs: InputData[], onSubmit: SubmitHandler<any>) {
   const schemaObject: Record<string, yup.AnySchema> = {};
   const defaultValues: { [key: string]: any } = {};
   
@@ -25,7 +25,7 @@ export default function useGenericForm(inputs: InputData[]) : UseFormReturn {
         fieldSchema = yup.number();
         break;
     case "color":
-        fieldSchema = yup.string()/* .matches(/^#[0-9A-Fa-f]{6}$/, "Invalid color format"); */
+        fieldSchema = yup.string().matches(/^#[0-9A-Fa-f]{6}$/, "Invalid color format");
         break;
     default:
         fieldSchema = yup.string();
@@ -34,18 +34,45 @@ export default function useGenericForm(inputs: InputData[]) : UseFormReturn {
     if (input.required) {
       fieldSchema = fieldSchema.required(`${input.label} es requerido`);
     }
-    defaultValues[input.id] = input.default /* || (input.type === 'text' ? '' : input.type === 'color' ? '#ffffff' : ''); */
+    defaultValues[input.id] = input.default;
     
     schemaObject[input.id] = fieldSchema;
 
   }); 
 
+  
   const schema = yup.object().shape(schemaObject);
-
-  const useFormObject = useForm({
+  
+  const useFormObject : UseFormReturn = useForm({
     resolver: yupResolver(schema),
     defaultValues: defaultValues
   })
+  
+  const onSubmitHandler : SubmitHandler<any> = useFormObject.handleSubmit((data) => {
+    const transformedData = flatValuesToFinalObject(data);
+    onSubmit(transformedData); 
+  });
 
-  return useFormObject;
+
+  return { ...useFormObject, onSubmit: onSubmitHandler };
+}
+
+type NestedObject = {
+  [key: string]: string | NestedObject;
+};
+
+const flatValuesToFinalObject = (data: object) =>{ //only two level
+  let result:NestedObject = {};
+
+  const arrayData = Object.entries(data).map(array => {return array[0].split('_').concat(array[1])})
+
+  for(let i=0; i<arrayData.length; i++){
+    let level1Prop = arrayData[i][0];
+    if(arrayData[i].length === 3){
+      let level2Prop = arrayData[i][1];
+      result = {...result, [level1Prop]: Object.assign(result[level1Prop] || {}, {[level2Prop]: arrayData[i][2]})}
+    } 
+    else result = {...result, [level1Prop]: arrayData[i][1]}
+  }
+  return result;
 }

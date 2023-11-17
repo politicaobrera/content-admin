@@ -4,14 +4,14 @@ import createSection from "@/app/actions/data/sections/createSection";
 import GenericForm, { GenericProps } from "@/app/components/Form/GenericForm";
 import useGenericForm, { InputData } from "@/app/hooks/useGenericForm";
 import { useRouter } from "next/navigation"
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const SectionForm: React.FC = () => {
 
 const router = useRouter();
 
-const onSumbit = async (data: any) => {
+const onSumbit: SubmitHandler<any> = async (data: any) => {
   const result = await createSection(data);
   if (result?.error) {
     toast.error(result.error.message)
@@ -37,7 +37,7 @@ const inputs : InputData[] = [
     id: 'styles_color',
     type: 'color',
     required: true,
-    default: '#ffffff'
+    default: '#000000'
   },
   {
     label: 'Color Fondo',
@@ -48,12 +48,12 @@ const inputs : InputData[] = [
   },
 ]
 
-const sectionsFormObject = useGenericForm(inputs)
+const {onSubmit: onSubmitTransformed, ...sectionsFormObject} = useGenericForm(inputs, onSumbit)
 
 
   return (
     <div>
-      <GenericForm inputs={inputs} onSumbit={onSumbit} useFormObject={sectionsFormObject} />
+      <GenericForm inputs={inputs} onSumbit={onSubmitTransformed} useFormObject={sectionsFormObject} />
     </div>
   );
 };

@@ -31,7 +31,7 @@ const ArticlesList:React.FC = async () => {
       <div className="flex items-center text-center flex-col">
         <ul>
           {
-            data.map((article) => <li>{article.title}</li>)
+            data.map((article) => <li id={`li-${article.slug}`}>{article.title}</li>)
           }
         </ul>
       </div>

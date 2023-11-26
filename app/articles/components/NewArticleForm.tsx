@@ -10,7 +10,10 @@ import {
   SubmitHandler,
   useForm
 } from "react-hook-form"
+import createArticle from "@/app/actions/data/articles/createArticle"
 import { toast } from "react-hot-toast"
+import { iResponse } from "@/types/Responses"
+import { Article } from "@/types/articles"
 
 const NewArticleForm = () => {
   const session = useSession()
@@ -37,14 +40,19 @@ const NewArticleForm = () => {
     }
   }, [session?.status, router])
 
-  const onNewArticle = () => {
-    console.log("clicking")
-    setShowForm(true)
-  }
-
-  const onSubmit:SubmitHandler<FieldValues> = (data) => {
+  const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     setLoading(true)
-    // post de nota
+    const {data, error}:iResponse<Article> = await createArticle(payload.title)
+    if (error){
+      toast.error(error.message)
+    } 
+    if(data){
+      toast.success("Nota creada correctamente")
+      // router.push('/main')
+    }
+    setLoading(false)
+    setShowForm(false)
+    router.refresh()
   }
 
   return (
@@ -77,6 +85,7 @@ const NewArticleForm = () => {
                 id="title"
                 type="text"
                 register={register}
+                required={true}
                 disabled={loading}
                 errors={errors}
                 placeHolder="Título de la nota"
@@ -96,7 +105,7 @@ const NewArticleForm = () => {
               type="button"
               fullWidth
               disabled={loading}
-              onClick={onNewArticle}
+              onClick={() => setShowForm(true)}
             >
               NUEVA NOTA
             </Button>

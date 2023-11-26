@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import MainContainer from "../components/MainContainer"
 import ArticlesList from "./components/ArticlesList"
 import Loading from "../components/Loading"
+import NewArticleForm from "./components/NewArticleForm";
 
 const ArticlesPage = () => {
   return (
@@ -17,6 +18,7 @@ const ArticlesPage = () => {
             font-bold
           "
         >Notas</h1>
+        <NewArticleForm />
         <Suspense fallback={<Loading />}>
           <ArticlesList />
         </Suspense>

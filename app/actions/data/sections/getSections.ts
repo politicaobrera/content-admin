@@ -1,3 +1,5 @@
+'use server'
+
 import { Section } from "@/types/sections"
 import { iResponse } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"

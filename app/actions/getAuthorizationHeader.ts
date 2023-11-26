@@ -1,3 +1,5 @@
+'use server'
+
 import getCurrentUser from "./getCurrentUser"
 
 export default async function getAuthorizationHeader(){

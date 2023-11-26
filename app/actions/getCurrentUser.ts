@@ -1,3 +1,5 @@
+'use server'
+
 import getSession from "./getSession"
 
 export default async function getCurrentUser(){

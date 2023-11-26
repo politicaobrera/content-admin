@@ -1,3 +1,5 @@
+'use server'
+
 import { Article } from "@/types/articles"
 import { iResponse } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"

@@ -2,6 +2,7 @@
 import { SubmitHandler, UseFormReturn, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+import { Section } from "../sections/types/sections";
 
 export type InputData= {
     label: string,
@@ -12,7 +13,7 @@ export type InputData= {
     default?: any
 }
 
-export default function useGenericForm(inputs: InputData[], onSubmit: any, id?:string) {
+export default function useGenericForm(inputs: InputData[], onSubmit: any, _id?:string) {
   const schemaObject: Record<string, yup.AnySchema> = {};
   const defaultValues: { [key: string]: any } = {};
   
@@ -51,8 +52,8 @@ export default function useGenericForm(inputs: InputData[], onSubmit: any, id?:s
   
   const onSubmitHandler : SubmitHandler<any> = useFormObject.handleSubmit((data) => {
     const transformedData = flatValuesToFinalObject(data);
-    console.log('id seccion:', id);
-    if(id) onSubmit(id, transformedData);
+    //console.log('id seccion:', id);
+    if(_id) onSubmit(_id, transformedData);
     else onSubmit(transformedData); 
   });
 
@@ -64,7 +65,7 @@ type NestedObject = {
   [key: string]: string | NestedObject;
 };
 
-const flatValuesToFinalObject = (data: object) =>{ //only two level
+export const flatValuesToFinalObject = (data: object) : any =>{ //only two level
   let result:NestedObject = {};
 
   const arrayData = Object.entries(data).map(array => {return array[0].split('_').concat(array[1])})

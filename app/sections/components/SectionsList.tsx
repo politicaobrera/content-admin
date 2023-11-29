@@ -1,12 +1,12 @@
 import getSections from "@/app/actions/data/sections/getSections"
 import { iResponse } from "@/types/Responses"
-import { Section } from "@/types/sections"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import SectionItem from "./SectionItem"
 import Button from "@/app/components/Button"
 import Link from "next/link"
 import useSectionHook from "../hooks/useSectionHook"
 import { useRouter } from "next/navigation"
+import { Section } from "../types/sections"
 
 const SectionsList:React.FC = async () => {
   const {data, error}:iResponse<Section> = await getSections()
@@ -39,7 +39,7 @@ const SectionsList:React.FC = async () => {
           {    
             data?.map((section) => (
               <SectionItem
-                key={section.id}
+                key={section._id}
                 section={section}
               />
             ))

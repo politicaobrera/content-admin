@@ -8,3 +8,8 @@ export type ResponseError = {
   statusText: string
   message: string
 }
+
+export type iResponseId<T> = {
+  error?: ResponseError,
+  data?: T
+}

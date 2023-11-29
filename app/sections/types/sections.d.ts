@@ -1,5 +1,5 @@
 export type Section = {
-    id: string,
+    _id?: string,
     name: string,
     style: {
         color: string,

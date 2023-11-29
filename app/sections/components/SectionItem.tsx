@@ -7,15 +7,15 @@ const SectionItem: React.FC<SectionProps> = ({ section }) => {
   
   const router = useRouter();
 
+  console.log(section);
   const handleEdit = (section: Section) => {
-    // Redirect to the edit page with the section ID
-    router.push(`/sections/${section.id}`);
+    router.push(`/sections/${section._id}`);
   };
   
   return (
-    <li>
-      {section.name}
-      <button onClick={() => handleEdit(section)}>Editar</button>
+    <li className='flex items-center'>
+      <span className='mr-2'>{section.name}</span>
+      <button className='font-bold' onClick={() => handleEdit(section)}>Editar</button>
       {/* <button onClick={() => onDelete(section.id)}>Eliminar</button> */}
     </li>
   );

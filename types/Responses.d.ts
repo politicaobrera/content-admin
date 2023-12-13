@@ -1,7 +1,4 @@
-export type iResponse<T> = {
-  error?: ResponseError,
-  data?: T[]
-}
+// type Data<T> = T | T[]
 
 export type ResponseError = {
   status: number
@@ -9,7 +6,12 @@ export type ResponseError = {
   message: string
 }
 
-export type iResponseId<T> = {
+export type iResponseMany<T> = {
+  error?: ResponseError,
+  data?: T[]
+}
+
+export type iResponseOne<T> = {
   error?: ResponseError,
   data?: T
 }

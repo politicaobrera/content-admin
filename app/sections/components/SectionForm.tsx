@@ -33,14 +33,14 @@ const inputs : InputData[] = [
     id: 'style_color',
     type: 'color',
     required: true,
-    default: props.edit ? props.editInfo?.style.color : '#ffffff'
+    default: props.edit ? props.editInfo?.style?.color : '#ffffff'
   },
   {
     label: 'Color Fondo',
     id: 'style_backgroundColor',
     type: 'color',
     required: true,
-    default: props.edit ? props.editInfo?.style.backgroundColor :'#000000'
+    default: props.edit ? props.editInfo?.style?.backgroundColor :'#000000'
   },
 ]
 

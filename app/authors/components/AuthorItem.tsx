@@ -15,7 +15,7 @@ const AuthorItem: React.FC<AuthorItemProps> = ({ author }) => {
 
   console.log(author);
   const handleEdit = (author: Author) => {
-    router.push(`/sections/${author._id}`);
+    router.push(`/authors/${author._id}`);
   };
   
   return (

@@ -36,7 +36,7 @@ const SectionsList:React.FC = async () => {
         <div className="flex items-center text-center flex-col">     
           <ul>
           {    
-            data?.map((section) => (
+            data?.map((section:Section) => (
               <SectionItem
                 key={section._id}
                 section={section}

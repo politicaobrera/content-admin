@@ -1,12 +1,12 @@
 'use server'
 
 import { Article } from "@/types/articles"
-import { iResponse } from "@/types/Responses"
+import { iResponseMany } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 
-const getArticles = async function ():Promise<iResponse<Article>> {
+const getArticles = async function ():Promise<iResponseMany<Article>> {
   // await setAuthCookie()
   const headers = await getAuthorizationHeader()
   const response = await fetch(articlesApi, {headers: headers, cache: 'no-store'})

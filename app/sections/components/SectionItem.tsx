@@ -13,7 +13,7 @@ const SectionItem: React.FC<SectionProps> = ({ section }) => {
   };
   
   return (
-    <li className='flex items-center'>
+    <li key={`section-item-${section._id}`} className='flex items-center'>
       <span className='mr-2'>{section.name}</span>
       <button className='font-bold' onClick={() => handleEdit(section)}>Editar</button>
       {/* <button onClick={() => onDelete(section.id)}>Eliminar</button> */}

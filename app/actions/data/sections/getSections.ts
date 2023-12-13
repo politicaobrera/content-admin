@@ -1,12 +1,11 @@
 'use server'
-
-import { Section } from "@/types/sections"
-import { iResponse } from "@/types/Responses"
+import { Section } from "../../../sections/types/sections"
+import { iResponseMany } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 
 const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'
 
-const getSections = async function ():Promise<iResponse<Section>> {
+const getSections = async function ():Promise<iResponseMany<Section>> {
   // await setAuthCookie()
   const headers = await getAuthorizationHeader()
   const response = await fetch(sectionsApi, {headers: headers, cache: 'no-store'})
@@ -19,7 +18,6 @@ const getSections = async function ():Promise<iResponse<Section>> {
         statusText: response.statusText,
         message: `Error al obtener las secciones (${response.status}): ${response.statusText}`,
       },
-      data: []
     }
   }
   

@@ -1,10 +1,17 @@
-export type iResponse<T> = {
-  error?: ResponseError,
-  data?: T[]
-}
+// type Data<T> = T | T[]
 
 export type ResponseError = {
   status: number
   statusText: string
   message: string
+}
+
+export type iResponseMany<T> = {
+  error?: ResponseError,
+  data?: T[]
+}
+
+export type iResponseOne<T> = {
+  error?: ResponseError,
+  data?: T
 }

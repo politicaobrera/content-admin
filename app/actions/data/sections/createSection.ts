@@ -1,11 +1,11 @@
 'use server'
-import { iResponse } from "@/types/Responses"
+import { iResponseOne } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 import { Section } from "@/app/sections/types/sections"
 
 const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'
 
-const createSection = async function (data: Section):Promise<iResponse<Section>> {
+const createSection = async function (data: Section):Promise<iResponseOne<Section>> {
   const auth = await getAuthorizationHeader()
   const headers = {...auth, 'Content-Type': 'application/json'}
   console.log('data',data);
@@ -17,8 +17,6 @@ const createSection = async function (data: Section):Promise<iResponse<Section>>
     body: JSON.stringify(data)
   })
 
-  
-
   if(!response.ok) {
     console.log(`Error al crear la sección (${response.status}): ${response.statusText}`)
     return {
@@ -27,7 +25,6 @@ const createSection = async function (data: Section):Promise<iResponse<Section>>
         statusText: response.statusText,
         message: `Error al crear las secciones (${response.status}): ${response.statusText}`,
       },
-      data: []
     }
   }
   

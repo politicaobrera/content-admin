@@ -1,5 +1,5 @@
 import getSections from "@/app/actions/data/sections/getSections"
-import { iResponse } from "@/types/Responses"
+import { iResponseMany } from "@/types/Responses"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import SectionItem from "./SectionItem"
 import Button from "@/app/components/Button"
@@ -9,12 +9,11 @@ import { useRouter } from "next/navigation"
 import { Section } from "../types/sections"
 
 const SectionsList:React.FC = async () => {
-  const {data, error}:iResponse<Section> = await getSections()
+  const {data, error}:iResponseMany<Section> = await getSections()
 
   if (error) {
     return <ErrorMessage error={error}/>
   }
-
 
   return (
     <>

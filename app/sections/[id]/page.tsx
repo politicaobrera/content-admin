@@ -2,14 +2,14 @@ import { Suspense } from "react"
 import SectionDetails from "../components/SectionDetails"
 import MainContainer from "@/app/components/MainContainer"
 import Loading from "@/app/components/Loading"
-import { iResponse, iResponseId } from "@/types/Responses"
+import { iResponseOne } from "@/types/Responses"
 import { Section } from "../types/sections"
-import getSectionById from "@/app/actions/data/sections/getSectionById"
+import getSection from "@/app/actions/data/sections/getSection"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import SectionForm from "../components/SectionForm"
 import { useParams } from "next/navigation"
 
-const SectionIdPage = async ({
+const SectionPage = async ({
   params,
   searchParams,
 } : {
@@ -17,8 +17,7 @@ const SectionIdPage = async ({
   searchParams : { [key: string]: string | string[] | undefined }
 }) => {
 
-  const {data, error}:iResponseId<Section> = await getSectionById(params.id)
-
+  const {data, error}:iResponseOne<Section> = await getSection(params.id)
   
   if (error) {
     return <ErrorMessage error={error}/>
@@ -45,4 +44,4 @@ const SectionIdPage = async ({
   )
 }
 
-export default SectionIdPage
+export default SectionPage

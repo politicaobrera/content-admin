@@ -1,12 +1,4 @@
-import MainContainer from "@/app/components/MainContainer"
 import { Section } from "../types/sections"
-import { iResponse } from "@/types/Responses"
-import ErrorMessage from "@/app/components/ErrorMessage"
-import getSectionById from "@/app/actions/data/sections/getSectionById"
-
-// interface SectionDetailsProps {
-//     section: Section
-// }
 
 const SectionDetails : React.FC<Section> =  (section) => {
     const sectionStyle = {

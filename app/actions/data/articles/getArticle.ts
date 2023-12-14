@@ -3,39 +3,35 @@
 import { Article } from "@/types/articles"
 import { iResponseOne } from "@/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-// import axios from 'axios'
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 
-const createArticle = async function (title:string):Promise<iResponseOne<Article>> {
+const getArticle = async function (id:string):Promise<iResponseOne<Article>> {
   // await setAuthCookie()
   try {
     const headers = await getAuthorizationHeader()
-    const payload = {title}
-    console.log("article", articlesApi, JSON.stringify(payload))
     const response = await fetch(
-      articlesApi,
-      {
-        headers: {...headers, 'Content-Type': 'application/json'},
-        method: 'POST',
-        body: JSON.stringify(payload)
-      }
-    )
-      // TODO hacer funcion que genera el objeto de error y hace console.log con el mensaje a travez de los parametros
+        `${articlesApi}/${id}`,
+        {
+          headers: {...headers, 'Accept': 'application/json'},
+          cache: 'no-store'
+        }
+      )
+  
     if(!response.ok) {
-      console.log(`Error al crear el articulo (${response.status}): ${response.statusText}`)
+      console.log(`Error al obtener el articulo (${response.status}): ${response.statusText}`)
       return {
         error: {
           status: response.status,
           statusText: response.statusText,
-          message: `Error al crear el articulo (${response.status}): ${response.statusText}`,
+          message: `Error al obtener el articulo (${response.status}): ${response.statusText}`,
         },
       }
     }
     const res = await response.json()
     return {
       data: res
-    }
+    }    
   } catch (error) {
     console.log(error)
     return {
@@ -48,4 +44,4 @@ const createArticle = async function (title:string):Promise<iResponseOne<Article
   }
 }
 
-export default createArticle
+export default getArticle

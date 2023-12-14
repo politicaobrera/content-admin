@@ -20,7 +20,7 @@ interface ArticleFormProps {
   article: Article
 }
 
-const ArticleForm:React.FC<ArticleFormProps> = async ({article}) => {
+const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   console.log("articulo con data", article)
   const session = useSession()
   const router = useRouter()
@@ -107,7 +107,6 @@ const ArticleForm:React.FC<ArticleFormProps> = async ({article}) => {
             type="text"
             register={register}
             key={`article-volanta-${article._id}`}
-            required={true}
             disabled={loading}
             errors={errors}
             placeHolder="Volanta"
@@ -118,7 +117,6 @@ const ArticleForm:React.FC<ArticleFormProps> = async ({article}) => {
             type="text"
             register={register}
             key={`article-subhead-${article._id}`}
-            required={true}
             disabled={loading}
             errors={errors}
             placeHolder="Bajada"
@@ -130,7 +128,6 @@ const ArticleForm:React.FC<ArticleFormProps> = async ({article}) => {
             type="text"
             register={register}
             key={`article-content-${article._id}`}
-            required={true}
             disabled={loading}
             errors={errors}
             placeHolder="Contenido"

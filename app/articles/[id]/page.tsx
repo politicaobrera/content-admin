@@ -30,11 +30,7 @@ const ArticlePage = async ({
   return (
     <div className="block h-full">
       <MainContainer>
-        <Suspense fallback={<Loading />}> 
-         <>
-            <ArticleForm article={data}/>
-         </>
-        </Suspense>
+        <ArticleForm article={data}/>
       </MainContainer>
     </div>
   )

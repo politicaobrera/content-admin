@@ -1,10 +1,10 @@
 import getArticles from "@/app/actions/data/articles/getArticles"
-import { iResponse } from "@/types/Responses"
+import { iResponseMany } from "@/types/Responses"
 import { Article } from "@/types/articles"
 import ErrorMessage from "@/app/components/ErrorMessage"
 
 const ArticlesList:React.FC = async () => {
-  const {data, error}:iResponse<Article> = await getArticles()
+  const {data, error}:iResponseMany<Article> = await getArticles()
 
   if (error) {
     return <ErrorMessage error={error}/>
@@ -31,7 +31,7 @@ const ArticlesList:React.FC = async () => {
       <div className="flex items-center text-center flex-col">
         <ul>
           {
-            data.map((article) => <li id={`li-${article.slug}`}>{article.title}</li>)
+            data.map((article:Article) => (<li id={`li-${article.slug}`}>{article.title}</li>))
           }
         </ul>
       </div>

@@ -15,7 +15,7 @@ export const authOptions:AuthOptions = {
           throw new Error('invalid credentials')
         }
         let user = await axios.post(process.env.CONTENT_SERVER_URL+'/auth/login', credentials)
-        console.log("user", user.data)
+        //console.log("user", user.data)
         user.data.name = user.data.username
         user.data.sessionToken = user.data.authentication.sessionToken
         return user.data

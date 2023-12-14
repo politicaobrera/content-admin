@@ -6,7 +6,8 @@ import{
   HiMiniPencilSquare,
   HiArrowLeftOnRectangle,
   HiBookOpen,
-  HiNewspaper
+  HiNewspaper,
+  HiTag
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -34,6 +35,11 @@ const useRoutes = () => {
       active: pathname === '/articles',
     },
     {
+      label: 'Tags',
+      href: '/tags',
+      icon: HiTag,
+      active: pathname === '/tags',
+    },    {
       label: 'Logout',
       href: '#',
       icon: HiArrowLeftOnRectangle,

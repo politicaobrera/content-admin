@@ -1,4 +1,4 @@
-import getTags from "@/app/actions/data/sections/getTags"
+import getTags from "@/app/actions/data/tags/getTags"
 import { iResponse } from "@/types/Responses"
 import { Tag } from "@/types/tags"
 import ErrorMessage from "@/app/components/ErrorMessage"

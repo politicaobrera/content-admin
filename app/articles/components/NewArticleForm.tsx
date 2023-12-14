@@ -12,7 +12,7 @@ import {
 } from "react-hook-form"
 import createArticle from "@/app/actions/data/articles/createArticle"
 import { toast } from "react-hot-toast"
-import { iResponse } from "@/types/Responses"
+import { iResponseOne } from "@/types/Responses"
 import { Article } from "@/types/articles"
 
 const NewArticleForm = () => {
@@ -42,7 +42,7 @@ const NewArticleForm = () => {
 
   const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     setLoading(true)
-    const {data, error}:iResponse<Article> = await createArticle(payload.title)
+    const {data, error}:iResponseOne<Article> = await createArticle(payload.title)
     if (error){
       toast.error(error.message)
     } 

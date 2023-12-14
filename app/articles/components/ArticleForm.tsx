@@ -15,6 +15,7 @@ import { iResponseOne } from "@/types/Responses"
 import { Article } from "@/types/articles"
 import editArticle from "@/app/actions/data/articles/editArticle"
 import Separator from "@/app/components/Separator"
+import useArticleHook from "../hooks/useArticleHook"
 
 interface ArticleFormProps {
   article: Article
@@ -25,6 +26,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const session = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
+
+  const {edit} = useArticleHook();
 
   const {
     register,
@@ -48,20 +51,21 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     }
   }, [session?.status, router])
 
-  const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
+  const onSubmit:SubmitHandler<FieldValues> = (payload) => {
     setLoading(true)
     console.log("voy a guardar", payload)
     console.log("old article", article)
     const merged = Object.assign(article, payload)
     console.log("merged", merged)
-    const {data, error}:iResponseOne<Article> = await editArticle(merged as Article)
-    if (error){
-      toast.error(error.message)
-    } 
-    if(data){
-      toast.success("Nota editada correctamente")
-      // router.push('/main')
-    }
+    edit(merged as Article).then(result => {
+      if (result.error){
+        toast.error(result.error.message)
+      } 
+      if(result.data){
+        toast.success("Nota editada correctamente")
+        // router.push('/main')
+      }
+    })
     setLoading(false)
     // push to list todo
     router.refresh()

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { Article } from '@/types/articles';
+import { Article } from '@/app/types/articles';
 import { useRouter } from 'next/navigation';
 
 interface ArticleListItemProps {

@@ -1,8 +1,8 @@
 'use server'
 
-import { iResponseOne } from "@/types/Responses"
+import { iResponseOne } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-import { Article } from "@/types/articles"
+import { Article } from "@/app/types/articles"
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 

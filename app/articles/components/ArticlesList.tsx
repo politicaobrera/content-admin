@@ -1,6 +1,6 @@
 import getArticles from "@/app/actions/data/articles/getArticles"
-import { iResponseMany } from "@/types/Responses"
-import { Article } from "@/types/articles"
+import { iResponseMany } from "@/app/types/Responses"
+import { Article } from "@/app/types/articles"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import ArticleListItem from "./ArticleListItem"
 

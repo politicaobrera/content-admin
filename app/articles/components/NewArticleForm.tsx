@@ -12,8 +12,8 @@ import {
 } from "react-hook-form"
 import createArticle from "@/app/actions/data/articles/createArticle"
 import { toast } from "react-hot-toast"
-import { iResponseOne } from "@/types/Responses"
-import { Article } from "@/types/articles"
+import { iResponseOne } from "@/app/types/Responses"
+import { Article } from "@/app/types/articles"
 
 const NewArticleForm = () => {
   const session = useSession()

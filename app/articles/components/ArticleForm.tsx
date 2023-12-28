@@ -11,8 +11,8 @@ import {
   useForm
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import { iResponseOne } from "@/types/Responses"
-import { Article } from "@/types/articles"
+import { iResponseOne } from "@/app/types/Responses"
+import { Article } from "@/app/types/articles"
 import editArticle from "@/app/actions/data/articles/editArticle"
 import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"

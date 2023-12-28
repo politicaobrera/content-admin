@@ -3,7 +3,7 @@
 import { useState } from "react"
 import useRoutes from "@/app/hooks/useRoutes"
 import DesktopItem from "./DesktopItem"
-import { ExtendedUser } from "@/types/nextauth"
+import { ExtendedUser } from "@/app/types/nextauth"
 
 interface DesktopSidebarProps {
   currentUser: ExtendedUser | null

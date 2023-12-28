@@ -1,4 +1,4 @@
-import { Article } from "@/types/articles";
+import { Article } from "@/app/types/articles";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import editArticle from "@/app/actions/data/articles/editArticle";

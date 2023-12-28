@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { ResponseError } from "@/types/Responses"
+import { ResponseError } from "@/app/types/Responses"
 
 interface ErrorMessageProps {
   error: ResponseError

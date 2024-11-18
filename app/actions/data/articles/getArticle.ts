@@ -1,12 +1,12 @@
 'use server'
 
-import { Article } from "@/app/types/articles"
+import { ArticleType } from "@/app/types/articles"
 import { iResponseOne } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 
-const getArticle = async function (id:string):Promise<iResponseOne<Article>> {
+const getArticle = async function (id:string):Promise<iResponseOne<ArticleType>> {
   // await setAuthCookie()
   try {
     const headers = await getAuthorizationHeader()

@@ -2,11 +2,11 @@
 
 import { iResponseOne } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-import { Article } from "@/app/types/articles"
+import { ArticleType } from "@/app/types/articles"
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 
-const editArticle = async function (data:Article):Promise<iResponseOne<Article>> {
+const editArticle = async function (data:ArticleType):Promise<iResponseOne<ArticleType>> {
   const auth = await getAuthorizationHeader()
   const headers = {...auth, 'Content-Type': 'application/json'}
   console.log('data',data);
@@ -19,12 +19,12 @@ const editArticle = async function (data:Article):Promise<iResponseOne<Article>>
   })
 
   if(!response.ok) {
-    console.log(`Error al editar la sección (${response.status}): ${response.statusText}`)
+    console.log(`Error al editar el articulo ${data._id} (${response.status}): ${response.statusText}`)
     return {
       error: {
         status: response.status,
         statusText: response.statusText,
-        message: `Error al crear las secciones (${response.status}): ${response.statusText}`,
+        message: `Error al editar el articulo ${data._id}(${response.status}): ${response.statusText}`,
       },
     }
   }

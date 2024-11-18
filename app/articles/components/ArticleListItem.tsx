@@ -1,11 +1,11 @@
 'use client'
 
 import React from 'react';
-import { Article } from '@/app/types/articles';
+import { ArticleType } from '@/app/types/articles';
 import { useRouter } from 'next/navigation';
 
 interface ArticleListItemProps {
-  article: Article
+  article: ArticleType
 }
 
 const ArticleListItem: React.FC<ArticleListItemProps> = ({ article }) => {

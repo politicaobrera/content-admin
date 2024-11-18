@@ -12,20 +12,21 @@ import {
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { iResponseOne } from "@/app/types/Responses"
-import { Article } from "@/app/types/articles"
+import { ArticleType, MainImageType } from "@/app/types/articles"
 import editArticle from "@/app/actions/data/articles/editArticle"
 import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"
+import MainImage from "@/app/components/image/MainImage"
 
 interface ArticleFormProps {
-  article: Article
+  article: ArticleType
 }
 
 const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   console.log("articulo con data", article)
-  const session = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
+  const [mainImage, setMainImage] = useState<MainImageType|undefined>(article.image ?? undefined)
 
   const {edit} = useArticleHook();
 
@@ -40,24 +41,21 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       title: article.title,
       volanta: article.volanta || "",
       subhead: article.subhead || "",
-      content: article.content || ""
+      content: article.content || "",
     }
   })
 
-  // TODO: esto aca o en la page?
-  useEffect(() => {
-    if (session?.status !== 'authenticated') {
-      router.push('/')
-    }
-  }, [session?.status, router])
+  const handleMainImage = (img:MainImageType) => {
+    setMainImage(img)
+  }
 
   const onSubmit:SubmitHandler<FieldValues> = (payload) => {
     setLoading(true)
     console.log("voy a guardar", payload)
     console.log("old article", article)
-    const merged = Object.assign(article, payload)
+    const merged:ArticleType = Object.assign(article, payload, {image: mainImage})
     console.log("merged", merged)
-    edit(merged as Article).then(result => {
+    edit(merged).then(result => {
       if (result.error){
         toast.error(result.error.message)
       } 
@@ -124,6 +122,13 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             disabled={loading}
             errors={errors}
             placeHolder="Bajada"
+          />
+          <Separator />
+          <MainImage 
+            id="main-image"
+            onUpload={handleMainImage}
+            fileName={article.slug}
+            image={mainImage}
           />
           <Separator />
           <Input

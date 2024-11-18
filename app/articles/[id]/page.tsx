@@ -1,8 +1,10 @@
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import MainContainer from "@/app/components/MainContainer"
 import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/Responses"
-import { Article } from "@/app/types/articles" 
+import { ArticleType } from "@/app/types/articles" 
 import getArticle from "@/app/actions/data/articles/getArticle"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import ArticleForm from "../components/ArticleForm"
@@ -14,10 +16,18 @@ const ArticlePage = async ({
   params: { id: string },
   searchParams : { [key: string]: string | string[] | undefined }
 }) => {
-  console.log("params", params)
+  // const session = useSession()
+  // const router = useRouter()
+  // useEffect(() => {
+  //   if (session?.status !== 'authenticated') {
+  //     router.push('/')
+  //   }
+  // }, [session?.status, router])
 
-  const {data, error}:iResponseOne<Article> = await getArticle(params.id)
+  console.log("params", params)
+  const {data, error}:iResponseOne<ArticleType> = await getArticle(params.id)
   console.log("data", data)
+
   if (error) {
     return <ErrorMessage error={error}/>
   }

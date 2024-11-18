@@ -13,7 +13,7 @@ import {
 import createArticle from "@/app/actions/data/articles/createArticle"
 import { toast } from "react-hot-toast"
 import { iResponseOne } from "@/app/types/Responses"
-import { Article } from "@/app/types/articles"
+import { ArticleType } from "@/app/types/articles"
 
 const NewArticleForm = () => {
   const session = useSession()
@@ -42,7 +42,7 @@ const NewArticleForm = () => {
 
   const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     setLoading(true)
-    const {data, error}:iResponseOne<Article> = await createArticle(payload.title)
+    const {data, error}:iResponseOne<ArticleType> = await createArticle(payload.title)
     if (error){
       toast.error(error.message)
     } 

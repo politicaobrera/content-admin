@@ -80,16 +80,19 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
                   mainImagen.state.uploading ? 'Loading':'Guardar'
                 }
               </Button>
-              {
+              {/* {
                 mainImagen.state.uploading && (
                   <p>{mainImagen.state.percent} "% done"</p>
                 )
-              }
+              } */}
               <Button
                 fullWidth
                 danger
                 disabled={!mainImagen.state.currentImage || mainImagen.state.uploading}
-                onClick={() => mainImagen.actions.onToggleMode()}
+                onClick={() => {
+                  mainImagen.actions.onToggleMode()
+                  mainImagen.actions.cleanUploadTemps()
+                }}
               >
                 {
                   mainImagen.state.uploading ? 'Loading':'Cancelar'

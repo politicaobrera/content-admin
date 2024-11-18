@@ -33,12 +33,6 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
   const [percent, setPercent] = useState<number>(0)// revisar luego
 
   useEffect(() => {
-    if (currentImage) {
-      onUpload?.(currentImage)
-    }
-  },[currentImage])
-
-  useEffect(() => {
     if (image) {
       setCurrentImage(image)
       setUploadMode(false)
@@ -77,6 +71,13 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
     setFile(f)
   }
 
+  const cleanUploadTemps = () => {
+    setPreview('')
+    setPreviewSEO('')
+    setImageFileReadyToUpload(null)
+    setImageSEOFileReadyToUpload(null)
+  }
+
   const onSave = async () => {
     if (imageFileReadyToUpload && imageSEOFileReadyToUpload) {
       setUploading(true)
@@ -91,9 +92,10 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
         console.log("url", imageUrl)
         console.log("urlSEO", imageUrlSEO)
         // TODO add caption from missing textfield
-        setCurrentImage({...emptyImage,src:imageUrl, srcSEO: imageUrlSEO})
-        setPreview('')
-        setPreviewSEO('')
+        const notaImg:MainImageType = {...emptyImage,src:imageUrl, srcSEO: imageUrlSEO}
+        setCurrentImage(notaImg)
+        onUpload(notaImg)
+        cleanUploadTemps()
         onToggleMode()
       } catch (error) {
         console.log("error uploading", error)
@@ -118,6 +120,7 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
     },
     actions: { 
       onToggleMode,
+      cleanUploadTemps,
       onFileChange,
       onSave,
     },

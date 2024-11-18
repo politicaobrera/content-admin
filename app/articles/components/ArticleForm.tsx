@@ -45,8 +45,19 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     }
   })
 
-  const handleMainImage = (img:MainImageType) => {
-    setMainImage(img)
+  const handleMainImage = async (img:MainImageType) => {
+    console.log("old article", article)
+    console.log("voy a updatear imagen", img)
+    const merged:ArticleType = Object.assign(article, {image: img})
+    edit(merged).then(result => {
+      if (result.error){
+        toast.error(result.error.message)
+      } 
+      if(result.data){
+        toast.success("Imagen Nota actualizada correctamente")
+      }
+    })
+    router.refresh()
   }
 
   const onSubmit:SubmitHandler<FieldValues> = (payload) => {
@@ -68,6 +79,10 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     // push to list todo
     router.refresh()
   }
+
+  const handleCancel = () => {
+    router.push(`/articles`);
+  };
 
   return (
     <div
@@ -141,7 +156,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             errors={errors}
             placeHolder="Contenido"
           />
-          <div>
+          <div className="space-y-2">
             <Button
               type="submit"
               fullWidth
@@ -149,6 +164,16 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             >
               GUARDAR
             </Button>
+            <Button
+              fullWidth
+              danger
+              disabled={loading}
+              onClick={handleCancel}
+            >
+              {
+                loading ? 'Loading' : 'Cancelar'
+              }
+            </Button>            
           </div>
         </form>
       </div>

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  .ql-container {
+    @apply min-h-[200px] rounded-lg bg-white;
+  }
+
+  .ql-toolbar {
+    @apply bg-gray-50 rounded-lg border border-gray-300;
+  }
+}
+
 html,
 body,
 root {

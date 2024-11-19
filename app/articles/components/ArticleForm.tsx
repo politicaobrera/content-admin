@@ -2,7 +2,6 @@
 
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
-import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react"
 import { 
@@ -11,12 +10,11 @@ import {
   useForm
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import { iResponseOne } from "@/app/types/Responses"
 import { ArticleType, MainImageType } from "@/app/types/articles"
-import editArticle from "@/app/actions/data/articles/editArticle"
 import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"
 import MainImage from "@/app/components/image/MainImage"
+import Wysiwyg from "@/app/components/inputs/Wysiwyg"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -32,6 +30,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: {
       errors,
@@ -100,6 +99,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           py-8
           sm:rounded-lg
           sm:px-10
+          min-w-max
           shadow
         "
       >      
@@ -146,7 +146,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             image={mainImage}
           />
           <Separator />
-          <Input
+          {/* <Input
             label="Contenido"
             id="content"
             type="text"
@@ -155,7 +155,16 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             disabled={loading}
             errors={errors}
             placeHolder="Contenido"
+          /> */}
+          <Wysiwyg
+            label="Contenido"
+            id="content"
+            control={control}
+            errors={errors}
+            required={true}
+            placeHolder="Cuerpo de la nota..."
           />
+          <Separator />
           <div className="space-y-2">
             <Button
               type="submit"

@@ -146,16 +146,6 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             image={mainImage}
           />
           <Separator />
-          {/* <Input
-            label="Contenido"
-            id="content"
-            type="text"
-            register={register}
-            key={`article-content-${article._id}`}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Contenido"
-          /> */}
           <Wysiwyg
             label="Contenido"
             id="content"

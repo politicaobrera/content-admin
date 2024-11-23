@@ -10,6 +10,10 @@
   .ql-toolbar {
     @apply bg-gray-50 rounded-lg border border-gray-300;
   }
+  
+  .ql-embed-image {
+    max-height: 400px;
+  }
 }
 
 html,

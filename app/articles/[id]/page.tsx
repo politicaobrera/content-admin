@@ -1,6 +1,3 @@
-import { Suspense, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import MainContainer from "@/app/components/MainContainer"
 import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/Responses"
@@ -16,13 +13,6 @@ const ArticlePage = async ({
   params: { id: string },
   searchParams : { [key: string]: string | string[] | undefined }
 }) => {
-  // const session = useSession()
-  // const router = useRouter()
-  // useEffect(() => {
-  //   if (session?.status !== 'authenticated') {
-  //     router.push('/')
-  //   }
-  // }, [session?.status, router])
 
   console.log("params", params)
   const {data, error}:iResponseOne<ArticleType> = await getArticle(params.id)

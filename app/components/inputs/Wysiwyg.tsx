@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { use, useEffect, useMemo, useRef } from 'react';
 import clsx from 'clsx';
 import { Controller, Control } from 'react-hook-form';
-import ReactQuill, {} from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 export interface WYSIWYGEditorProps {
@@ -35,54 +35,32 @@ const Wysiwyg: React.FC<WYSIWYGEditorProps> = ({
   disabled,
   placeHolder,
 }) => {
-  // const {
-  //   field: { value, onChange },
-  // } = useController({
-  //   name: id,
-  //   control,
-  //   rules: { required },
-  // });
 
   const quillRef = useRef<ReactQuill|null>(null);
 
   const handleEmbedImage = () => {
-    const editor = quillRef.current?.getEditor(); // Accede a la instancia de Quill
+    const editor = quillRef.current?.getEditor();
     if (editor) {
       const link = prompt('Ingrese el enlace de la imagen:');
       if (link) {
-        const range = editor.getSelection(); // Obtiene la posición actual del cursor
-        editor.insertEmbed(range?.index || 0, 'image', link); // Inserta la imagen
+        const range = editor.getSelection();
+        editor.insertEmbed(range?.index || 0, 'image', link);
       }
     }
   };
 
-  const handleUploadImage = () => {
-    const editor = quillRef.current?.getEditor();
-    // if (editor) {
-    //   const input = document.createElement('input');
-    //   input.setAttribute('type', 'file');
-    //   input.setAttribute('accept', 'image/*');
-    //   input.click();
-  
-    //   input.onchange = async () => {
-    //     const file = input.files?.[0];
-    //     if (file) {
-    //       // const reader = new FileReader();
-    //       // reader.onload = () => {
-    //       //   const url = reader.result; // Base64 para previsualización
-    //       //   const range = editor.getSelection();
-    //       //   editor.insertEmbed(range?.index || 0, 'image', url); // Inserta la imagen
-    //       // };
-    //       // reader.readAsDataURL(file);
-    //     }
-    //   };
-    // }
-  };
+  useEffect(() => {
+    if (window) {
+      let Image = Quill.import('formats/image');
+      Image.className = 'ql-embed-image';
+      Quill.register(Image, true);
+    }
+  }, [quillRef])
 
-  const modules = {
+  const modules = useMemo(() => ({
     toolbar: {
       container: [
-        [{ header: [1, 2, 3, false] }],
+        [{ header: [2, 3, 4, false] }],
         ['bold', 'italic', 'underline', 'strike'],
         [{ color: [] }, { background: [] }],
         [{ list: 'ordered' }, { list: 'bullet' }],
@@ -91,10 +69,10 @@ const Wysiwyg: React.FC<WYSIWYGEditorProps> = ({
         ['clean'],
       ],
       handlers: {
-        video: () => {console.log("holi")}
+        image: handleEmbedImage,
       }
     },
-  };
+  }),[])
 
   return (
     <div>

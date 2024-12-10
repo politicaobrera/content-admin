@@ -88,8 +88,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       className="
         mt-8
         sm:mx-auto
-        sm:w-fullseparator
-        sm:max-w-md
+        sm:w-full
       "
     >
       <div

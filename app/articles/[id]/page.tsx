@@ -28,7 +28,7 @@ const ArticlePage = async ({
 
 
   return (
-    <div className="block h-full">
+    <div className="block h-full bg-gray-100">
       <MainContainer>
         <ArticleForm article={data}/>
       </MainContainer>

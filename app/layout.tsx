@@ -8,7 +8,7 @@ import Sidebar from './components/sidebar/Sidebar'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'News Admin App',
+  title: 'Admin App',
   description: 'Manage all of the contents',
 }
 

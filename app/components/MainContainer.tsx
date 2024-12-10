@@ -13,10 +13,16 @@ const MainContainer:React.FC<MainContainerProps> = ({children}) => {
         h-full
         flex
         justify-center
-        bg-gray-100
       "
     >
-      <div className="flex items-center text-center flex-col">
+      <div 
+        className="
+          flex
+          items-center
+          text-center
+          flex-col
+        "
+      >
         {children}
       </div>
     </div>

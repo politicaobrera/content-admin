@@ -57,8 +57,8 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
   };
 
   return (
+    // sacar a componente aparte de filtros
     <div className="space-y-4">
-      {/* Panel de filtros */}
       <div className="p-4 bg-gray-100 rounded shadow">
         <h2 className="text-lg font-semibold mb-2">Filtros</h2>
         <div className="grid grid-cols-2 gap-4">
@@ -113,11 +113,29 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
               <tr key={article.articleId} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border-b text-sm text-gray-600">{article.articleId}</td>
                 <td className="px-4 py-2 border-b">
-                  <img
-                    src={article.image?.src}
-                    alt={article.title}
-                    className="h-12 w-12 rounded object-cover shadow-md"
-                  />
+                  {article.image?.src ? (
+                    <img
+                      src={article.image?.src}
+                      alt={article.title}
+                      className="h-auto w-24 object-cover rounded shadow-md"
+                    />
+                  ) :  (
+                    <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="h-8 w-8 text-gray-400"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  )}
                 </td>
                 <td className="px-4 py-2 border-b text-sm text-gray-600">{article.title}</td>
                 <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section}</td>

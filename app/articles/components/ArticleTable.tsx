@@ -90,119 +90,125 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
         </div>
       </div>
 
-      {/* Tabla */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse border border-gray-300 bg-white shadow-md">
-          <thead className="bg-gray-100">
-            <tr>
-              <th
-                className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                onClick={() => handleSort('articleId')}
-              >
-                ID {sort.field === 'articleId' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
-              </th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Imagen</th>
-              <th
-                className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                onClick={() => handleSort('title')}
-              >
-                Título {sort.field === 'title' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
-              </th>
-              <th
-                className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                onClick={() => handleSort('section')}
-              >
-                Sección {sort.field === 'section' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
-              </th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Subhead</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Volanta</th>
-              <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {articles.map((article) => (
-              <tr key={article.articleId} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border-b text-sm text-gray-600">{article.articleId}</td>
-                <td className="px-4 py-2 border-b">
-                  {article.image?.src ? (
-                    <img
-                      src={article.image?.src}
-                      alt={article.title}
-                      className="h-auto w-24 object-cover rounded shadow-md"
-                    />
-                  ) :  (
-                    <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="h-8 w-8 text-gray-400"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                  </div>
-                  )}
-                </td>
-                <td className="px-4 py-2 border-b text-sm text-gray-600">{article.title}</td>
-                <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section}</td>
-                <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
-                <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
-                <td className="px-4 py-2 border-b text-sm text-gray-600">
-                  <Button
-                    type="button"
-                    onClick={() => handleEdit(article._id)}
-                  >
-                    Editar
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        {articles.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20">
+           <p className="text-lg text-gray-600 font-medium">No hay artículos para mostrar</p>
+           <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos artículos.</p>
+         </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-collapse border border-gray-300 bg-white shadow-md">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
+                      onClick={() => handleSort('articleId')}
+                    >
+                      ID {sort.field === 'articleId' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                    </th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Imagen</th>
+                    <th
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
+                      onClick={() => handleSort('title')}
+                    >
+                      Título {sort.field === 'title' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                    </th>
+                    <th
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
+                      onClick={() => handleSort('section')}
+                    >
+                      Sección {sort.field === 'section' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                    </th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Subhead</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Volanta</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {articles.map((article) => (
+                    <tr key={article.articleId} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.articleId}</td>
+                      <td className="px-4 py-2 border-b">
+                        {article.image?.src ? (
+                          <img
+                            src={article.image?.src}
+                            alt={article.title}
+                            className="h-auto w-24 object-cover rounded shadow-md"
+                          />
+                        ) :  (
+                          <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="h-8 w-8 text-gray-400"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                        </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.title}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">
+                        <Button
+                          type="button"
+                          onClick={() => handleEdit(article._id)}
+                        >
+                          Editar
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Paginación */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Artículos por página:</span>
+                <select
+                  className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
+                  value={pagination.perPage}
+                  onChange={(e) => setPagination({ perPage: Number(e.target.value), page: 1 })}
+                >
+                  <option value={20}>20</option>
+                  <option value={30}>30</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
 
-      {/* Paginación */}
-      <div className="flex items-center justify-between">
-
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Artículos por página:</span>
-          <select
-            className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
-            value={pagination.perPage}
-            onChange={(e) => setPagination({ perPage: Number(e.target.value), page: 1 })}
-          >
-            <option value={20}>20</option>
-            <option value={30}>30</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <button
-            className="rounded bg-gray-200 px-2 py-1 text-sm text-gray-600 disabled:opacity-50"
-            disabled={pagination.page === 1}
-            onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
-          >
-            Anterior
-          </button>
-          <span className="text-sm text-gray-600">
-            Página {pagination.page} de {totalPages}
-          </span>
-          <button
-            className="rounded bg-gray-200 px-2 py-1 text-sm text-gray-600 disabled:opacity-50"
-            disabled={pagination.page === totalPages}
-            onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
-          >
-            Siguiente
-          </button>
-        </div>
-      </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  className="rounded bg-gray-200 px-2 py-1 text-sm text-gray-600 disabled:opacity-50"
+                  disabled={pagination.page === 1}
+                  onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+                >
+                  Anterior
+                </button>
+                <span className="text-sm text-gray-600">
+                  Página {pagination.page} de {totalPages}
+                </span>
+                <button
+                  className="rounded bg-gray-200 px-2 py-1 text-sm text-gray-600 disabled:opacity-50"
+                  disabled={pagination.page === totalPages}
+                  onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+                >
+                  Siguiente
+                </button>
+              </div>
+          </div>
+          </>
+        )}
     </div>
   );
 };

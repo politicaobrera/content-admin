@@ -16,10 +16,6 @@ const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
     return <ErrorMessage error={error}/>
   }
 
-  // if (!data || data?.length === 0) {
-  //   return <div>No hay Articulos</div>
-  // }
-
   return (
     <div
       className="

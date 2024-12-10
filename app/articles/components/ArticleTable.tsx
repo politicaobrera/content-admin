@@ -7,9 +7,10 @@ import Button from '@/app/components/Button';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
+  total: number | undefined;
 }
 
-const ArticlesTable = ({ articles }: ArticlesTableProps) => {
+const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -21,6 +22,12 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
     field: searchParams.get('sortField') || '',
     order: searchParams.get('sortOrder') || '',
   });
+
+  const [pagination, setPagination] = useState({
+    page: parseInt(searchParams.get('page') || '1', 10),
+    perPage: parseInt(searchParams.get('perPage') || '30', 10)
+  });
+  const totalPages = Math.ceil(total || 1 / pagination.perPage);
 
   // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {
@@ -37,8 +44,11 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
     if (sort.order) params.set('sortOrder', sort.order);
     else params.delete('sortOrder');
 
+    params.set('page', String(pagination.page || 1));
+    params.set('perPage', String(pagination.perPage || 30));
+
     router.push(`?${params.toString()}`);
-  }, [filters, sort, router, searchParams]);
+  }, [filters, sort, pagination, router, searchParams]);
 
   const handleSort = (field: string) => {
     setSort((prev) => ({
@@ -59,6 +69,7 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
   return (
     // sacar a componente aparte de filtros
     <div className="space-y-4">
+
       <div className="p-4 bg-gray-100 rounded shadow">
         <h2 className="text-lg font-semibold mb-2">Filtros</h2>
         <div className="grid grid-cols-2 gap-4">
@@ -121,19 +132,19 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
                     />
                   ) :  (
                     <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="h-8 w-8 text-gray-400"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="h-8 w-8 text-gray-400"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                   </div>
                   )}
                 </td>
@@ -153,6 +164,44 @@ const ArticlesTable = ({ articles }: ArticlesTableProps) => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Paginación */}
+      <div className="flex items-center justify-between">
+
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">Artículos por página:</span>
+          <select
+            className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
+            value={pagination.perPage}
+            onChange={(e) => setPagination({ perPage: Number(e.target.value), page: 1 })}
+          >
+            <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <button
+            className="rounded bg-gray-200 px-2 py-1 text-sm text-gray-600 disabled:opacity-50"
+            disabled={pagination.page === 1}
+            onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+          >
+            Anterior
+          </button>
+          <span className="text-sm text-gray-600">
+            Página {pagination.page} de {totalPages}
+          </span>
+          <button
+            className="rounded bg-gray-200 px-2 py-1 text-sm text-gray-600 disabled:opacity-50"
+            disabled={pagination.page === totalPages}
+            onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
     </div>
   );

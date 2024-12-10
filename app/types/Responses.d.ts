@@ -8,7 +8,8 @@ export type ResponseError = {
 
 export type iResponseMany<T> = {
   error?: ResponseError,
-  data?: Data
+  data?: Data,
+  total?: number,
 }
 
 export type iResponseOne<T> = {

@@ -6,7 +6,7 @@ import ArticleListItem from "./ArticleListItem"
 import ArticlesTable from "./ArticleTable"
 
 const ArticlesList:React.FC = async () => {
-  const {data, error}:iResponseMany<ArticleType> = await getArticles()
+  const {data, error, total}:iResponseMany<ArticleType> = await getArticles()
 
   if (error) {
     return <ErrorMessage error={error}/>
@@ -38,6 +38,7 @@ const ArticlesList:React.FC = async () => {
       </ul> */}
       <ArticlesTable 
         articles={data}
+        total={total}
       />
     </div>
   )

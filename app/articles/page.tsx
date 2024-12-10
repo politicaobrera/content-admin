@@ -3,8 +3,13 @@ import MainContainer from "../components/MainContainer"
 import ArticlesList from "./components/ArticlesList"
 import Loading from "../components/Loading"
 import NewArticleForm from "./components/NewArticleForm";
+import { Params } from "../types/Requests";
 
-const ArticlesPage = () => {
+const ArticlesPage = ({
+  searchParams,
+} : {
+  searchParams : Params
+}) => {
   return (
     <div className="h-full bg-gray-100">
       <MainContainer>
@@ -24,7 +29,7 @@ const ArticlesPage = () => {
             </h1>
             <NewArticleForm />
             <Suspense fallback={<Loading />}>
-              <ArticlesList />
+              <ArticlesList searchParams={searchParams}/>
             </Suspense>
         </section>
       </MainContainer>

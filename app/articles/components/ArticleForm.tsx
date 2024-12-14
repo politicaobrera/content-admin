@@ -24,7 +24,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   console.log("articulo con data", article)
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
-  const [mainImage, setMainImage] = useState<MainImageType|undefined>(article.image ?? undefined)
+  const [mainImage, _] = useState<MainImageType|undefined>(article.image ?? undefined)
 
   const {edit} = useArticleHook();
 

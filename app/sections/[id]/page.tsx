@@ -1,5 +1,4 @@
 import { Suspense } from "react"
-import SectionDetails from "../components/SectionDetails"
 import MainContainer from "@/app/components/MainContainer"
 import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/Responses"
@@ -7,7 +6,6 @@ import { Section } from "../types/sections"
 import getSection from "@/app/actions/data/sections/getSection"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import SectionForm from "../components/SectionForm"
-import { useParams } from "next/navigation"
 
 const SectionPage = async ({
   params,
@@ -26,19 +24,14 @@ const SectionPage = async ({
   return (
     <div className="block h-full">
       <MainContainer>
-        
         <Suspense fallback={<Loading />}>
          {
-         data && 
-         <>
+          data &&
+          <>
             <SectionForm key={data._id} edit={true} editInfo={data}/>
-            
-         </>
-         
+          </>
          }
         </Suspense>
-
-        
       </MainContainer>
     </div>
   )

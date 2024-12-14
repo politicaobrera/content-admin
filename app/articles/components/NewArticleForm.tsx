@@ -38,7 +38,7 @@ const NewArticleForm = () => {
     if (session?.status !== 'authenticated') {
       router.push('/')
     }
-  }, [session?.status, router])
+  }, [session, router])
 
   const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     setLoading(true)

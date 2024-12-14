@@ -89,7 +89,6 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
           />
         </div>
       </div>
-
         {articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
            <p className="text-lg text-gray-600 font-medium">No hay artículos para mostrar</p>
@@ -120,7 +119,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                     >
                       Sección {sort.field === 'section' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Subhead</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Bajada</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Volanta</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>

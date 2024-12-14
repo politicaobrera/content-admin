@@ -46,7 +46,7 @@ const inputs : InputData[] = [
 
 const {onSubmit: onSubmitTransformed, ...sectionsFormObject} = useGenericForm(inputs, onSumbit, props.editInfo?._id)
 
-console.log(sectionsFormObject.getValues())
+// console.log(sectionsFormObject.getValues())
 
 useEffect(()=>{},[sectionsFormObject.watch()])
 

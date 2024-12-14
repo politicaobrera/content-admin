@@ -141,6 +141,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             disabled={loading}
             errors={errors}
             placeHolder="Bajada"
+            rows={3}
           />
           <Separator />
           <MainImage 

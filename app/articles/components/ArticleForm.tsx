@@ -15,6 +15,8 @@ import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"
 import MainImage from "@/app/components/image/MainImage"
 import Wysiwyg from "@/app/components/inputs/Wysiwyg"
+import ArticlePreview from "./Preview/ArticlePreview"
+import TextArea from "@/app/components/inputs/TextArea"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -32,6 +34,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     register,
     control,
     handleSubmit,
+    watch,
     formState: {
       errors,
     } 
@@ -83,6 +86,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     router.push(`/articles`);
   };
 
+  const currentValues = watch() as ArticleType
+  console.log("currentValues", currentValues)
   return (
     <div
       className="
@@ -92,16 +97,17 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       "
     >
       <div
+        // style={{maxWidth: '40rem'}}
         className="
           bg-white
           px-4
           py-8
           sm:rounded-lg
           sm:px-10
-          min-w-max
+          max-w-screen-md
           shadow
         "
-      >      
+      >
         <form
           className="space-y-6"
           onSubmit={handleSubmit(onSubmit)}
@@ -127,10 +133,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             errors={errors}
             placeHolder="Volanta"
           />
-          <Input
+          <TextArea
             label="Bajada"
             id="subhead"
-            type="text"
             register={register}
             key={`article-subhead-${article._id}`}
             disabled={loading}
@@ -174,6 +179,18 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             </Button>            
           </div>
         </form>
+        <h2
+          className="
+            mt-6
+            text-center
+            text-xl
+          text-black
+            tracking-tight
+            font-bold
+            py-2
+          "
+        >Previsualizacion</h2>
+        <ArticlePreview  article={currentValues}  mainImage={mainImage}/>
       </div>
     </div>
   )

@@ -18,4 +18,5 @@ export type ArticleType = {
   lastModifiedBy:string
   section:Section
   image?: MainImageType
+  createdAt: string;
 }

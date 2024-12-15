@@ -76,32 +76,53 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
     // sacar a componente aparte de filtros
     <div className="space-y-4">
 
-      <div className="p-4 bg-gray-100 rounded shadow">
-        <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            name="articleId"
-            placeholder="Filtrar por ID"
-            value={filters.articleId}
-            onChange={handleFilterChange}
-            className="p-2 border rounded w-full"
-          />
-          <input
-            name="title"
-            placeholder="Filtrar por título"
-            value={filters.title}
-            onChange={handleFilterChange}
-            className="p-2 border rounded w-full"
-          />
-          <input
-            name="section"
-            placeholder="Filtrar por sección"
-            value={filters.section}
-            onChange={handleFilterChange}
-            className="p-2 border rounded w-full"
-          />
+      <div
+        className="
+          bg-white
+          px-4
+          py-8
+          sm:rounded-lg
+          sm:px-10
+          shadow
+        "
+      >
+        <div className="p-4 bg-gray-100 rounded shadow">
+          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              name="articleId"
+              placeholder="Filtrar por ID"
+              value={filters.articleId}
+              onChange={handleFilterChange}
+              className="p-2 border rounded w-full"
+            />
+            <input
+              name="title"
+              placeholder="Filtrar por título"
+              value={filters.title}
+              onChange={handleFilterChange}
+              className="p-2 border rounded w-full"
+            />
+            <input
+              name="section"
+              placeholder="Filtrar por sección"
+              value={filters.section}
+              onChange={handleFilterChange}
+              className="p-2 border rounded w-full"
+            />
+          </div>
         </div>
       </div>
+      <div
+        className="
+          bg-white
+          px-4
+          py-8
+          sm:rounded-lg
+          sm:px-10
+          shadow
+        "
+      >
         {articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
            <p className="text-lg text-gray-600 font-medium">No hay artículos para mostrar</p>
@@ -121,7 +142,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                     </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Imagen</th>
                     <th
-                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer w-20"
                       onClick={() => handleSort('title')}
                     >
                       Título {sort.field === 'title' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
@@ -132,7 +153,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                     >
                       Sección {sort.field === 'section' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Bajada</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 w-20">Bajada</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Volanta</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
@@ -221,6 +242,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
           </div>
           </>
         )}
+      </div>
     </div>
   );
 };

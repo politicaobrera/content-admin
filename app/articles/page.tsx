@@ -11,7 +11,7 @@ const ArticlesPage = ({
   searchParams : Params
 }) => {
   return (
-    <div className="h-full bg-gray-100">
+    <div className="bg-gray-100 pb-12">
       <MainContainer>
         <section
         >

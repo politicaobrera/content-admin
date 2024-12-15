@@ -7,10 +7,11 @@ const MainContainer:React.FC<MainContainerProps> = ({children}) => {
     <div
       className="
         px-4
-        py-8
+        py-10
         sm:px-6
         lg:px-8
         h-full
+        mb-12
         flex
         justify-center
       "

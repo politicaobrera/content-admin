@@ -14,7 +14,9 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // TODO: useTable factor out
   const [filters, setFilters] = useState({
+    articleId: searchParams.get('articleId') || '',
     title: searchParams.get('title') || '',
     section: searchParams.get('section') || '',
   });
@@ -32,6 +34,10 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
+
+    if (filters.articleId) params.set('articleId', filters.articleId);
+    else params.delete('articleId');
+
     if (filters.title) params.set('title', filters.title);
     else params.delete('title');
 
@@ -62,7 +68,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEdit = (id: string) => {
+  const handleClickEdit = (id: string) => {
     router.push(`/articles/${id}`);
   };
 
@@ -73,6 +79,13 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
       <div className="p-4 bg-gray-100 rounded shadow">
         <h2 className="text-lg font-semibold mb-2">Filtros</h2>
         <div className="grid grid-cols-2 gap-4">
+          <input
+            name="articleId"
+            placeholder="Filtrar por ID"
+            value={filters.articleId}
+            onChange={handleFilterChange}
+            className="p-2 border rounded w-full"
+          />
           <input
             name="title"
             placeholder="Filtrar por título"
@@ -160,7 +173,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                       <td className="px-4 py-2 border-b text-sm text-gray-600">
                         <Button
                           type="button"
-                          onClick={() => handleEdit(article._id)}
+                          onClick={() => handleClickEdit(article._id)}
                         >
                           Editar
                         </Button>

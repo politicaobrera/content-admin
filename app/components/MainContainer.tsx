@@ -7,25 +7,15 @@ const MainContainer:React.FC<MainContainerProps> = ({children}) => {
     <div
       className="
         px-4
-        py-10
         sm:px-6
         lg:px-8
-        h-full
-        mb-12
+        h-auto
         flex
+        items-center
         justify-center
       "
     >
-      <div 
-        className="
-          flex
-          items-center
-          text-center
-          flex-col
-        "
-      >
-        {children}
-      </div>
+      {children}
     </div>
   )
 }

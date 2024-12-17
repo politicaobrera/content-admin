@@ -93,18 +93,15 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       className="
         mt-8
         sm:mx-auto
-        sm:w-full
       "
     >
       <div
-        // style={{maxWidth: '40rem'}}
         className="
           bg-white
           px-4
           py-8
           sm:rounded-lg
           sm:px-10
-          max-w-screen-md
           shadow
         "
       >

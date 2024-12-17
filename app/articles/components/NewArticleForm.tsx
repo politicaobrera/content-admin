@@ -60,7 +60,7 @@ const NewArticleForm = () => {
       className="
         mt-8
         sm:mx-auto
-        sm:w-fullseparator
+        sm:w-full
         sm:max-w-md
       "
     >

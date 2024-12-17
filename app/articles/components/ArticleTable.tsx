@@ -75,7 +75,6 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   return (
     // sacar a componente aparte de filtros
     <div className="space-y-4">
-
       <div
         className="
           bg-white
@@ -142,7 +141,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                     </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Imagen</th>
                     <th
-                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer w-20"
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
                       onClick={() => handleSort('title')}
                     >
                       Título {sort.field === 'title' && (sort.order === 'asc' ? '⬆️' : '⬇️')}

@@ -11,29 +11,26 @@ const ArticlesPage = ({
   searchParams : Params
 }) => {
   return (
-    <div className="bg-gray-100 pb-12">
-      <MainContainer>
-        <section
+    <MainContainer>
+      <section id="article-list">
+        <h1
+          className="
+            mt-6
+            text-center
+            text-2xl
+            text-black
+            tracking-tight
+            font-bold
+          "
         >
-            <h1
-              className="
-                mt-6
-                text-center
-                text-2xl
-                text-black
-                tracking-tight
-                font-bold
-              "
-            >
-              Notas
-            </h1>
-            <NewArticleForm />
-            <Suspense fallback={<Loading />}>
-              <ArticlesList searchParams={searchParams}/>
-            </Suspense>
-        </section>
-      </MainContainer>
-    </div>
+          Notas
+        </h1>
+        <NewArticleForm />
+        <Suspense fallback={<Loading />}>
+          <ArticlesList searchParams={searchParams}/>
+        </Suspense>
+      </section>
+    </MainContainer>
   )
 }
 

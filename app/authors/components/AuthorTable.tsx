@@ -65,12 +65,42 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
   };
 
   const handleClickEdit = (id: string) => {
-    router.push(`/articles/${id}`);
+    router.push(`/authors/${id}`);
   };
 
+  const handleClickNew = () => {
+    router.push(`/authors/new`);
+  }
+
   return (
+    
     // TODO: sacar a componente aparte de filtros
     <div className="space-y-4">
+            <div
+        className="
+          mt-8
+          sm:mx-auto
+        "
+      >
+        <div
+          className="
+            bg-white
+            px-4
+            py-8
+            sm:rounded-lg
+            sm:px-10
+            shadow
+          "
+        >
+          <Button
+            type="button"
+            fullWidth
+            onClick={handleClickNew}
+          >
+            NUEVO AUTOR
+          </Button>
+        </div>
+      </div>
       <div
         className="
           bg-white
@@ -141,7 +171,13 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
                     //TODO: sacar a componente?
                     <tr key={author._id} className="hover:bg-gray-50">
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{author.name}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600 flex flex-col">{author.descriptions}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600 flex flex-col">
+                        {author.descriptions.map(description => (
+                          <div>
+                            {description}
+                          </div>
+                        ))}
+                      </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">
                         <Button
                           type="button"

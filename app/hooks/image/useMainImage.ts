@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
-import { MainImageType } from "@/app/types/articles"
+import { MainImageType } from "@/app/types/article"
 
 const compressOptions = {
   maxSizeMB: 1,

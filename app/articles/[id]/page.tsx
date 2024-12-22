@@ -1,7 +1,7 @@
 import MainContainer from "@/app/components/MainContainer"
 import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/Responses"
-import { ArticleType } from "@/app/types/articles" 
+import { ArticleType } from "@/app/types/article" 
 import getArticle from "@/app/actions/data/articles/getArticle"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import ArticleForm from "../components/ArticleForm"

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from "react"
 import useRoutes from "@/app/hooks/useRoutes"
 import DesktopItem from "./DesktopItem"
 import { ExtendedUser } from "@/app/types/nextauth"

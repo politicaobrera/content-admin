@@ -10,7 +10,7 @@ import {
   useForm
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import { ArticleType, MainImageType } from "@/app/types/articles"
+import { ArticleType, MainImageType } from "@/app/types/article"
 import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"
 import MainImage from "@/app/components/image/MainImage"

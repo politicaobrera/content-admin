@@ -1,19 +1,19 @@
 'use server'
 
-import { ArticleType } from "@/app/types/article"
+import { AuthorType } from "@/app/types/author"
 import { iResponseMany } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 import { Params } from "@/app/types/Requests"
 import { buildQueryString } from "@/app/utils/query"
 
-const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
+const authorApi = process.env.CONTENT_SERVER_URL + '/authors'
 
-const getArticles = async function (searchParams:Params):Promise<iResponseMany<ArticleType>> {
+const getAuthors = async function (searchParams:Params):Promise<iResponseMany<AuthorType>> {
   console.log("searchParams", searchParams)
   const query = buildQueryString(searchParams)
   console.log("query", query)
   const headers = await getAuthorizationHeader()
-  const response = await fetch(`${articlesApi}?${query}`, {headers: headers, cache: 'no-store'})
+  const response = await fetch(`${authorApi}?${query}`, {headers: headers, cache: 'no-store'})
 
   if(!response.ok) {
     console.log(`Error al obtener los articulos (${response.status}): ${response.statusText}`)
@@ -29,4 +29,4 @@ const getArticles = async function (searchParams:Params):Promise<iResponseMany<A
   return res
 }
 
-export default getArticles
+export default getAuthors

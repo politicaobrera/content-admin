@@ -1,4 +1,5 @@
 'use server'
+// TODO: section type y types
 import { Section } from "../../../sections/types/sections"
 import { iResponseMany } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"

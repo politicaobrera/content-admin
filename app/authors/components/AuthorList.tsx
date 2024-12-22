@@ -1,16 +1,16 @@
-import getArticles from "@/app/actions/data/articles/getArticles"
+import getAuthors from "@/app/actions/data/authors/getAuthors"
 import { iResponseMany } from "@/app/types/Responses"
-import { ArticleType } from "@/app/types/article"
+import { AuthorType } from "@/app/types/author"
 import ErrorMessage from "@/app/components/ErrorMessage"
-import ArticlesTable from "./ArticleTable"
+import AuthorTable from "./AuthorTable"
 import { Params } from "@/app/types/Requests"
 
-interface ArticlesListProps {
+interface AuthorsListProps {
   searchParams: Params;
 }
 
-const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
-  const {data, error, total}:iResponseMany<ArticleType> = await getArticles(searchParams)
+const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
+  const {data, error, total}:iResponseMany<AuthorType> = await getAuthors(searchParams)
 
   if (error) {
     return <ErrorMessage error={error}/>
@@ -27,12 +27,12 @@ const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
         flex
       "
     >
-      <ArticlesTable 
-        articles={data}
+      <AuthorTable 
+        authors={data}
         total={total}
       />
     </div>
   )
 }
 
-export default ArticlesList
+export default AuthorsList

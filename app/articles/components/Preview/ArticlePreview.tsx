@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ArticleType, MainImageType } from "@/app/types/articles"
+import { ArticleType, MainImageType } from "@/app/types/article"
 
 interface ArticlePreviewProps {
   article: ArticleType

@@ -2,23 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArticleType } from "@/app/types/article";
+import { AuthorType } from '@/app/types/author';
 import Button from '@/app/components/Button';
 
-interface ArticlesTableProps {
-  articles: ArticleType[];
+interface AuthorTableProps {
+  authors: AuthorType[];
   total: number | undefined;
 }
 
-const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
+const AuthorTable = ({ authors, total }: AuthorTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
-    articleId: searchParams.get('articleId') || '',
-    title: searchParams.get('title') || '',
-    section: searchParams.get('section') || '',
+    name: searchParams.get('name') || '',
+    description: searchParams.get('description') || '',
   });
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
@@ -35,14 +34,11 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (filters.articleId) params.set('articleId', filters.articleId);
-    else params.delete('articleId');
+    if (filters.name) params.set('name', filters.name);
+    else params.delete('name');
 
-    if (filters.title) params.set('title', filters.title);
-    else params.delete('title');
-
-    if (filters.section) params.set('section', filters.section);
-    else params.delete('section');
+    if (filters.description) params.set('description', filters.description);
+    else params.delete('description');
 
     if (sort.field) params.set('sortField', sort.field);
     else params.delete('sortField');
@@ -73,7 +69,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   };
 
   return (
-    // sacar a componente aparte de filtros
+    // TODO: sacar a componente aparte de filtros
     <div className="space-y-4">
       <div
         className="
@@ -89,23 +85,16 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
           <h2 className="text-lg font-semibold mb-2">Filtros</h2>
           <div className="grid grid-cols-2 gap-4">
             <input
-              name="articleId"
-              placeholder="Filtrar por ID"
-              value={filters.articleId}
+              name="name"
+              placeholder="Filtrar por nombre"
+              value={filters.name}
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
             <input
-              name="title"
-              placeholder="Filtrar por título"
-              value={filters.title}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="section"
-              placeholder="Filtrar por sección"
-              value={filters.section}
+              name="description"
+              placeholder="Filtrar por descripción"
+              value={filters.description}
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
@@ -122,10 +111,10 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
           shadow
         "
       >
-        {articles.length === 0 ? (
+        {authors.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-           <p className="text-lg text-gray-600 font-medium">No hay artículos para mostrar</p>
-           <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos artículos.</p>
+           <p className="text-lg text-gray-600 font-medium">No hay autores para mostrar</p>
+           <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos autores.</p>
          </div>
         ) : (
           <>
@@ -135,65 +124,28 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                   <tr>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                      onClick={() => handleSort('articleId')}
+                      onClick={() => handleSort('name')}
                     >
-                      ID {sort.field === 'articleId' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
-                    </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Imagen</th>
-                    <th
-                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                      onClick={() => handleSort('title')}
-                    >
-                      Título {sort.field === 'title' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                      Nombre {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                      onClick={() => handleSort('section')}
                     >
-                      Sección {sort.field === 'section' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                      Descripción
                     </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 w-20">Bajada</th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Volanta</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {articles.map((article) => (
-                    <tr key={article.articleId} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.articleId}</td>
-                      <td className="px-4 py-2 border-b">
-                        {article.image?.src ? (
-                          <img
-                            src={article.image?.src}
-                            alt={article.title}
-                            className="h-auto w-24 object-cover rounded shadow-md"
-                          />
-                        ) :  (
-                          <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="h-8 w-8 text-gray-400"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                        </div>
-                        )}
-                      </td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.title}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
+                  {authors.map((author) => (
+                    //TODO: sacar a componente?
+                    <tr key={author._id} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{author.name}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600 flex flex-col">{author.descriptions}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">
                         <Button
                           type="button"
-                          onClick={() => handleClickEdit(article._id)}
+                          onClick={() => handleClickEdit(author._id)}
                         >
                           Editar
                         </Button>
@@ -206,7 +158,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
             {/* Paginación */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Artículos por página:</span>
+                <span className="text-sm text-gray-600">Autores por página:</span>
                 <select
                   className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
                   value={pagination.perPage}
@@ -246,4 +198,4 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   );
 };
 
-export default ArticlesTable;
+export default AuthorTable;

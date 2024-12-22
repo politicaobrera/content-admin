@@ -13,7 +13,7 @@ import {
 import createArticle from "@/app/actions/data/articles/createArticle"
 import { toast } from "react-hot-toast"
 import { iResponseOne } from "@/app/types/Responses"
-import { ArticleType } from "@/app/types/articles"
+import { ArticleType } from "@/app/types/article"
 
 const NewArticleForm = () => {
   const session = useSession()

@@ -1,4 +1,4 @@
-import { ArticleType } from "@/app/types/articles";
+import { ArticleType } from "@/app/types/article";
 import editArticle from "@/app/actions/data/articles/editArticle";
 
 export default function useArticleHook(){

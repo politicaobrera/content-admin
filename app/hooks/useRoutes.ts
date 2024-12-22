@@ -6,7 +6,8 @@ import{
   HiMiniPencilSquare,
   HiArrowLeftOnRectangle,
   HiBookOpen,
-  HiNewspaper
+  HiNewspaper,
+  HiOutlineUserPlus
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -22,16 +23,22 @@ const useRoutes = () => {
       active: pathname === '/main',
     },
     {
+      label: 'Notas',
+      href: '/articles',
+      icon: HiMiniPencilSquare,
+      active: pathname === '/articles',
+    },
+    {
       label: 'Secciones',
       href: '/sections',
       icon: HiNewspaper,
       active: pathname === '/sections',
     },
     {
-      label: 'Notas',
-      href: '/articles',
-      icon: HiMiniPencilSquare,
-      active: pathname === '/articles',
+      label: 'Autores',
+      href: '/authors',
+      icon: HiOutlineUserPlus,
+      active: pathname === '/authors',
     },
     {
       label: 'Logout',

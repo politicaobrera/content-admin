@@ -1,6 +1,6 @@
 import {FC, Fragment} from 'react'
 import useMainImagen from '@/app/hooks/image/useMainImage'
-import { MainImageType } from '@/app/types/articles'
+import { MainImageType } from '@/app/types/article'
 import Button from '../Button'
 
 interface MainImageProps {

@@ -2,7 +2,7 @@
 
 import { iResponseOne } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-import { ArticleType } from "@/app/types/articles"
+import { ArticleType } from "@/app/types/article"
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 

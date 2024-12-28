@@ -30,7 +30,6 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
     register,
     control,
     handleSubmit,
-    watch,
     formState: {
       errors,
     } 
@@ -114,43 +113,48 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
             errors={errors}
             placeHolder="Nombre autor"
           />
+
           <Separator />
-          {/* <Input
-            label="Descripciones"
-            id="description"
-            type="text"
-            register={register}
-            key={`author-descriptions-${author._id}`}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Descripciones"
-          /> */}
-          {fields.map((field, index) => (
-            <div key={field.id} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
-              <input
-                {...register(`descriptions.${index}`)}
-                placeholder={`Descripción ${index + 1}`}
-                disabled={loading}
-                style={{ flex: 1, marginRight: "8px" }}
-              />
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                disabled={loading}
-                style={{ backgroundColor: "red", color: "white" }}
-              >
-                Borrar
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
+
+          <div>
+            <label
+              className="
+                block
+                text-sm
+                text-gray-900
+                font-medium
+                leading-6
+              "
+              htmlFor={"descriptions"}
+            >
+              {"Descripciones"}
+            </label>
+            {fields.map((field, index) => (
+              <div key={field.id} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+                <input
+                  {...register(`descriptions.${index}`)}
+                  placeholder={`Descripción ${index + 1}`}
+                  disabled={loading}
+                  style={{ flex: 1, marginRight: "8px" }}
+                />
+                <Button
+                  onClick={() => remove(index)}
+                  disabled={loading}
+                  secondary
+                >
+                  Borrar
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            fullWidth
             onClick={() => append("")}
             disabled={loading}
-            style={{ marginTop: "8px" }}
           >
             Agregar descripción
-          </button>
+          </Button>
           <Separator />
           <div className="space-y-2">
             <Button

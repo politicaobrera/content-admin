@@ -76,7 +76,7 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
     
     // TODO: sacar a componente aparte de filtros
     <div className="space-y-4">
-            <div
+      <div
         className="
           mt-8
           sm:mx-auto
@@ -169,16 +169,16 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
                 <tbody>
                   {authors.map((author) => (
                     //TODO: sacar a componente?
-                    <tr key={author._id} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{author.name}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600 flex flex-col">
-                        {author.descriptions.map(description => (
-                          <div>
+                    <tr key={author._id} className="hover:bg-gray-50 border-b">
+                      <td className="px-4 py-2 text-sm text-gray-600">{author.name}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">
+                        {author.descriptions.length > 0 && author.descriptions.map((description, idx) => (
+                          <div key={`${author._id}-${idx}`}>
                             {description}
                           </div>
                         ))}
                       </td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">
+                      <td className="px-4 py-2 text-sm text-gray-600">
                         <Button
                           type="button"
                           onClick={() => handleClickEdit(author._id)}

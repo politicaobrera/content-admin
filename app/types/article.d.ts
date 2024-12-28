@@ -1,11 +1,5 @@
 import { Section } from "./sections"
-
-export type ImageTpe = {
-  src: string
-  caption: string
-}
-
-export type MainImageType = ImageTpe & {srcSEO: string}
+import { MainImageType } from "./image"
 
 export type ArticleType = {
   _id: string

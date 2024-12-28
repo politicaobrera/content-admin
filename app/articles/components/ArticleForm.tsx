@@ -10,13 +10,14 @@ import {
   useForm
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import { ArticleType, MainImageType } from "@/app/types/article"
+import { ArticleType } from "@/app/types/article"
 import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"
 import MainImage from "@/app/components/image/MainImage"
 import Wysiwyg from "@/app/components/inputs/Wysiwyg"
 import ArticlePreview from "./Preview/ArticlePreview"
 import TextArea from "@/app/components/inputs/TextArea"
+import { MainImageType } from "@/app/types/image"
 
 interface ArticleFormProps {
   article: ArticleType

@@ -32,6 +32,10 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
 
   // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {
+    handleFilterSubmit()
+  }, [sort, pagination, router, searchParams]);
+  
+  const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
 
     if (filters.name) params.set('name', filters.name);
@@ -50,7 +54,7 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
     params.set('perPage', String(pagination.perPage || 30));
 
     router.push(`?${params.toString()}`);
-  }, [filters, sort, pagination, router, searchParams]);
+  }
 
   const handleSort = (field: string) => {
     setSort((prev) => ({
@@ -128,6 +132,14 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
+          </div>
+          <div className='mt-4'>
+            <Button
+              type="button"
+              onClick={() => handleFilterSubmit()}
+            >
+              Filtrar
+            </Button>
           </div>
         </div>
       </div>

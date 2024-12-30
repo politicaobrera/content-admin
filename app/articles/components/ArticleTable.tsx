@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
+import { NumericKeyDown } from '@/app/utils/inputs';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -32,7 +33,12 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   const totalPages = Math.ceil(total || 1 / pagination.perPage);
 
   // Actualiza los query params al cambiar filtros o sorting
+
   useEffect(() => {
+    handleFilterSubmit()
+  }, [sort, pagination, router, searchParams]);
+
+  const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
 
     if (filters.articleId) params.set('articleId', filters.articleId);
@@ -54,7 +60,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
     params.set('perPage', String(pagination.perPage || 30));
 
     router.push(`?${params.toString()}`);
-  }, [filters, sort, pagination, router, searchParams]);
+  } 
 
   const handleSort = (field: string) => {
     setSort((prev) => ({
@@ -90,6 +96,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
           <div className="grid grid-cols-2 gap-4">
             <input
               name="articleId"
+              onKeyDown={NumericKeyDown}
               placeholder="Filtrar por ID"
               value={filters.articleId}
               onChange={handleFilterChange}
@@ -102,6 +109,9 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
+            {
+              // TODO Combo con secciones
+            }
             <input
               name="section"
               placeholder="Filtrar por sección"
@@ -109,6 +119,14 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
+          </div>
+          <div className='mt-4'>
+            <Button
+              type="button"
+              onClick={() => handleFilterSubmit()}
+            >
+              Filtrar
+            </Button>
           </div>
         </div>
       </div>

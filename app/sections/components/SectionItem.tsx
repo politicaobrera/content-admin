@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Section, SectionProps } from '../types/sections';
+import { Section, SectionProps } from '../../types/sections';
 import { useRouter } from 'next/navigation';
 
 const SectionItem: React.FC<SectionProps> = ({ section }) => {

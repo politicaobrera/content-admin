@@ -6,7 +6,7 @@ import Button from "@/app/components/Button"
 import Link from "next/link"
 import useSectionHook from "../hooks/useSectionHook"
 import { useRouter } from "next/navigation"
-import { Section } from "../types/sections"
+import { Section } from "../../types/sections"
 
 const SectionsList:React.FC = async () => {
   const {data, error}:iResponseMany<Section> = await getSections()

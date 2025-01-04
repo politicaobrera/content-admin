@@ -1,4 +1,4 @@
-import { Section } from "../types/sections"
+import { Section } from "../../types/sections"
 
 const SectionDetails : React.FC<Section> =  (section) => {
     const sectionStyle = {

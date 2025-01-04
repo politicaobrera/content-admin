@@ -1,6 +1,7 @@
 import { AuthorType } from "@/app/types/author";
 import editAuthor from "@/app/actions/data/authors/editAuthor";
 import createAuthor from "@/app/actions/data/authors/createAuthor";
+import getAuthors from "@/app/actions/data/authors/getAuthors";
 
 export default function useAuthorHook(){
     const edit = async (author: AuthorType) : Promise<any> => {
@@ -12,6 +13,11 @@ export default function useAuthorHook(){
       const {data, error} = await createAuthor(author);
       return {data, error};
     }
+
+    const search = async (authorName:string): Promise<any> => {
+      const {data, error} = await getAuthors({name:authorName});
+      return {data, error};
+    }
     
-    return {edit, create}
+    return {edit, create, search}
 }

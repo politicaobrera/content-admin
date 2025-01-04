@@ -6,7 +6,7 @@ import useGenericForm, { InputData, flatValuesToFinalObject } from "@/app/hooks/
 import { useRouter } from "next/navigation"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Section, SectionFormType } from "../types/sections";
+import { Section, SectionFormType } from "../../types/sections";
 import useSectionHook from "../hooks/useSectionHook";
 import SectionDetails from "./SectionDetails";
 import { useEffect } from "react";

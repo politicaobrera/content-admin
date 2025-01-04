@@ -18,6 +18,8 @@ import Wysiwyg from "@/app/components/inputs/Wysiwyg"
 import ArticlePreview from "./Preview/ArticlePreview"
 import TextArea from "@/app/components/inputs/TextArea"
 import { MainImageType } from "@/app/types/image"
+import AuthorSelector from "@/app/components/authors/AuthorSelector"
+import { AuthorType } from "@/app/types/author"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -28,6 +30,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
   const [mainImage, _] = useState<MainImageType|undefined>(article.image ?? undefined)
+  const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(article.authors)
+  const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
 
   const {edit} = useArticleHook();
 
@@ -67,7 +71,15 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     setLoading(true)
     console.log("voy a guardar", payload)
     console.log("old article", article)
-    const merged:ArticleType = Object.assign(article, payload, {image: mainImage})
+    const merged:ArticleType = Object.assign(
+      article,
+      payload,
+      {image: mainImage},
+      {
+        authors: currentAuthors,
+        authorsDescriptions: currentDescriptions
+      }
+    )
     console.log("merged", merged)
     edit(merged).then(result => {
       if (result.error){
@@ -81,6 +93,12 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     setLoading(false)
     // push to list todo
     router.refresh()
+  }
+
+  const handleAuthorChange = (authors:AuthorType[], descriptions:string[]) => {
+    console.log("changin authors", authors, descriptions)
+    setCurrentAuthors(authors)
+    setCurrentDescriptions(descriptions)
   }
 
   const handleCancel = () => {
@@ -121,6 +139,20 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             errors={errors}
             placeHolder="Título de la nota"
           />
+          <Separator />
+          <MainImage 
+            id="main-image"
+            onUpload={handleMainImage}
+            fileName={article.slug}
+            image={mainImage}
+          />
+          <Separator />
+          <AuthorSelector
+            authors={article.authors}
+            descriptions={article.authorsDescriptions}
+            onChange={handleAuthorChange}
+          />
+          <Separator />
           <Input
             label="Volanta"
             id="volanta"
@@ -141,14 +173,6 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Bajada"
             rows={3}
           />
-          <Separator />
-          <MainImage 
-            id="main-image"
-            onUpload={handleMainImage}
-            fileName={article.slug}
-            image={mainImage}
-          />
-          <Separator />
           <Wysiwyg
             label="Contenido"
             id="content"

@@ -1,5 +1,5 @@
 import { SubmitHandler } from "react-hook-form";
-import { Section } from "../types/sections";
+import { Section } from "../../types/sections";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import createSection from "@/app/actions/data/sections/createSection";

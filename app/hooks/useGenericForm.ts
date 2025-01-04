@@ -2,7 +2,7 @@
 import { SubmitHandler, UseFormReturn, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { Section } from "../sections/types/sections";
+import { Section } from "../types/sections";
 
 export type InputData= {
     label: string,

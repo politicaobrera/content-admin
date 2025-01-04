@@ -19,8 +19,8 @@ const Separator: React.FC<SeparatorProps> = ({
           <div
             className="
               w-full
-              border-t
-              border-gray-300
+              border-t-2
+              border-gray-400
             "
           />
         </div>

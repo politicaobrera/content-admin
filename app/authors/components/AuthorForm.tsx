@@ -45,13 +45,19 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
     name: "descriptions",
   });
 
-  const onSubmit:SubmitHandler<FieldValues> = (payload) => {
+  const onSubmit:SubmitHandler<FieldValues | AuthorType> = (payload) => {
+    console.log("voy a guardar", payload)
     setLoading(true)
+    // clean payload empty descriptions
+    const cleanPayload: Partial<AuthorType> = {
+      ...payload,
+      descriptions: payload.descriptions.filter((i:string) => i !== "")
+    }
+    console.log("cleanPayload", cleanPayload)
     if (author) {
       // edit
-      console.log("voy a guardar", payload)
       console.log("old author", author)
-      const merged:AuthorType = Object.assign(author, payload)
+      const merged:AuthorType = Object.assign(author, cleanPayload)
       console.log("merged", merged)
   
       edit(merged).then(result => {
@@ -65,7 +71,7 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
       })
     }
 
-    create(payload as AuthorType).then(result => {
+    create(cleanPayload as AuthorType).then(result => {
       if (result.error){
         toast.error(result.error.message)
       } 

@@ -1,15 +1,15 @@
 'use client'
 
-import Button from "@/app/components/Button"
-import Input from "@/app/components/inputs/Input"
+import React, { useContext, useState } from "react"
 import { useRouter } from "next/navigation"
-import React, { useEffect, useState } from "react"
+import { toast } from "react-hot-toast"
 import { 
   FieldValues,
   SubmitHandler,
   useForm
 } from "react-hook-form"
-import { toast } from "react-hot-toast"
+import Button from "@/app/components/Button"
+import Input from "@/app/components/inputs/Input"
 import { ArticleType } from "@/app/types/article"
 import Separator from "@/app/components/Separator"
 import useArticleHook from "../hooks/useArticleHook"
@@ -20,14 +20,17 @@ import TextArea from "@/app/components/inputs/TextArea"
 import { MainImageType } from "@/app/types/image"
 import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
+import SectionsContext from "@/app/context/SectionsContext"
 
 interface ArticleFormProps {
   article: ArticleType
 }
 
 const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
-  console.log("articulo con data", article)
+  // console.log("articulo con data", article)
   const router = useRouter()
+  const { sections } = useContext(SectionsContext);
+  console.log("sections", sections)
   const [loading, setLoading] = useState<boolean>(false)
   const [mainImage, _] = useState<MainImageType|undefined>(article.image ?? undefined)
   const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(article.authors)
@@ -96,7 +99,6 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   }
 
   const handleAuthorChange = (authors:AuthorType[], descriptions:string[]) => {
-    console.log("changin authors", authors, descriptions)
     setCurrentAuthors(authors)
     setCurrentDescriptions(descriptions)
   }
@@ -106,7 +108,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   };
 
   const currentValues = watch() as ArticleType
-  console.log("currentValues", currentValues)
+  // console.log("currentValues", currentValues)
   return (
     <div
       className="

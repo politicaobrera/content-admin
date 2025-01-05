@@ -14,9 +14,9 @@ const ArticlePage = async ({
   searchParams : { [key: string]: string | string[] | undefined }
 }) => {
 
-  console.log("params", params)
+  // console.log("params", params)
   const {data, error}:iResponseOne<ArticleType> = await getArticle(params.id)
-  console.log("data", data)
+  // console.log("data", data)
 
   if (error) {
     return <ErrorMessage error={error}/>

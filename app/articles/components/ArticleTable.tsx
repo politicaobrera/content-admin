@@ -205,7 +205,7 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
                         )}
                       </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.title}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section?.name || "-"}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">

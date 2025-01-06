@@ -2,6 +2,7 @@ import { Section } from "../../types/sections"
 
 const SectionDetails : React.FC<Section> =  (section) => {
     const sectionStyle = {
+        maxWidth: 'fit-content',
         backgroundColor: section.style.backgroundColor,
         color: section.style.color,
         padding: "10px", // Ajusta el espaciado según tus necesidades

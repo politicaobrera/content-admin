@@ -1,5 +1,7 @@
 import moment from 'moment';
-import { ArticleType, MainImageType } from "@/app/types/article"
+import { ArticleType } from "@/app/types/article"
+import { MainImageType } from '@/app/types/image';
+import AuthorsList from './AuthorList';
 
 interface ArticlePreviewProps {
   article: ArticleType
@@ -8,8 +10,21 @@ interface ArticlePreviewProps {
 const ArticlePreview = ({article, mainImage}:ArticlePreviewProps) => {
   const date = moment( moment.utc(article.createdAt)).format('DD/MM/YYYY')
   return (
-    <section id="nota-preview">
-      <div className="mt-6">
+    <section id="nota-preview" className='max-w-6xl'>
+      <div className="mt-6 flex flex-col gap-2 items-center">
+        {
+          article.section && (
+            <div
+              style={{
+                backgroundColor: article.section.style.backgroundColor,
+                color: article.section.style.color || '#000',
+              }}
+              className='w-fit p-1 rounded-md'
+            >
+              <span>{article.section.name}</span>
+            </div>
+          )
+        }
         <span
           className="
             mt-1
@@ -53,6 +68,7 @@ const ArticlePreview = ({article, mainImage}:ArticlePreviewProps) => {
         >
           {article.subhead}
         </p>
+        <AuthorsList authors={article.authors} descriptions={article.authorsDescriptions}/>
       </div>
 
       <img className="w-full h-auto mt-2" src={mainImage?.src}></img>

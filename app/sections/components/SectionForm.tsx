@@ -51,7 +51,7 @@ const {onSubmit: onSubmitTransformed, ...sectionsFormObject} = useGenericForm(in
 useEffect(()=>{},[sectionsFormObject.watch()])
 
   return (
-    <div>
+    <div className="flex flex-col justify-center items-center">
       <GenericForm inputs={inputs} onSumbit={onSubmitTransformed} useFormObject={sectionsFormObject} edit={props.edit}/>
       <h2
           className="

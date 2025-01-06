@@ -2,15 +2,16 @@
 
 import { createContext, useState, useEffect } from 'react';
 import getSections from '../actions/data/sections/getSections';
+import { Section } from '../types/sections';
 
-const SectionsContext = createContext({sections: []});
+const SectionsContext = createContext<{sections: Section[]}>({sections:[]});
 
 interface SectionsProviderProps {
   children: React.ReactNode
 }
 
 export function SectionsProvider({ children }: SectionsProviderProps) {
-  const [sections, setSections] = useState([]);
+  const [sections, setSections] = useState<Section[]>([]);
 
   useEffect(() => {
     const fetchSections = async () => {

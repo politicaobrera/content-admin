@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { 
@@ -20,7 +20,8 @@ import TextArea from "@/app/components/inputs/TextArea"
 import { MainImageType } from "@/app/types/image"
 import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
-import SectionsContext from "@/app/context/SectionsContext"
+import SectionSelector from "@/app/components/sections/SectionSelector"
+import { Section } from "@/app/types/sections"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -29,12 +30,11 @@ interface ArticleFormProps {
 const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   // console.log("articulo con data", article)
   const router = useRouter()
-  const { sections } = useContext(SectionsContext);
-  console.log("sections", sections)
   const [loading, setLoading] = useState<boolean>(false)
   const [mainImage, _] = useState<MainImageType|undefined>(article.image ?? undefined)
   const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(article.authors)
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
+  const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
 
   const {edit} = useArticleHook();
 
@@ -81,6 +81,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       {
         authors: currentAuthors,
         authorsDescriptions: currentDescriptions
+      },
+      {
+        section: currentSection?._id || null
       }
     )
     console.log("merged", merged)
@@ -101,6 +104,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const handleAuthorChange = (authors:AuthorType[], descriptions:string[]) => {
     setCurrentAuthors(authors)
     setCurrentDescriptions(descriptions)
+  }
+
+  const handleSectionChange = (section:Section) => {
+    console.log("section changed", section)
+    setCurrentSection(section)
   }
 
   const handleCancel = () => {
@@ -124,6 +132,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           sm:rounded-lg
           sm:px-10
           shadow
+          max-w-6xl
         "
       >
         <form
@@ -147,6 +156,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             onUpload={handleMainImage}
             fileName={article.slug}
             image={mainImage}
+          />
+          <Separator />
+          <SectionSelector
+            onChange={handleSectionChange}
+            currentSection={currentSection}
           />
           <Separator />
           <AuthorSelector
@@ -204,6 +218,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             </Button>            
           </div>
         </form>
+        <Separator />
         <h2
           className="
             mt-6
@@ -215,7 +230,10 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             py-2
           "
         >Previsualizacion</h2>
-        <ArticlePreview  article={currentValues}  mainImage={mainImage}/>
+        <ArticlePreview
+          article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions}}
+          mainImage={mainImage}
+        />
       </div>
     </div>
   )

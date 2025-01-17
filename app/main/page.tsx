@@ -1,9 +1,18 @@
-import ArticlesOrganizer from "./components/ArticlesOrganizer"
+import { Suspense } from "react"
+import Portada from "./components/Portada"
+import Loading from "../components/Loading"
 
-const Main = () => {
+const MainPage = async ({
+  searchParams,
+} : {
+  searchParams : { [key: string]: string | string[] | undefined }
+}) => {
+
   return (
     <div className="lg:ml-44 lg:mr-10 lg:mt-10">
-      <ArticlesOrganizer />
+      <Suspense fallback={<Loading />}>
+        <Portada searchParams={searchParams} />
+      </Suspense>
     </div>
   )
 /*   return (
@@ -45,4 +54,4 @@ const Main = () => {
         </MainContainer> */
 }
 
-export default Main
+export default MainPage

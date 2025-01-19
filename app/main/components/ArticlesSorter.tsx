@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { DndContext, closestCenter } from "@dnd-kit/core"
+import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core"
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -15,7 +15,11 @@ interface ArticlesSorterProps {
   newToAdd: ArticleType[]
 }
 
-function addIDToArticles (list:ArticleType[]) {
+interface ArticleWithID extends ArticleType {
+  id: number
+}
+
+function addIDToArticles (list:ArticleType[]): ArticleWithID[] {
   return list.map(item => ({...item, id: item.articleId}))
 }
 
@@ -23,10 +27,22 @@ function addIDToArticles (list:ArticleType[]) {
 const ArticlesSorter = ({ current, newToAdd }: ArticlesSorterProps) => {
   const [currentArticles, setCurrentArticles] = useState(addIDToArticles(current));
   const [newToAddArticles, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
+  const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
+
+  const handleDragStart = (event: any) => {
+    const { active } = event;
+    const allItems = [...currentArticles, ...newToAddArticles];
+    const draggedItem = allItems.find((item) => item.id === active.id);
+    setActiveItem(draggedItem ?? null);
+  };
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    if (!over) return; 
+
+    if (!over) {
+      setActiveItem(null);
+      return
+    } 
 
     const activeList = currentArticles.find((item) => item.id === active.id)
       ? 'current'
@@ -65,13 +81,18 @@ const ArticlesSorter = ({ current, newToAdd }: ArticlesSorterProps) => {
         ]);
       }
     }
+    setActiveItem(null);
   };
 
   return (
     <div>
       <div>Filtros</div>
       <div className="flex justify-around">
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
+        >
           <div className="w-[calc(40%+2rem)] h-1/2 flex flex-col">
             <h2 className="text-2xl font-bold bg-gray-400">Portada</h2>
             <div className="border-dashed border-gray-700 border-2 p-1 h-full w-auto">
@@ -98,6 +119,13 @@ const ArticlesSorter = ({ current, newToAdd }: ArticlesSorterProps) => {
               </SortableContext>
             </div>
           </div>
+          <DragOverlay>
+            {activeItem ? (
+              <div className="bg-white p-4 rounded-md shadow-md my-2 text-slate-950">
+                <h1>{activeItem.title}</h1>
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
       </div>
     </div>

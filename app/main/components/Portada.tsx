@@ -6,6 +6,7 @@ import getArticles from "@/app/actions/data/articles/getArticles"
 import { Params } from "@/app/types/Requests"
 import { ArticleType } from "@/app/types/article"
 import MainContainer from "@/app/components/MainContainer"
+import { isInArray } from "@/app/utils/arrays"
 
 interface PortadaProps {
   searchParams: Params;
@@ -13,22 +14,21 @@ interface PortadaProps {
 
 const Portada = async ({searchParams}: PortadaProps) => {
   const { data: homePageData, error: homePageError }:iResponseMany<PageType> = await getPageByName("portada")
-  const { data: searchedArticles, error:searchedArticlesError, total:searchedArticlesTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
-  // const { data: ultimas, error:searchedArticlesError, total:searchedArticlesTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
+  const { data: ultimas, error:ultimasError, total:ultimasTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
+  //const { data: searchedArticles, error:searchedArticlesError, total:searchedArticlesTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
 
-  console.log("homePageData", homePageData)
+  // console.log("homePageData", homePageData)
   const currentArticles = ((homePageData) as PageType).articles
-
-  if(currentArticles.length === 0){
-    console.log("we are here", searchedArticles)
-    currentArticles.push(searchedArticles.pop())
-    currentArticles.push(searchedArticles.pop())
-  }
+  const id = ((homePageData) as PageType)._id
   
+  const ultimasCleaned = ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
+  console.log("ultima cleaned", ultimasCleaned.map((i:ArticleType) => i.articleId))
   return (
-    <MainContainer>
-      <ArticlesSorter current={currentArticles} newToAdd={searchedArticles} />
-    </MainContainer>
+    <section id="portada">
+      <div>
+        <ArticlesSorter current={currentArticles} newToAdd={ultimasCleaned} id={id}/>
+      </div>
+    </section>
   )
 }
 

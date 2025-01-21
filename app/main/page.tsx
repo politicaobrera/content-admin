@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import Portada from "./components/Portada"
 import Loading from "../components/Loading"
+import MainContainer from "../components/MainContainer"
 
 const MainPage = async ({
   searchParams,
@@ -9,11 +10,11 @@ const MainPage = async ({
 }) => {
 
   return (
-    <div className="lg:ml-44 lg:mr-10 lg:mt-10">
+    <MainContainer>
       <Suspense fallback={<Loading />}>
         <Portada searchParams={searchParams} />
       </Suspense>
-    </div>
+    </MainContainer>
   )
 /*   return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-2 gap-y-3 grid-flow-row-dense">

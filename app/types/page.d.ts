@@ -14,6 +14,7 @@ interface Banner {
 }
 
 interface PageType {
+  _id: string
   name: string
   videos: Video[]
   banners: Banner[]

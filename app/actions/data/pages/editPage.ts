@@ -2,15 +2,15 @@
 
 import { iResponseOne } from "@/app/types/Responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-import { ArticleType } from "@/app/types/article"
+import { PageType } from "@/app/types/page"
 
-const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
+const pageApi = process.env.CONTENT_SERVER_URL + '/pages'
 
-const editArticle = async function (data:Partial<ArticleType>):Promise<iResponseOne<ArticleType>> {
+const editPage = async function (data:Partial<PageType>):Promise<iResponseOne<PageType>> {
   const auth = await getAuthorizationHeader()
   const headers = {...auth, 'Content-Type': 'application/json'}
-  console.log('data',data);
-  const response = await fetch(`${articlesApi}/${data._id}`,
+  console.log('page data', data);
+  const response = await fetch(`${pageApi}/${data._id}`,
    {
     headers: headers,
     cache: 'no-store',
@@ -19,12 +19,12 @@ const editArticle = async function (data:Partial<ArticleType>):Promise<iResponse
   })
 
   if(!response.ok) {
-    console.log(`Error al editar el articulo ${data._id} (${response.status}): ${response.statusText}`)
+    console.log(`Error al editar página ${data._id} (${response.status}): ${response.statusText}`)
     return {
       error: {
         status: response.status,
         statusText: response.statusText,
-        message: `Error al editar el articulo ${data._id}(${response.status}): ${response.statusText}`,
+        message: `Error al editar página ${data._id}(${response.status}): ${response.statusText}`,
       },
     }
   }
@@ -34,4 +34,4 @@ const editArticle = async function (data:Partial<ArticleType>):Promise<iResponse
   }
 }
 
-export default editArticle
+export default editPage

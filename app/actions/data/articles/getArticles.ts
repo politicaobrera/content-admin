@@ -9,9 +9,9 @@ import { buildQueryString } from "@/app/utils/query"
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 
 const getArticles = async function (searchParams:Params):Promise<iResponseMany<ArticleType>> {
-  console.log("searchParams", searchParams)
+  // console.log("searchParams", searchParams)
   const query = buildQueryString(searchParams)
-  console.log("query", query)
+  // console.log("query", query)
   const headers = await getAuthorizationHeader()
   const response = await fetch(`${articlesApi}?${query}`, {headers: headers, cache: 'no-store'})
 

@@ -7,15 +7,20 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable"
-import DraggableItem from "@/app/components/drag/DraggableItem"
+import DraggableArticle from "@/app/main/components/DraggableArticle"
 import { ArticleType } from "@/app/types/article"
+import Button from "@/app/components/Button"
+import usePortada from "../hooks/usePortada"
+import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
 interface ArticlesSorterProps {
   current: ArticleType[]
   newToAdd: ArticleType[]
+  id: string
 }
 
-interface ArticleWithID extends ArticleType {
+export interface ArticleWithID extends ArticleType {
   id: number
 }
 
@@ -24,10 +29,24 @@ function addIDToArticles (list:ArticleType[]): ArticleWithID[] {
 }
 
 // TODO: Article or content or both sorter?
-const ArticlesSorter = ({ current, newToAdd }: ArticlesSorterProps) => {
+const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
+  const {saveArticles}= usePortada();
+  const router = useRouter()
   const [currentArticles, setCurrentArticles] = useState(addIDToArticles(current));
   const [newToAddArticles, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
   const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
+
+  const handleSave = async () => {
+    saveArticles(currentArticles, id).then(result => {
+      if (result.error){
+        toast.error(result.error.message)
+      } 
+      if(result.data){
+        toast.success("Articulos de portada actualizada correctamente")
+      }
+    })
+    router.refresh()
+  }
 
   const handleDragStart = (event: any) => {
     const { active } = event;
@@ -85,36 +104,40 @@ const ArticlesSorter = ({ current, newToAdd }: ArticlesSorterProps) => {
   };
 
   return (
-    <div>
-      <div>Filtros</div>
-      <div className="flex justify-around">
+    <div className="mt-5 flex flex-col gap-2">
+      {/*TODO <div>Filtros</div> */}
+      <div className="flex gap-10">
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
           onDragStart={handleDragStart}
         >
-          <div className="w-[calc(40%+2rem)] h-1/2 flex flex-col">
-            <h2 className="text-2xl font-bold bg-gray-400">Portada</h2>
-            <div className="border-dashed border-gray-700 border-2 p-1 h-full w-auto">
+          <div className="w-[calc(45%)] flex flex-col">
+            <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
+              <h2 className="text-2xl font-bold">Portada Actual</h2>
+            </div>
+            <div className="border-dashed border-gray-700 border-2 p-2 h-full w-auto mt-1">
               <SortableContext
                 items={currentArticles.map((article) => article.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {currentArticles.map((article) => (
-                  <DraggableItem key={article.id} item={article} />
+                {currentArticles.map((article, idx) => (
+                  <DraggableArticle key={article.id} article={article} idx={idx} />
                 ))}
               </SortableContext>
             </div>
           </div>
-          <div className="w-[calc(40%+2rem)] h-1/2 flex flex-col">
-            <h2 className="text-2xl font-bold bg-gray-400">Busqueda</h2>
-            <div className="border-dashed border-gray-700 border-2 p-1">
+          <div className="w-[calc(40%+2rem)] flex flex-col">
+            <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
+              <h2 className="text-2xl font-bold">Últimas</h2>
+            </div>
+            <div className="border-dashed border-gray-700 border-2 p-2 h-full mt-1">
               <SortableContext
                 items={newToAddArticles.map((article) => article.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {newToAddArticles.map((article) => (
-                  <DraggableItem key={article.id} item={article} />
+                {newToAddArticles.map((article, idx) => (
+                  <DraggableArticle key={article.id} article={article} idx={idx}/>
                 ))}
               </SortableContext>
             </div>
@@ -127,6 +150,13 @@ const ArticlesSorter = ({ current, newToAdd }: ArticlesSorterProps) => {
             ) : null}
           </DragOverlay>
         </DndContext>
+      </div>
+      <div className="flex align-middle justify-start">
+        <Button
+          onClick={handleSave}
+        >
+          Guardar Orden
+        </Button>
       </div>
     </div>
   );

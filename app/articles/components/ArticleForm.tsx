@@ -58,8 +58,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const handleMainImage = async (img:MainImageType) => {
     console.log("old article", article)
     console.log("voy a updatear imagen", img)
-    const merged:ArticleType = Object.assign(article, {image: img})
-    edit(merged).then(result => {
+    edit({image: img, _id: article._id}).then(result => {
       if (result.error){
         toast.error(result.error.message)
       } 
@@ -151,7 +150,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Título de la nota"
           />
           <Separator />
-          <MainImage 
+          <MainImage
             id="main-image"
             onUpload={handleMainImage}
             fileName={article.slug}

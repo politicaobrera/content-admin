@@ -1,7 +1,7 @@
 import { withAuth } from "next-auth/middleware"
 import { NextRequest, NextResponse } from "next/server";
 
-const authMiddleware =withAuth({
+const authMiddleware = withAuth({
   pages:{
     signIn: '/',
   },

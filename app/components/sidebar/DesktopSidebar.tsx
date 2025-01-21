@@ -14,17 +14,17 @@ const DesktopSidebar:React.FC<DesktopSidebarProps> = ({currentUser}) => {
     <div
       className="
         hidden
-        lg:fixed
-        lg:inset-y-0
-        lg:left-0
-        lg:z-40
-        lg:w-50
-        lg:pb-4
-        lg:overflow-y-auto
-        lg:border-r-[1px]
-        lg:bg-white
-        lg:flex
-        lg:flex-col
+        md:fixed
+        md:inset-y-0
+        md:left-0
+        md:z-40
+        md:w-50
+        md:pb-4
+        md:overflow-y-auto
+        md:border-r-[1px]
+        md:bg-white
+        md:flex
+        md:flex-col
         justify-between
         xl:px-6
       "

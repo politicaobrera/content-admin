@@ -6,10 +6,17 @@ export type ResponseError = {
   message: string
 }
 
+export type PaginationMeta = {
+  total: number
+  page: number
+  perPage: number
+  totalPages: number
+}
+
 export type iResponseMany<T> = {
   error?: ResponseError,
   data?: Data,
-  total?: number,
+  meta?: PaginationMeta
 }
 
 export type iResponseOne<T> = {

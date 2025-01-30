@@ -5,13 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
 import { NumericKeyDown } from '@/app/utils/inputs';
+import { PaginationMeta } from '@/app/types/Responses';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
-  total: number | undefined;
+  meta: PaginationMeta | undefined;
 }
 
-const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
+const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -27,10 +28,10 @@ const ArticlesTable = ({ articles, total }: ArticlesTableProps) => {
   });
 
   const [pagination, setPagination] = useState({
-    page: parseInt(searchParams.get('page') || '1', 10),
-    perPage: parseInt(searchParams.get('perPage') || '30', 10)
+    page: parseInt(searchParams.get('page') || String(meta?.page) || '1', 10),
+    perPage: parseInt(searchParams.get('perPage') || String(meta?.perPage) || '50', 10)
   });
-  const totalPages = Math.ceil(total || 1 / pagination.perPage);
+  const totalPages = Math.ceil(meta?.total || 1 / pagination.perPage);
 
   // Actualiza los query params al cambiar filtros o sorting
 

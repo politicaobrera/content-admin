@@ -10,8 +10,8 @@ interface ArticlesListProps {
 }
 
 const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
-  const {data, error, total}:iResponseMany<ArticleType> = await getArticles(searchParams)
-
+  const {data, error, meta}:iResponseMany<ArticleType> = await getArticles(searchParams)
+  console.log("meta", meta)
   if (error) {
     return <ErrorMessage error={error}/>
   }
@@ -29,7 +29,7 @@ const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
     >
       <ArticlesTable 
         articles={data}
-        total={total}
+        meta={meta}
       />
     </div>
   )

@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthorType } from '@/app/types/author';
 import Button from '@/app/components/Button';
+import { PaginationMeta } from '@/app/types/Responses';
 
 interface AuthorTableProps {
   authors: AuthorType[];
-  total: number | undefined;
+  meta: PaginationMeta | undefined;
 }
 
-const AuthorTable = ({ authors, total }: AuthorTableProps) => {
+const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -25,10 +26,11 @@ const AuthorTable = ({ authors, total }: AuthorTableProps) => {
   });
 
   const [pagination, setPagination] = useState({
-    page: parseInt(searchParams.get('page') || '1', 10),
-    perPage: parseInt(searchParams.get('perPage') || '30', 10)
+    page: parseInt(searchParams.get('page') || String(meta?.page) || '1', 10),
+    perPage: parseInt(searchParams.get('perPage') || String(meta?.perPage) || '30', 10)
   });
-  const totalPages = Math.ceil(total || 1 / pagination.perPage);
+  
+  const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
 
   // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {

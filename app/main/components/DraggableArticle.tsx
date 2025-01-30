@@ -59,7 +59,7 @@ function DraggableArticle({ article, idx }: DraggableArticleProps) {
           overflow-hidden
           w-full
         "
-        style={article.section && {backgroundColor: article.section.style.backgroundColor, color: article.section.style.color}}
+        style={article.section && {backgroundColor: article.section?.style?.backgroundColor ?? 'white', color: article.section?.style?.color ?? 'black'}}
       >
         {article.title}
       </div>

@@ -10,7 +10,7 @@ interface AuthorsListProps {
 }
 
 const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
-  const {data, error, total}:iResponseMany<AuthorType> = await getAuthors(searchParams)
+  const {data, error, meta}:iResponseMany<AuthorType> = await getAuthors(searchParams)
 
   if (error) {
     return <ErrorMessage error={error}/>
@@ -29,7 +29,7 @@ const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
     >
       <AuthorTable 
         authors={data}
-        total={total}
+        meta={meta}
       />
     </div>
   )

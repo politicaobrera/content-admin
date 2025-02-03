@@ -57,7 +57,6 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-
     if (!over) {
       setActiveItem(null);
       return
@@ -87,17 +86,17 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
     } else {
 
       if (activeList === 'current') {
-        setCurrentArticles((curr) => curr.filter((item) => item.id !== active.id));
         setNewToAddArticles((curr) => [
           ...curr,
           currentArticles.find((item) => item.id === active.id)!,
         ]);
+        setCurrentArticles((curr) => curr.filter((item) => item.id !== active.id));
       } else {
-        setNewToAddArticles((curr) => curr.filter((item) => item.id !== active.id));
         setCurrentArticles((curr) => [
           ...curr,
           newToAddArticles.find((item) => item.id === active.id)!,
         ]);
+        setNewToAddArticles((curr) => curr.filter((item) => item.id !== active.id));
       }
     }
     setActiveItem(null);
@@ -116,8 +115,9 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Portada Actual</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 h-full w-auto mt-1">
+            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-screen overflow-scroll">
               <SortableContext
+                id="sortable-actual"
                 items={currentArticles.map((article) => article.id)}
                 strategy={verticalListSortingStrategy}
               >
@@ -131,13 +131,14 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Últimas</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 h-full mt-1">
+            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-screen overflow-scroll">
               <SortableContext
+                id="sortable-ultimas"
                 items={newToAddArticles.map((article) => article.id)}
                 strategy={verticalListSortingStrategy}
               >
                 {newToAddArticles.map((article, idx) => (
-                  <DraggableArticle key={article.id} article={article} idx={idx}/>
+                  <DraggableArticle key={article.id} article={article} idx={idx} showIndex={false}/>
                 ))}
               </SortableContext>
             </div>

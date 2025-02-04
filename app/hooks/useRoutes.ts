@@ -7,7 +7,8 @@ import{
   HiArrowLeftOnRectangle,
   HiBookOpen,
   HiNewspaper,
-  HiOutlineUserPlus
+  HiOutlineUserPlus,
+  HiOutlineCloudArrowUp
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -39,6 +40,12 @@ const useRoutes = () => {
       href: '/authors',
       icon: HiOutlineUserPlus,
       active: pathname === '/authors',
+    },
+    {
+      label: 'Desplegar',
+      href: '/deploy',
+      icon: HiOutlineCloudArrowUp,
+      active: pathname === '/deploy',
     },
     {
       label: 'Logout',

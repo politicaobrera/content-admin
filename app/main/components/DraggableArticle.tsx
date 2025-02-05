@@ -35,6 +35,7 @@ function DraggableArticle({ article, idx, showIndex = true }: DraggableArticlePr
         border-2
         flex
         border-black
+        my-1
       "
     >
       {showIndex && (

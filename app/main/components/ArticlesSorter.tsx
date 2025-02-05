@@ -111,11 +111,11 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
           onDragEnd={handleDragEnd}
           onDragStart={handleDragStart}
         >
-          <div className="w-[calc(45%)] flex flex-col">
+          <div className=" flex flex-col">
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
-              <h2 className="text-2xl font-bold">Portada Actual</h2>
+              <h2 className="text-2xl font-bold">Orden actual</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-screen overflow-scroll">
+            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-[75vh] overflow-scroll">
               <SortableContext
                 id="sortable-actual"
                 items={currentArticles.map((article) => article.id)}
@@ -127,11 +127,11 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
               </SortableContext>
             </div>
           </div>
-          <div className="w-[calc(40%+2rem)] flex flex-col">
+          <div className=" flex flex-col">
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
-              <h2 className="text-2xl font-bold">Últimas</h2>
+              <h2 className="text-2xl font-bold">Últimas notas</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-screen overflow-scroll">
+            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-[75vh] overflow-scroll">
               <SortableContext
                 id="sortable-ultimas"
                 items={newToAddArticles.map((article) => article.id)}

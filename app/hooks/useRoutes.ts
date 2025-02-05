@@ -8,7 +8,8 @@ import{
   HiBookOpen,
   HiNewspaper,
   HiOutlineUserPlus,
-  HiOutlineCloudArrowUp
+  HiOutlineCloudArrowUp,
+  HiOutlineTag
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -30,16 +31,22 @@ const useRoutes = () => {
       active: pathname === '/articles',
     },
     {
+      label: 'Autores',
+      href: '/authors',
+      icon: HiOutlineUserPlus,
+      active: pathname === '/authors',
+    },
+    {
       label: 'Secciones',
       href: '/sections',
       icon: HiNewspaper,
       active: pathname === '/sections',
     },
     {
-      label: 'Autores',
-      href: '/authors',
-      icon: HiOutlineUserPlus,
-      active: pathname === '/authors',
+      label: 'Tags',
+      href: '/tags',
+      icon: HiOutlineTag,
+      active: pathname === '/tags',
     },
     {
       label: 'Desplegar',

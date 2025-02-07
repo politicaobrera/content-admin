@@ -13,6 +13,7 @@ import { toast } from "react-hot-toast"
 import Separator from "@/app/components/Separator"
 //import useAuthorHook from "../hooks/useAuthorHook"
 import { TagType } from "@/app/types/tag"
+import useTagHook from "../hooks/useTagHook"
 
 interface TagFormProps {
   tag?: TagType
@@ -23,7 +24,7 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
 
-  //const {edit, create} = useAuthorHook();
+  const {edit, create} = useTagHook();
 
   const {
     register,
@@ -45,26 +46,28 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
     if (tag) {
       // edit
       console.log("old tag", tag)
-      // edit(payload).then(result => {
-      //   if (result.error){
-      //     toast.error(result.error.message)
-      //   } 
-      //   if(result.data){
-      //     toast.success("Tag editado correctamente")
-      //     router.push('/tags')
-      //   }
-      // })
+      const merged:TagType = Object.assign(tag, payload)
+      console.log("merged", merged)
+      edit(merged).then(result => {
+        if (result.error){
+          toast.error(result.error.message)
+        } 
+        if(result.data){
+          toast.success("Tag editado correctamente")
+          router.push('/tags')
+        }
+      })
     }
 
-    // create(payload as TagType).then(result => {
-    //   if (result.error){
-    //     toast.error(result.error.message)
-    //   } 
-    //   if(result.data){
-    //     toast.success("Tag creado correctamente")
-    //     router.push('/authors')
-    //   }
-    // })
+    create(payload as TagType).then(result => {
+      if (result.error){
+        toast.error(result.error.message)
+      } 
+      if(result.data){
+        toast.success("Tag creado correctamente")
+        router.push('/tags')
+      }
+    })
 
     setLoading(false)
   }
@@ -124,7 +127,7 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
               {
                 loading ? 'Loading' : 'Cancelar'
               }
-            </Button>            
+            </Button>
           </div>
         </form>
       </div>

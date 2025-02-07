@@ -11,9 +11,11 @@ const MainPage = async ({
 
   return (
     <MainContainer>
-      <Suspense fallback={<Loading />}>
-        <Portada searchParams={searchParams} />
-      </Suspense>
+      <section id="main-page" className="flex flex-col gap-3 px-4">
+        <Suspense fallback={<Loading />}>
+          <Portada searchParams={searchParams} />
+        </Suspense>
+      </section>
     </MainContainer>
   )
 /*   return (

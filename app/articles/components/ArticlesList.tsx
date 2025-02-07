@@ -19,15 +19,10 @@ const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
   return (
     <div
       className="
-        px-4
-        py-8
-        sm:px-6
-        lg:px-8
         h-screen
-        flex
       "
     >
-      <ArticlesTable 
+      <ArticlesTable
         articles={data}
         meta={meta}
       />

@@ -5,8 +5,8 @@ import Loading from "../components/Loading"
 
 const SectionsPage = () => {
   return (
-    <div className="block h-full">
-      <MainContainer>
+    <MainContainer>
+      <section id="section-page">
         <h1
           className="
             mt-6
@@ -20,8 +20,8 @@ const SectionsPage = () => {
         <Suspense fallback={<Loading />}>
           <SectionsList />
         </Suspense>
-      </MainContainer>
-    </div>
+      </section>
+    </MainContainer>
   )
 }
 

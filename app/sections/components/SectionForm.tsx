@@ -1,12 +1,9 @@
 'use client'
 
-import createSection from "@/app/actions/data/sections/createSection";
-import GenericForm, { GenericProps } from "@/app/components/Form/GenericForm";
+import GenericForm from "@/app/components/form/GenericForm";
 import useGenericForm, { InputData, flatValuesToFinalObject } from "@/app/hooks/useGenericForm";
 import { useRouter } from "next/navigation"
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { Section, SectionFormType } from "../../types/sections";
+import { SectionFormType } from "../../types/sections";
 import useSectionHook from "../hooks/useSectionHook";
 import SectionDetails from "./SectionDetails";
 import { useEffect } from "react";

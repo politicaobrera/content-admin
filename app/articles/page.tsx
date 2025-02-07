@@ -12,7 +12,7 @@ const ArticlesPage = ({
 }) => {
   return (
     <MainContainer>
-      <section id="article-list">
+      <section id="article-page" className="flex flex-col gap-3 px-4">
         <h1
           className="
             mt-6

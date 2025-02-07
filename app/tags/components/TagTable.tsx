@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AuthorType } from '@/app/types/author';
+import { TagType } from '@/app/types/tag';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/Responses';
 
-interface AuthorTableProps {
-  authors: AuthorType[];
+interface TagTableProps {
+  tags: TagType[];
   meta: PaginationMeta | undefined;
 }
 
-const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
+const TagTable = ({ tags, meta }: TagTableProps) => {
+  console.log("tags", tags)
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
     name: searchParams.get('name') || '',
-    description: searchParams.get('description') || '',
   });
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
@@ -42,9 +42,6 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
 
     if (filters.name) params.set('name', filters.name);
     else params.delete('name');
-
-    if (filters.description) params.set('description', filters.description);
-    else params.delete('description');
 
     if (sort.field) params.set('sortField', sort.field);
     else params.delete('sortField');
@@ -71,11 +68,11 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
   };
 
   const handleClickEdit = (id: string) => {
-    router.push(`/authors/${id}`);
+    router.push(`/tags/${id}`);
   };
 
   const handleClickNew = () => {
-    router.push(`/authors/new`);
+    router.push(`/tags/new`);
   }
 
   return (
@@ -104,7 +101,7 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
             fullWidth
             onClick={handleClickNew}
           >
-            NUEVO AUTOR
+            NUEVO TAG
           </Button>
         </div>
       </div>
@@ -125,13 +122,6 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
               name="name"
               placeholder="Filtrar por nombre"
               value={filters.name}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="description"
-              placeholder="Filtrar por descripción"
-              value={filters.description}
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
@@ -156,10 +146,10 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
           shadow
         "
       >
-        {authors.length === 0 ? (
+        {tags.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-           <p className="text-lg text-gray-600 font-medium">No hay autores para mostrar</p>
-           <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos autores.</p>
+           <p className="text-lg text-gray-600 font-medium">No hay tags para mostrar</p>
+           <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos tags.</p>
          </div>
         ) : (
           <>
@@ -173,30 +163,18 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
                     >
                       Nombre {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
-                    <th
-                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                    >
-                      Descripción
-                    </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {authors.map((author) => (
+                  {tags.map((tag) => (
                     //TODO: sacar a componente?
-                    <tr key={author._id} className="hover:bg-gray-50 border-b">
-                      <td className="px-4 py-2 text-sm text-gray-600">{author.name}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600">
-                        {author.descriptions.length > 0 && author.descriptions.map((description, idx) => (
-                          <div key={`${author._id}-${idx}`}>
-                            {description}
-                          </div>
-                        ))}
-                      </td>
+                    <tr key={tag._id} className="hover:bg-gray-50 border-b">
+                      <td className="px-4 py-2 text-sm text-gray-600">{tag.name}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">
                         <Button
                           type="button"
-                          onClick={() => handleClickEdit(author._id)}
+                          onClick={() => handleClickEdit(tag._id)}
                         >
                           Editar
                         </Button>
@@ -209,7 +187,7 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
             {/* Paginación */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Autores por página:</span>
+                <span className="text-sm text-gray-600">Tags por página:</span>
                 <select
                   className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
                   value={pagination.perPage}
@@ -249,4 +227,4 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
   );
 };
 
-export default AuthorTable;
+export default TagTable;

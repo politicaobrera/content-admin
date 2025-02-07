@@ -1,5 +1,3 @@
-import { Section } from "./sections"
-
 // TODO: agregar imagen como en nota a los autores, optativa
 
 export type AuthorType = {
@@ -8,5 +6,5 @@ export type AuthorType = {
   slug:string
   descriptions: string[]
   lastModifiedBy:string
-  createdAt: string;
+  createdAt: string
 }

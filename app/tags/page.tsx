@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import MainContainer from "../components/MainContainer"
-//import AuthorList from "./components/AuthorList"
+import Tags from "./components/Tags"
 import Loading from "../components/Loading"
 import { Params } from "../types/Requests";
 
@@ -11,7 +11,7 @@ const TagsPage = ({
 }) => {
   return (
     <MainContainer>
-      <section id="authors-list">
+      <section id="tags-page" className="flex flex-col gap-3 px-4">
         <h1
           className="
             mt-6
@@ -24,9 +24,9 @@ const TagsPage = ({
         >
           Tags
         </h1>
-        {/* <Suspense fallback={<Loading />}>
-          <AuthorList searchParams={searchParams}/>
-        </Suspense> */}
+        <Suspense fallback={<Loading />}>
+          <Tags searchParams={searchParams}/>
+        </Suspense>
       </section>
     </MainContainer>
   )

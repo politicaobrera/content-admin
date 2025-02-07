@@ -1,17 +1,17 @@
-import getAuthors from "@/app/actions/data/authors/getAuthors"
+import getTags from "@/app/actions/data/tags/getTags"
 import { iResponseMany } from "@/app/types/Responses"
-import { AuthorType } from "@/app/types/author"
+import { TagType } from "@/app/types/tag"
 import ErrorMessage from "@/app/components/ErrorMessage"
-import AuthorTable from "./AuthorTable"
+import TagTable from "./TagTable"
 import { Params } from "@/app/types/Requests"
 
 interface AuthorsListProps {
   searchParams: Params;
 }
 
-const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
-  const {data, error, meta}:iResponseMany<AuthorType> = await getAuthors(searchParams)
-
+const Tags:React.FC<AuthorsListProps> = async ({searchParams}) => {
+  const {data, error, meta}:iResponseMany<TagType> = await getTags(searchParams)
+  console.log("data", data)
   if (error) {
     return <ErrorMessage error={error}/>
   }
@@ -22,12 +22,12 @@ const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
         h-screen
       "
     >
-      <AuthorTable 
-        authors={data}
+      <TagTable
+        tags={data}
         meta={meta}
       />
     </div>
   )
 }
 
-export default AuthorsList
+export default Tags

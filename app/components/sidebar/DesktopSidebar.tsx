@@ -18,7 +18,7 @@ const DesktopSidebar:React.FC<DesktopSidebarProps> = ({currentUser}) => {
         md:inset-y-0
         md:left-0
         md:z-40
-        md:w-50
+        md:w-40
         md:pb-4
         md:overflow-y-auto
         md:border-r-[1px]

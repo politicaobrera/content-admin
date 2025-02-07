@@ -81,7 +81,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
 
   return (
     // sacar a componente aparte de filtros
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div
         className="
           bg-white

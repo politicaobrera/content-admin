@@ -11,7 +11,7 @@ const AuthorsPage = ({
 }) => {
   return (
     <MainContainer>
-      <section id="authors-list">
+      <section id="authors-page" className="flex flex-col gap-3 px-4">
         <h1
           className="
             mt-6

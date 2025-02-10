@@ -13,7 +13,7 @@ import {
 import { toast } from "react-hot-toast"
 import { AuthorType } from "@/app/types/author"
 import Separator from "@/app/components/Separator"
-import useAuthorHook from "../hooks/useAuthorHook"
+import useAuthor from "../hooks/useAuthor"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 
 interface AuthorFormProps {
@@ -25,7 +25,7 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
 
-  const {edit, create} = useAuthorHook();
+  const {edit, create} = useAuthor();
 
   const {
     register,

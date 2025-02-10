@@ -13,7 +13,7 @@ import { toast } from "react-hot-toast"
 import Separator from "@/app/components/Separator"
 //import useAuthorHook from "../hooks/useAuthorHook"
 import { TagType } from "@/app/types/tag"
-import useTagHook from "../hooks/useTagHook"
+import useTag from "../hooks/useTag"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 
 interface TagFormProps {
@@ -25,7 +25,7 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
 
-  const {edit, create} = useTagHook();
+  const {edit, create} = useTag();
 
   const {
     register,

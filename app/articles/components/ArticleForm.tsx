@@ -12,7 +12,7 @@ import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
 import { ArticleType } from "@/app/types/article"
 import Separator from "@/app/components/Separator"
-import useArticleHook from "../hooks/useArticleHook"
+import useArticle from "../hooks/useArticle"
 import MainImage from "@/app/components/image/MainImage"
 import Wysiwyg from "@/app/components/inputs/Wysiwyg"
 import ArticlePreview from "./Preview/ArticlePreview"
@@ -23,6 +23,7 @@ import { AuthorType } from "@/app/types/author"
 import SectionSelector from "@/app/components/sections/SectionSelector"
 import { Section } from "@/app/types/sections"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
+import TagSelector from "@/app/components/tags/TagSelector"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -37,7 +38,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
   const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
 
-  const {edit} = useArticleHook();
+  const {edit} = useArticle();
 
   const {
     register,
@@ -198,6 +199,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             errors={errors}
             required={true}
             placeHolder="Cuerpo de la nota..."
+          />
+          <Separator />
+          <TagSelector
+            onChange={(newtags) => console.log("changed tags:", newtags)}
+            currentTags={[]}
           />
           <Separator />
           <ActionButtonsContainer>

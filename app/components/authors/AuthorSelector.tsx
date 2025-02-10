@@ -1,4 +1,4 @@
-import useAuthorHook from "@/app/authors/hooks/useAuthorHook"
+import useAuthor from "@/app/authors/hooks/useAuthor"
 import { AuthorType } from "@/app/types/author"
 import { useRef, ChangeEvent, useState, useEffect } from "react"
 import AuthorItem from "./AuthorItem"
@@ -16,7 +16,7 @@ const AuthorSelector = ({onChange, authors, descriptions}: AuthorSelectorProps) 
   const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(authors)
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(descriptions)
   const [searchResults, setSearchResults] = useState<AuthorType[]>([])
-  const {search} = useAuthorHook()
+  const {search} = useAuthor()
 
   useEffect(() => {
     onChange(currentAuthors, currentDescriptions)
@@ -24,7 +24,7 @@ const AuthorSelector = ({onChange, authors, descriptions}: AuthorSelectorProps) 
 
   const handleSearchAuthorChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const q = event.target.value
-    if (q && q.length > 2) {
+    if (q && q.length > 1) {
       const {data, error} = await search(q)
       if (error) {
         console.log("error al buscar", error)

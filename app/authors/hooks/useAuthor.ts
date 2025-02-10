@@ -3,7 +3,7 @@ import editAuthor from "@/app/actions/data/authors/editAuthor";
 import createAuthor from "@/app/actions/data/authors/createAuthor";
 import getAuthors from "@/app/actions/data/authors/getAuthors";
 
-export default function useAuthorHook(){
+export default function useAuthor(){
     const edit = async (author: AuthorType) : Promise<any> => {
         const {data, error} = await editAuthor(author);
         return {data, error};

@@ -52,7 +52,8 @@ const TagSelector = ({onChange, currentTags = []}: TagSelectorProps) => {
           onRemove={handleRemoveTag}
         />
       </div>
-      <div>
+      <div className="flex flex-col gap-2">
+        <h6>Buscar</h6>
         <input
           type="text"
           className="w-full border-2"

@@ -58,27 +58,29 @@ const AuthorSelector = ({onChange, authors, descriptions}: AuthorSelectorProps) 
   return (
     <div className="flex flex-col gap-3">
       <h4>Autores</h4>
-      <h6>Buscar</h6>
-      <div>
-        <input
-          className="border-2 w-full"
-          type="text"
-          ref={searchAuthorRef}
-          onChange={handleSearchAuthorChange}
-        />
-        {
-          searchResults.length > 0 && (
-            <ul className="border-2 border-black mt-1">
-              {searchResults.map((i, idx) => {
-                return (
-                <li key={"author-result-"+idx} onClick={() => handleAddAuthor(i)}>
-                  {i.name}
-                </li>
-                )
-              })}
-            </ul>
-          )
-        }
+      <div className="flex flex-col gap-2">
+        <h6>Buscar</h6>
+        <div>
+          <input
+            className="border-2 w-full"
+            type="text"
+            ref={searchAuthorRef}
+            onChange={handleSearchAuthorChange}
+          />
+          {
+            searchResults.length > 0 && (
+              <ul className="border-2 border-black">
+                {searchResults.map((i, idx) => {
+                  return (
+                  <li key={"author-result-"+idx} onClick={() => handleAddAuthor(i)}>
+                    {i.name}
+                  </li>
+                  )
+                })}
+              </ul>
+            )
+          }
+        </div>
       </div>
       <div className="pt-2">
         {currentAuthors.map(((author, idx) => (

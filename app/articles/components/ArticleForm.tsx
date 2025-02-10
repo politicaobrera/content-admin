@@ -242,7 +242,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           "
         >Previsualizacion</h2>
         <ArticlePreview
-          article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions}}
+          article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions, tags: currentTags}}
           mainImage={mainImage}
         />
       </div>

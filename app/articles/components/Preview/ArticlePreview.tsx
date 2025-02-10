@@ -2,6 +2,7 @@ import moment from 'moment';
 import { ArticleType } from "@/app/types/article"
 import { MainImageType } from '@/app/types/image';
 import AuthorsList from './AuthorList';
+import TagList from '@/app/components/tags/TagList';
 
 interface ArticlePreviewProps {
   article: ArticleType
@@ -75,6 +76,11 @@ const ArticlePreview = ({article, mainImage}:ArticlePreviewProps) => {
 
       <div className="mt-10 text-left">
         <div dangerouslySetInnerHTML={{ __html: article.content }} />
+      </div>
+      <div className='mt-5'>
+        <TagList
+          tags={article.tags}
+        />
       </div>
     </section>
   )

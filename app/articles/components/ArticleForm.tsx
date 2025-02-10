@@ -87,6 +87,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       },
       {
         section: currentSection?._id || null
+      },
+      {
+        tags: currentTags
       }
     )
     console.log("merged", merged)

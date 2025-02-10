@@ -82,7 +82,12 @@ const AuthorSelector = ({onChange, authors, descriptions}: AuthorSelectorProps) 
       </div>
       <div className="pt-2">
         {currentAuthors.map(((author, idx) => (
-          <AuthorItem author={author} selectedDescription={currentDescriptions?.[idx]} onChange={handleDescriptionChange} />
+          <AuthorItem
+            key={"selected-author-item"+idx}
+            author={author}
+            selectedDescription={currentDescriptions?.[idx]}
+            onChange={handleDescriptionChange}
+          />
         )))}
       </div>
     </div>

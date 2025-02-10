@@ -24,19 +24,21 @@ import SectionSelector from "@/app/components/sections/SectionSelector"
 import { Section } from "@/app/types/sections"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
+import { TagType } from "@/app/types/tag"
 
 interface ArticleFormProps {
   article: ArticleType
 }
 
 const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
-  // console.log("articulo con data", article)
+  console.log("articulo con data", article)
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
   const [mainImage, _] = useState<MainImageType|undefined>(article.image ?? undefined)
   const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(article.authors)
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
   const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
+  const [currentTags, setCurrentTags] = useState<TagType[]>(article.tags)
 
   const {edit} = useArticle();
 
@@ -202,8 +204,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           />
           <Separator />
           <TagSelector
-            onChange={(newtags) => console.log("changed tags:", newtags)}
-            currentTags={[]}
+            onChange={(newtags) => setCurrentTags(newtags)}
+            currentTags={currentTags}
           />
           <Separator />
           <ActionButtonsContainer>

@@ -1,6 +1,7 @@
 import { Section } from "./sections"
 import { MainImageType } from "./image"
 import { AuthorType } from "./author"
+import { TagType } from "./tag"
 
 export type ArticleType = {
   _id: string
@@ -13,6 +14,7 @@ export type ArticleType = {
   section: Section
   authors: AuthorType[]
   authorsDescriptions: string[]
+  tags: TagType[]
   image?: MainImageType
   lastModifiedBy: string
   createdAt: string

@@ -1,6 +1,7 @@
 import { ChangeEvent, useRef, useState } from "react"
 import { TagType } from "@/app/types/tag"
 import useTag from "@/app/tags/hooks/useTag"
+import TagList from "./TagList"
 
 interface TagSelectorProps {
   onChange: (tags:TagType[]) => void
@@ -31,13 +32,26 @@ const TagSelector = ({onChange, currentTags = []}: TagSelectorProps) => {
     setSearchResults([])
     const alreadyAdded = currentTags.find(a => a.name === tag.name)
     if(!alreadyAdded) {
-      console.log("deberia agregar", tag)
+      onChange([...currentTags, tag])
+    }
+  }
+
+  const handleRemoveTag = async (tag:TagType) => {
+    const alreadyAdded = currentTags.find(a => a.name === tag.name)
+    if(alreadyAdded) {
+      onChange(currentTags.filter(i => i._id !== tag._id))
     }
   }
 
   return (
     <div className="flex flex-col gap-3">
       <h5>Tags</h5>
+      <div>
+        <TagList
+          tags={currentTags}
+          onRemove={handleRemoveTag}
+        />
+      </div>
       <div>
         <input
           type="text"

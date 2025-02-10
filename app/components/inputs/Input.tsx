@@ -8,7 +8,7 @@ import {
 } from "react-hook-form"
 
 export interface InputProps {
-  label: string,
+  label?: string,
   id: string,
   register: UseFormRegister<FieldValues>,
   errors: FieldErrors,
@@ -33,6 +33,7 @@ const Input: React.FC<InputProps> = ({
   
     return (
       <div>
+        {label && (
         <label
           className="
             block
@@ -45,6 +46,7 @@ const Input: React.FC<InputProps> = ({
         >
           {label}
         </label>
+        )}
         <div className="mt-2">
           <input
             id={id}

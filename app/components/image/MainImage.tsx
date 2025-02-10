@@ -2,6 +2,7 @@ import {FC, Fragment} from 'react'
 import useMainImagen from '@/app/hooks/image/useMainImage'
 import { MainImageType } from '@/app/types/image'
 import Button from '../Button'
+import ActionButtonsContainer from '../layout/ActionButtonsContainer'
 
 interface MainImageProps {
   id: string
@@ -15,18 +16,7 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
   const mainImagen = useMainImagen(image, fileName, onUpload)
   return (
     <>
-        <label
-          className="
-            block
-            text-sm
-            text-gray-900
-            font-medium
-            leading-6
-          "
-          htmlFor={id}
-        >
-          Imagen principal
-        </label>
+        <h5>Imagen principal</h5>
         <div>
         {!mainImagen.state.uploadMode && (
             // TODO: Extraer a un nuevo componente
@@ -70,9 +60,8 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
           space-y-2
         ">
           {mainImagen.state.uploadMode && (
-            <Fragment>
+            <ActionButtonsContainer>
               <Button
-                fullWidth
                 disabled={!mainImagen.state.file || mainImagen.state.uploading}
                 onClick={() => mainImagen.actions.onSave()}
               >
@@ -80,13 +69,7 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
                   mainImagen.state.uploading ? 'Loading':'Guardar'
                 }
               </Button>
-              {/* {
-                mainImagen.state.uploading && (
-                  <p>{mainImagen.state.percent} "% done"</p>
-                )
-              } */}
               <Button
-                fullWidth
                 danger
                 disabled={!mainImagen.state.currentImage || mainImagen.state.uploading}
                 onClick={() => {
@@ -98,12 +81,11 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
                   mainImagen.state.uploading ? 'Loading':'Cancelar'
                 }
               </Button>
-            </Fragment>
+            </ActionButtonsContainer>
           )}
           {
             !mainImagen.state.uploadMode && (
               <Button
-                fullWidth
                 onClick={() => mainImagen.actions.onToggleMode()}
               >
                 Modificar

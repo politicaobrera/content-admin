@@ -8,6 +8,7 @@ import { buildQueryString } from "@/app/utils/query"
 
 const tagsApi = process.env.CONTENT_SERVER_URL + '/tags'
 
+// TODO DO TRY CATCH IN THIS ACTIONS FUNCTIONS
 const getTags = async function (searchParams:Params):Promise<iResponseMany<TagType>> {
   console.log("searchParams", searchParams)
   const query = buildQueryString(searchParams)

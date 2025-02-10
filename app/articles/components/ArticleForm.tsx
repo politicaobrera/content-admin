@@ -22,6 +22,7 @@ import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
 import SectionSelector from "@/app/components/sections/SectionSelector"
 import { Section } from "@/app/types/sections"
+import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -120,7 +121,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     <div
       className="
         mt-8
-        sm:mx-auto
+        mx-4
       "
     >
       <div
@@ -138,17 +139,19 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           className="space-y-6"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Input
-            label="Título"
-            id="title"
-            type="text"
-            register={register}
-            key={`article-title-${article._id}`}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Título de la nota"
-          />
+          <div>
+            <h5>Título</h5>
+            <Input
+              id="title"
+              type="text"
+              register={register}
+              key={`article-title-${article._id}`}
+              required={true}
+              disabled={loading}
+              errors={errors}
+              placeHolder="Título de la nota"
+            />
+          </div>
           <Separator />
           <MainImage
             id="main-image"
@@ -197,16 +200,14 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Cuerpo de la nota..."
           />
           <Separator />
-          <div className="space-y-2">
+          <ActionButtonsContainer>
             <Button
               type="submit"
-              fullWidth
               disabled={loading}
             >
               GUARDAR
             </Button>
             <Button
-              fullWidth
               danger
               disabled={loading}
               onClick={handleCancel}
@@ -214,8 +215,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
               {
                 loading ? 'Loading' : 'Cancelar'
               }
-            </Button>            
-          </div>
+            </Button>
+          </ActionButtonsContainer>
         </form>
         <Separator />
         <h2

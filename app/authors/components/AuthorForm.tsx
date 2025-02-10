@@ -14,6 +14,7 @@ import { toast } from "react-hot-toast"
 import { AuthorType } from "@/app/types/author"
 import Separator from "@/app/components/Separator"
 import useAuthorHook from "../hooks/useAuthorHook"
+import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 
 interface AuthorFormProps {
   author?: AuthorType
@@ -155,17 +156,15 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
           </div>
 
           <Button
-            fullWidth
             onClick={() => append("")}
             disabled={loading}
           >
             Agregar descripción
           </Button>
           <Separator />
-          <div className="space-y-2">
+          <ActionButtonsContainer>
             <Button
               type="submit"
-              fullWidth
               disabled={loading}
             >
               {
@@ -173,7 +172,6 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
               }
             </Button>
             <Button
-              fullWidth
               danger
               disabled={loading}
               onClick={handleCancel}
@@ -181,8 +179,8 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
               {
                 loading ? 'Loading' : 'Cancelar'
               }
-            </Button>            
-          </div>
+            </Button>
+          </ActionButtonsContainer>
         </form>
       </div>
     </div>

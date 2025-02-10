@@ -14,6 +14,7 @@ import Separator from "@/app/components/Separator"
 //import useAuthorHook from "../hooks/useAuthorHook"
 import { TagType } from "@/app/types/tag"
 import useTagHook from "../hooks/useTagHook"
+import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 
 interface TagFormProps {
   tag?: TagType
@@ -108,10 +109,9 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
           />
 
           <Separator />
-          <div className="space-y-2">
+          <ActionButtonsContainer>
             <Button
               type="submit"
-              fullWidth
               disabled={loading}
             >
               {
@@ -119,7 +119,6 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
               }
             </Button>
             <Button
-              fullWidth
               danger
               disabled={loading}
               onClick={handleCancel}
@@ -128,7 +127,7 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
                 loading ? 'Loading' : 'Cancelar'
               }
             </Button>
-          </div>
+          </ActionButtonsContainer>
         </form>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import MainContainer from "@/app/components/MainContainer"
+import MainContainer from "@/app/components/layout/MainContainer"
 import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/Responses"
 import getTag from "@/app/actions/data/tags/getTag"

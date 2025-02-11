@@ -1,4 +1,4 @@
-import MainContainer from "@/app/components/MainContainer";
+import MainContainer from "@/app/components/layout/MainContainer";
 import SectionForm from "../components/SectionForm";
 
 const NewSectionPage  = () => {

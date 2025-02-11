@@ -12,7 +12,7 @@ import {
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { AuthorType } from "@/app/types/author"
-import Separator from "@/app/components/Separator"
+import Separator from "@/app/components/layout/Separator"
 import useAuthor from "../hooks/useAuthor"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 

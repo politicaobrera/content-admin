@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import MainContainer from "../components/MainContainer"
+import MainContainer from "../components/layout/MainContainer"
 import ArticlesList from "./components/ArticlesList"
 import Loading from "../components/Loading"
 import NewArticleForm from "./components/NewArticleForm";

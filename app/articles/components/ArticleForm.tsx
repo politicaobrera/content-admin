@@ -11,7 +11,7 @@ import {
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
 import { ArticleType } from "@/app/types/article"
-import Separator from "@/app/components/Separator"
+import Separator from "@/app/components/layout/Separator"
 import useArticle from "../hooks/useArticle"
 import MainImage from "@/app/components/image/MainImage"
 import Wysiwyg from "@/app/components/inputs/Wysiwyg"

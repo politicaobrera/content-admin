@@ -103,7 +103,7 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
   };
 
   return (
-    <div className="mt-5 flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       {/*TODO <div>Filtros</div> */}
       <div className="flex gap-10">
         <DndContext
@@ -152,7 +152,7 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
           </DragOverlay>
         </DndContext>
       </div>
-      <div className="flex align-middle justify-start">
+      <div className="flex align-middle justify-end">
         <Button
           onClick={handleSave}
         >

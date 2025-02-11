@@ -9,6 +9,8 @@ const MainContainer:React.FC<MainContainerProps> = ({children}) => {
         h-auto
         w-full
         md:ml-[10rem]
+        mb-5
+        mr-5
       "
     >
       {children}

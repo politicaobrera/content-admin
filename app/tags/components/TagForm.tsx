@@ -10,7 +10,7 @@ import {
   useForm,
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import Separator from "@/app/components/Separator"
+import Separator from "@/app/components/layout/Separator"
 //import useAuthorHook from "../hooks/useAuthorHook"
 import { TagType } from "@/app/types/tag"
 import useTag from "../hooks/useTag"

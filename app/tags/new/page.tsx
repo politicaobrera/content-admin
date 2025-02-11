@@ -1,4 +1,4 @@
-import MainContainer from "@/app/components/MainContainer"
+import MainContainer from "@/app/components/layout/MainContainer"
 import TagForm from "../components/TagForm"
 
 const NewTagPage = async () => {

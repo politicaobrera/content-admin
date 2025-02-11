@@ -5,8 +5,9 @@ import ArticlesSorter from "./ArticlesSorter"
 import getArticles from "@/app/actions/data/articles/getArticles"
 import { Params } from "@/app/types/Requests"
 import { ArticleType } from "@/app/types/article"
-import MainContainer from "@/app/components/MainContainer"
 import { isInArray } from "@/app/utils/arrays"
+import BannersSelector from "./BannersSelector"
+import Separator from "@/app/components/layout/Separator"
 
 interface PortadaProps {
   searchParams: Params;
@@ -17,7 +18,13 @@ const Portada = async ({searchParams}: PortadaProps) => {
   const { data: ultimas, error:ultimasError, meta:ultimasMeta }:iResponseMany<ArticleType> = await getArticles(searchParams)
   // TODO posibility for searching an article and add it to newtoadd
   //const { data: searchedArticles, error:searchedArticlesError, total:searchedArticlesTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
-  const { articles: currentArticles, _id: id } = homePageData as PageType;
+  const {
+    _id: id,
+    articles: currentArticles,
+    banners: currentBanners,
+    videos: currentVideos,
+    name
+  } = homePageData as PageType;
   
   const ultimasCleaned = ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
   // IMPORTANT TODO FOR DEV PORPOSE REMOVE LATER 
@@ -26,10 +33,18 @@ const Portada = async ({searchParams}: PortadaProps) => {
   }
   //console.log("ultima cleaned", ultimasCleaned.map((i:ArticleType) => i.articleId))
   return (
-    <section id="portada">
-      <div>
-        <ArticlesSorter current={currentArticles} newToAdd={ultimasCleaned} id={id}/>
-      </div>
+    <section id="portada" className="flex flex-col gap-5 mt-5">
+      <ArticlesSorter
+        current={currentArticles}
+        newToAdd={ultimasCleaned}
+        id={id}
+      />
+      <Separator />
+      <BannersSelector
+        id={id}
+        pageName={name}
+        current={currentBanners}
+      />
     </section>
   )
 }

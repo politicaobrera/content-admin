@@ -1,22 +1,21 @@
 import { ArticleType } from "./article"
 
-interface Video {
+export interface Video {
   src: string
   title: string
 }
 
-interface Banner {
-  image: {
-    src: string
-    caption: string
-    link: string
-  }
+export interface BannerType {
+  _id?: string
+  src: string
+  caption: string
+  link: string
 }
 
-interface PageType {
+export interface PageType {
   _id: string
   name: string
   videos: Video[]
-  banners: Banner[]
+  banners: BannerType[]
   articles: ArticleType[]
 }

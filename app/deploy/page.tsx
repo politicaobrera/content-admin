@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import Loading from "../components/Loading"
-import MainContainer from "../components/MainContainer"
+import MainContainer from "../components/layout/MainContainer"
 import Deploy from "./components/Deploy"
 
 const DeployPage = async ({

@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import MainContainer from "@/app/components/MainContainer"
+import MainContainer from "@/app/components/layout/MainContainer"
 import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/Responses"
 import { Section } from "../../types/sections"

@@ -22,7 +22,7 @@ const emptyImage:MainImageType = {
   srcSEO: '',
 }
 
-const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload: (img:MainImageType) => void) => {
+const useImageResource = (image:MainImageType | undefined, fileName:string, onUpload: (img:MainImageType) => void) => {
   const [uploadMode, setUploadMode] = useState<boolean>(true)
   const [uploading, setUploading] = useState<boolean>(false)
   const [currentImage, setCurrentImage] = useState<MainImageType|null>(image ?? null)
@@ -128,4 +128,4 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
   }
 }
 
-export default useMainImage
+export default useImageResource

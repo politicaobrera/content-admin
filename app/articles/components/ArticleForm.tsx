@@ -139,6 +139,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           sm:px-10
           shadow
           max-w-6xl
+          xl:max-w-screen-2xl
         "
       >
         <form

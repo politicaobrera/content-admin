@@ -11,7 +11,7 @@ interface ArticlePreviewProps {
 const ArticlePreview = ({article, mainImage}:ArticlePreviewProps) => {
   const date = moment( moment.utc(article.createdAt)).format('DD/MM/YYYY')
   return (
-    <section id="nota-preview" className='max-w-6xl'>
+    <section id="nota-preview" className='max-w-6xl flex flex-col xl:max-w-screen-2xl'>
       <div className="mt-6 flex flex-col gap-2 items-center">
         {
           article.section && (
@@ -74,7 +74,7 @@ const ArticlePreview = ({article, mainImage}:ArticlePreviewProps) => {
 
       <img className="w-full h-auto mt-2" src={mainImage?.src}></img>
 
-      <div className="mt-10 text-left">
+      <div className="mt-10 text-left overflow-hidden break-all">
         <div dangerouslySetInnerHTML={{ __html: article.content }} />
       </div>
       <div className='mt-5'>

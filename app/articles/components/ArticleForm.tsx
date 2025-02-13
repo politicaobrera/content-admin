@@ -70,9 +70,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       } 
       if(result.data){
         toast.success("Imagen Nota actualizada correctamente")
+        router.refresh()
       }
     })
-    router.refresh()
   }
 
   const onSubmit:SubmitHandler<FieldValues> = (payload) => {

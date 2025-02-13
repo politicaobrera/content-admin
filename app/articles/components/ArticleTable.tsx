@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArticleType } from "@/app/types/article";
+import { ArticleStatus, ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
 import { NumericKeyDown } from '@/app/utils/inputs';
 import { PaginationMeta } from '@/app/types/responses';
+import clsx from 'clsx';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -178,7 +179,13 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                 </thead>
                 <tbody>
                   {articles.map((article) => (
-                    <tr key={article.articleId} className="hover:bg-gray-50">
+                    <tr
+                      key={article.articleId}
+                      className={clsx(`
+                        hover:bg-gray-50`,
+                        article.status === ArticleStatus.Published && 'border-l-gray-700 border-l-4'
+                      )}
+                    >
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.articleId}</td>
                       <td className="px-4 py-2 border-b">
                         {article.image?.src ? (

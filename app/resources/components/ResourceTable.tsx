@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { TagType } from '@/app/types/tag';
+import { ResourceType } from '@/app/types/resource';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 
-interface TagTableProps {
-  tags: TagType[];
+interface ResourceTableProps {
+  resources: ResourceType[];
   meta: PaginationMeta | undefined;
 }
 
-const TagTable = ({ tags, meta }: TagTableProps) => {
-  console.log("tags", tags)
+const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
+  console.log("resources", resources)
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
-    name: searchParams.get('name') || '',
+    title: searchParams.get('title') || '',
   });
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
@@ -40,8 +40,8 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (filters.name) params.set('name', filters.name);
-    else params.delete('name');
+    if (filters.title) params.set('title', filters.title);
+    else params.delete('title');
 
     if (sort.field) params.set('sortField', sort.field);
     else params.delete('sortField');
@@ -68,11 +68,11 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
   };
 
   const handleClickEdit = (id: string) => {
-    router.push(`/tags/${id}`);
+    router.push(`/resources/${id}`);
   };
 
   const handleClickNew = () => {
-    router.push(`/tags/new`);
+    router.push(`/resources/new`);
   }
 
   return (
@@ -101,7 +101,7 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
             fullWidth
             onClick={handleClickNew}
           >
-            NUEVO TAG
+            NUEVO RECURSO
           </Button>
         </div>
       </div>
@@ -119,9 +119,9 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
           <h2 className="text-lg font-semibold mb-2">Filtros</h2>
           <div className="grid grid-cols-2 gap-4">
             <input
-              name="name"
-              placeholder="Filtrar por nombre"
-              value={filters.name}
+              name="title"
+              placeholder="Filtrar por título"
+              value={filters.title}
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
@@ -146,11 +146,11 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
           shadow
         "
       >
-        {tags.length === 0 ? (
+        {resources.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-           <p className="text-lg text-gray-600 font-medium">No hay tags para mostrar</p>
-           <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos tags.</p>
-         </div>
+            <p className="text-lg text-gray-600 font-medium">No hay recursos para mostrar</p>
+            <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos recursos.</p>
+          </div>
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -161,20 +161,20 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
                       onClick={() => handleSort('name')}
                     >
-                      Nombre {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                      Título {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tags.map((tag) => (
+                  {resources.map((resource) => (
                     //TODO: sacar a componente?
-                    <tr key={tag._id} className="hover:bg-gray-50 border-b">
-                      <td className="px-4 py-2 text-sm text-gray-600">{tag.name}</td>
+                    <tr key={resource._id} className="hover:bg-gray-50 border-b">
+                      <td className="px-4 py-2 text-sm text-gray-600">{resource.title}</td>
                       <td className="px-4 py-2 text-sm text-gray-600 w-20">
                         <Button
                           type="button"
-                          onClick={() => handleClickEdit(tag._id)}
+                          onClick={() => handleClickEdit(resource._id)}
                         >
                           Editar
                         </Button>
@@ -227,4 +227,4 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
   );
 };
 
-export default TagTable;
+export default ResourceTable;

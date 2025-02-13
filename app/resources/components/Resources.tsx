@@ -2,7 +2,7 @@ import getResources from "@/app/actions/data/resources/getResources"
 import { iResponseMany } from "@/app/types/responses"
 import { ResourceType } from "@/app/types/resource"
 import ErrorMessage from "@/app/components/ErrorMessage"
-import TagTable from "./TagTable"
+import ResourceTable from "./ResourceTable"
 import { Params } from "@/app/types/requests"
 
 interface ResourcesProps {
@@ -22,11 +22,10 @@ const Resources:React.FC<ResourcesProps> = async ({searchParams}) => {
         h-screen
       "
     >
-      soy recursos
-      {/* <TagTable
-        tags={data}
+      <ResourceTable
+        resources={data}
         meta={meta}
-      /> */}
+      />
     </div>
   )
 }

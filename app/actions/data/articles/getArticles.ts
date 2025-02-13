@@ -1,9 +1,9 @@
 'use server'
 
 import { ArticleType } from "@/app/types/article"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-import { Params } from "@/app/types/Requests"
+import { Params } from "@/app/types/requests"
 import { buildQueryString } from "@/app/utils/query"
 
 const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'

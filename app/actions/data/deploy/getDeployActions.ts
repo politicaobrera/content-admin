@@ -1,5 +1,5 @@
 import { GitHubWorkflowRuns } from "@/app/types/github";
-import { iResponseOne } from "@/app/types/Responses";
+import { iResponseOne } from "@/app/types/responses";
 
 const ghtoken = process.env.GITHUB_TOKEN;
 const owner = process.env.GITHUB_OWNER;

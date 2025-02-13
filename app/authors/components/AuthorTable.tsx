@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthorType } from '@/app/types/author';
 import Button from '@/app/components/Button';
-import { PaginationMeta } from '@/app/types/Responses';
+import { PaginationMeta } from '@/app/types/responses';
 
 interface AuthorTableProps {
   authors: AuthorType[];
@@ -193,7 +193,7 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
                           </div>
                         ))}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-600">
+                      <td className="px-4 py-2 text-sm text-gray-600 w-20">
                         <Button
                           type="button"
                           onClick={() => handleClickEdit(author._id)}

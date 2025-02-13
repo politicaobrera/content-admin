@@ -10,7 +10,7 @@ import {
 } from "react-hook-form"
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
-import { ArticleType } from "@/app/types/article"
+import { ArticleStatus, ArticleType } from "@/app/types/article"
 import Separator from "@/app/components/layout/Separator"
 import useArticle from "../hooks/useArticle"
 import MainImage from "@/app/components/image/MainImage"
@@ -25,6 +25,8 @@ import { Section } from "@/app/types/sections"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
 import { TagType } from "@/app/types/tag"
+import Toggle from "@/app/components/inputs/Toggle"
+import ImportantMessage from "@/app/components/ImportantMessage"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -39,7 +41,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
   const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
   const [currentTags, setCurrentTags] = useState<TagType[]>(article.tags)
-
+  const [currentStatus, setCurrentStatus] = useState<boolean>(article.status === ArticleStatus.Published)
   const {edit} = useArticle();
 
   const {
@@ -90,6 +92,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       },
       {
         tags: currentTags
+      },
+      {
+        status: currentStatus ? ArticleStatus.Published : ArticleStatus.Draft
       }
     )
     console.log("merged", merged)
@@ -99,11 +104,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       } 
       if(result.data){
         toast.success("Nota editada correctamente")
-        // router.push('/main')
       }
     })
     setLoading(false)
-    // push to list todo
     router.refresh()
   }
 
@@ -122,7 +125,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   };
 
   const currentValues = watch() as ArticleType
-  // console.log("currentValues", currentValues)
+  const isNotReadyForPublish = !currentSection?._id || currentValues.content.trim() === "" || currentValues.title.trim() === ""? true : false
+
   return (
     <div
       className="
@@ -147,9 +151,26 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div>
-            <h5>Título</h5>
+            <ActionButtonsContainer>
+              <Button
+                type="submit"
+                disabled={loading}
+              >
+                GUARDAR
+              </Button>
+              <Button
+                danger
+                disabled={loading}
+                onClick={handleCancel}
+              >
+                {
+                  loading ? 'Loading' : 'Cancelar'
+                }
+              </Button>
+            </ActionButtonsContainer>
             <Input
               id="title"
+              label="Título"
               type="text"
               register={register}
               key={`article-title-${article._id}`}
@@ -211,7 +232,6 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             onChange={(newtags) => setCurrentTags(newtags)}
             currentTags={currentTags}
           />
-          <Separator />
           <ActionButtonsContainer>
             <Button
               type="submit"
@@ -246,6 +266,17 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions, tags: currentTags}}
           mainImage={mainImage}
         />
+        <Separator />
+        <div className="my-5 flex gap-3 items-center flex-wrap">
+          <h5>Estado</h5>
+          <Toggle
+            labelConfig={{isChecked: 'Publicada', isNotChecked: 'Borrador'}}
+            value={article.status === "published"}
+            disabled={article.status === ArticleStatus.Published || isNotReadyForPublish}
+            onChange={(val) => setCurrentStatus(val)}
+          />
+          <ImportantMessage message="Recuerda siempre revisar bien la nota antes de publicar!" />
+        </div>
       </div>
     </div>
   )

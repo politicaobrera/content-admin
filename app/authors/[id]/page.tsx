@@ -1,5 +1,5 @@
 import MainContainer from "@/app/components/layout/MainContainer"
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import { AuthorType } from "@/app/types/author"
 import getAuthor from "@/app/actions/data/authors/getAuthor"
 import ErrorMessage from "@/app/components/ErrorMessage"

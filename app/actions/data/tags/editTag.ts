@@ -1,6 +1,6 @@
 'use server'
 
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 import { TagType } from "@/app/types/tag"
 

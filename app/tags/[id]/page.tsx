@@ -1,6 +1,6 @@
 import MainContainer from "@/app/components/layout/MainContainer"
 import Loading from "@/app/components/Loading"
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import getTag from "@/app/actions/data/tags/getTag"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import TagForm from "../components/TagForm"

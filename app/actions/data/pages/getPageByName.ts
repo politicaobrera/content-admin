@@ -1,7 +1,7 @@
 'use server'
 
 import { PageType } from "@/app/types/page"
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 
 const authorApi = process.env.CONTENT_SERVER_URL + '/pages'

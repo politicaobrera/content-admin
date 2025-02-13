@@ -1,7 +1,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Button from '@/app/components/Button'
-import { PaginationMeta } from '@/app/types/Responses'
+import { PaginationMeta } from '@/app/types/responses'
 
 interface Column<T> {
   key: keyof T

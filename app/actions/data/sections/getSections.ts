@@ -1,7 +1,7 @@
 'use server'
 // TODO: section type y types
 import { Section } from "../../../types/sections"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 
 const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'

@@ -3,7 +3,7 @@ import MainContainer from "../components/layout/MainContainer"
 import ArticlesList from "./components/ArticlesList"
 import Loading from "../components/Loading"
 import NewArticleForm from "./components/NewArticleForm";
-import { Params } from "../types/Requests";
+import { Params } from "../types/requests";
 
 const ArticlesPage = ({
   searchParams,

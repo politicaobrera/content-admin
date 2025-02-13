@@ -1,4 +1,4 @@
-import { Params } from "../types/Requests";
+import { Params } from "../types/requests";
 
 export function buildQueryString(searchParams: Params): string {
   const queryString = Object.entries(searchParams)

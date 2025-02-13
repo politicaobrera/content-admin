@@ -1,7 +1,7 @@
 'use server'
 
 import { TagType } from "@/app/types/tag"
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 
 const tagApi = process.env.CONTENT_SERVER_URL + '/tags'

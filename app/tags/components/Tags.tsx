@@ -1,9 +1,9 @@
 import getTags from "@/app/actions/data/tags/getTags"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import { TagType } from "@/app/types/tag"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import TagTable from "./TagTable"
-import { Params } from "@/app/types/Requests"
+import { Params } from "@/app/types/requests"
 
 interface AuthorsListProps {
   searchParams: Params;

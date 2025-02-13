@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
 import { NumericKeyDown } from '@/app/utils/inputs';
-import { PaginationMeta } from '@/app/types/Responses';
+import { PaginationMeta } from '@/app/types/responses';
 
 interface ArticlesTableProps {
   articles: ArticleType[];

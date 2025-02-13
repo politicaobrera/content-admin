@@ -1,6 +1,6 @@
 import { ArticleType } from "@/app/types/article";
 import editArticle from "@/app/actions/data/articles/editArticle";
-import { iResponseOne } from "@/app/types/Responses";
+import { iResponseOne } from "@/app/types/responses";
 
 export default function useArticle(){
     const edit = async (article: Partial<ArticleType>) : Promise<iResponseOne<ArticleType>> => {

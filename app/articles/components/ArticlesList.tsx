@@ -1,9 +1,9 @@
 import getArticles from "@/app/actions/data/articles/getArticles"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import { ArticleType } from "@/app/types/article"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import ArticlesTable from "./ArticleTable"
-import { Params } from "@/app/types/Requests"
+import { Params } from "@/app/types/requests"
 
 interface ArticlesListProps {
   searchParams: Params;

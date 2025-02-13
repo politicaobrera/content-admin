@@ -18,4 +18,10 @@ export type ArticleType = {
   image?: MainImageType
   lastModifiedBy: string
   createdAt: string
+  status: string
+}
+
+export enum ArticleStatus {
+  Draft = "draft",
+  Published = "published",
 }

@@ -1,9 +1,9 @@
 import getAuthors from "@/app/actions/data/authors/getAuthors"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import { AuthorType } from "@/app/types/author"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import AuthorTable from "./AuthorTable"
-import { Params } from "@/app/types/Requests"
+import { Params } from "@/app/types/requests"
 
 interface AuthorsListProps {
   searchParams: Params;

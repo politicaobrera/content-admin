@@ -1,7 +1,7 @@
 'use server'
 
 import { ArticleType } from "@/app/types/article"
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 // import axios from 'axios'
 

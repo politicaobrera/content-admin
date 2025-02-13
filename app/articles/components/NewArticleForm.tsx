@@ -12,7 +12,7 @@ import {
 } from "react-hook-form"
 import createArticle from "@/app/actions/data/articles/createArticle"
 import { toast } from "react-hot-toast"
-import { iResponseOne } from "@/app/types/Responses"
+import { iResponseOne } from "@/app/types/responses"
 import { ArticleType } from "@/app/types/article"
 
 const NewArticleForm = () => {

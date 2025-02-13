@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { TagType } from '@/app/types/tag';
 import Button from '@/app/components/Button';
-import { PaginationMeta } from '@/app/types/Responses';
+import { PaginationMeta } from '@/app/types/responses';
 
 interface TagTableProps {
   tags: TagType[];
@@ -171,7 +171,7 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
                     //TODO: sacar a componente?
                     <tr key={tag._id} className="hover:bg-gray-50 border-b">
                       <td className="px-4 py-2 text-sm text-gray-600">{tag.name}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600">
+                      <td className="px-4 py-2 text-sm text-gray-600 w-20">
                         <Button
                           type="button"
                           onClick={() => handleClickEdit(tag._id)}

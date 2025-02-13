@@ -1,5 +1,5 @@
 import getSections from "@/app/actions/data/sections/getSections"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import SectionItem from "./SectionItem"
 import Button from "@/app/components/Button"

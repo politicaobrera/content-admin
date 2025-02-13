@@ -1,9 +1,9 @@
 'use server'
 
 import { TagType } from "@/app/types/tag"
-import { iResponseMany } from "@/app/types/Responses"
+import { iResponseMany } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
-import { Params } from "@/app/types/Requests"
+import { Params } from "@/app/types/requests"
 import { buildQueryString } from "@/app/utils/query"
 
 const tagsApi = process.env.CONTENT_SERVER_URL + '/tags'

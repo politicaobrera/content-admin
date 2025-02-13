@@ -9,7 +9,8 @@ import{
   HiNewspaper,
   HiOutlineUserPlus,
   HiOutlineCloudArrowUp,
-  HiOutlineTag
+  HiOutlineTag,
+  HiDocument
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -47,6 +48,12 @@ const useRoutes = () => {
       href: '/tags',
       icon: HiOutlineTag,
       active: pathname === '/tags',
+    },
+    {
+      label: 'Recursos',
+      href: '/resources',
+      icon: HiDocument,
+      active: pathname === '/resources',
     },
     {
       label: 'Desplegar',

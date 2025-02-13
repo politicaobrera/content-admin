@@ -3,6 +3,11 @@ import { MainImageType } from "./image"
 import { AuthorType } from "./author"
 import { TagType } from "./tag"
 
+export enum ArticleStatus {
+  Draft = "draft",
+  Published = "published",
+}
+
 export type ArticleType = {
   _id: string
   title: string
@@ -18,10 +23,5 @@ export type ArticleType = {
   image?: MainImageType
   lastModifiedBy: string
   createdAt: string
-  status: string
-}
-
-export enum ArticleStatus {
-  Draft = "draft",
-  Published = "published",
+  status: ArticleStatus
 }

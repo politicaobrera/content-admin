@@ -1,16 +1,16 @@
-import getTags from "@/app/actions/data/tags/getTags"
+import getResources from "@/app/actions/data/resources/getResources"
 import { iResponseMany } from "@/app/types/responses"
-import { TagType } from "@/app/types/tag"
+import { ResourceType } from "@/app/types/resource"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import TagTable from "./TagTable"
 import { Params } from "@/app/types/requests"
 
-interface TagsProps {
+interface ResourcesProps {
   searchParams: Params;
 }
 
-const Tags:React.FC<TagsProps> = async ({searchParams}) => {
-  const {data, error, meta}:iResponseMany<TagType> = await getTags(searchParams)
+const Resources:React.FC<ResourcesProps> = async ({searchParams}) => {
+  const {data, error, meta}:iResponseMany<ResourceType> = await getResources(searchParams)
   console.log("data", data)
   if (error) {
     return <ErrorMessage error={error}/>
@@ -22,12 +22,13 @@ const Tags:React.FC<TagsProps> = async ({searchParams}) => {
         h-screen
       "
     >
-      <TagTable
+      soy recursos
+      {/* <TagTable
         tags={data}
         meta={meta}
-      />
+      /> */}
     </div>
   )
 }
 
-export default Tags
+export default Resources

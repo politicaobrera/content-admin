@@ -76,8 +76,6 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   }
 
   return (
-    
-    // TODO: sacar a componente aparte de filtros
     <div className="space-y-4 w-full">
       <div
         className="
@@ -89,10 +87,8 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
         <div
           className="
             bg-white
-            px-4
-            py-8
-            sm:rounded-lg
-            sm:px-10
+            p-4
+            rounded-lg
             shadow
           "
         >
@@ -108,10 +104,8 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
       <div
         className="
           bg-white
-          px-4
-          py-8
-          sm:rounded-lg
-          sm:px-10
+          p-4
+          rounded-lg
           shadow
         "
       >
@@ -126,7 +120,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
               className="p-2 border rounded w-full"
             />
           </div>
-          <div className='mt-4'>
+          <div className='mt-4 flex justify-end'>
             <Button
               type="button"
               onClick={() => handleFilterSubmit()}
@@ -139,10 +133,8 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
       <div
         className="
           bg-white
-          px-4
-          py-8
-          sm:rounded-lg
-          sm:px-10
+          p-4
+          rounded-lg
           shadow
         "
       >

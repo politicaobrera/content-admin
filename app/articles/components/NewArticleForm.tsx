@@ -33,7 +33,6 @@ const NewArticleForm = () => {
     }
   })
 
-  // TODO: esto aca o en la page?
   useEffect(() => {
     if (session?.status !== 'authenticated') {
       router.push('/')

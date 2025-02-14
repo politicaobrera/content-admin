@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import MainContainer from "../components/layout/MainContainer"
-import AuthorList from "./components/AuthorList"
+import Authors from "./components/Authors"
 import Loading from "../components/Loading"
 import { Params } from "../types/requests";
 
@@ -25,7 +25,7 @@ const AuthorsPage = ({
           Autores
         </h1>
         <Suspense fallback={<Loading />}>
-          <AuthorList searchParams={searchParams}/>
+          <Authors searchParams={searchParams}/>
         </Suspense>
       </section>
     </MainContainer>

@@ -21,7 +21,7 @@ const ResourceSelector = ({sourceType, src, onChange}: ResourceSelectorProps) =>
 
   if (resource.state.isEditing) {
     return (
-      <div>
+      <div className="flex flex-col gap-2">
         {resource.state.preview && (
           <div className='mb-2'>
             <img src={resource.state.preview} className="w-92"/>
@@ -56,7 +56,7 @@ const ResourceSelector = ({sourceType, src, onChange}: ResourceSelectorProps) =>
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {resource.state.current && (
         <img src={resource.state.current} className="w-92"/>
       )}

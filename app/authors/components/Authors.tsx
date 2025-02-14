@@ -5,11 +5,11 @@ import ErrorMessage from "@/app/components/ErrorMessage"
 import AuthorTable from "./AuthorTable"
 import { Params } from "@/app/types/requests"
 
-interface AuthorsListProps {
+interface AuthorsProps {
   searchParams: Params;
 }
 
-const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
+const Authors:React.FC<AuthorsProps> = async ({searchParams}) => {
   const {data, error, meta}:iResponseMany<AuthorType> = await getAuthors(searchParams)
 
   if (error) {
@@ -30,4 +30,4 @@ const AuthorsList:React.FC<AuthorsListProps> = async ({searchParams}) => {
   )
 }
 
-export default AuthorsList
+export default Authors

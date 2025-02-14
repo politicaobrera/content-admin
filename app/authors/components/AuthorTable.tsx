@@ -92,10 +92,8 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
         <div
           className="
             bg-white
-            px-4
-            py-8
-            sm:rounded-lg
-            sm:px-10
+            p-4
+            rounded-lg
             shadow
           "
         >
@@ -111,10 +109,8 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
       <div
         className="
           bg-white
-          px-4
-          py-8
-          sm:rounded-lg
-          sm:px-10
+          p-4
+          rounded-lg
           shadow
         "
       >
@@ -136,7 +132,7 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
               className="p-2 border rounded w-full"
             />
           </div>
-          <div className='mt-4'>
+          <div className='mt-4 flex justify-end'>
             <Button
               type="button"
               onClick={() => handleFilterSubmit()}
@@ -149,10 +145,8 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
       <div
         className="
           bg-white
-          px-4
-          py-8
-          sm:rounded-lg
-          sm:px-10
+          p-4
+          rounded-lg
           shadow
         "
       >

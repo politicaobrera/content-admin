@@ -182,7 +182,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                             onClick={() => handleCopyToClipboard(resource.src)}
                           >
                             Copiar
-                          </Button>                    
+                          </Button>
                           <Button
                             type="button"
                             onClick={() => handleClickEdit(resource._id)}
@@ -199,7 +199,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
             {/* Paginación */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Tags por página:</span>
+                <span className="text-sm text-gray-600">Recursos por página:</span>
                 <select
                   className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
                   value={pagination.perPage}

@@ -37,7 +37,7 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [currentTags, setCurrentTags] = useState<TagType[]>(resource?.tags || [])
   const [currentUrl, setCurrentUrl] = useState<string>(resource?.src || "")
-  const {create} = useResource();
+  const {create, edit} = useResource();
 
   const {
     register,
@@ -76,16 +76,18 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
         resource,
         merged,
       )
-      console.log("merged", mergedResource)
-      // edit(merged).then(result => {
-      //   if (result.error){
-      //     toast.error(result.error.message)
-      //   } 
-      //   if(result.data){
-      //     toast.success("Tag editado correctamente")
-      //     router.push('/tags')
-      //   }
-      // })
+      console.log("edit merged", mergedResource)
+      edit(mergedResource).then(result => {
+        if (result.error){
+          toast.error(result.error.message)
+        } 
+        if(result.data){
+          toast.success("Recurso editado correctamente")
+          router.refresh()
+        }
+      })
+      setLoading(false)
+      return
     }
     create(merged as ResourceType).then(result => {
       if (result.error){
@@ -96,7 +98,6 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
         router.refresh()
       }
     })
-
     setLoading(false)
   }
 

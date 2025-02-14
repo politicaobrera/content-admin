@@ -11,9 +11,23 @@ const DeployPage = async ({
 
   return (
     <MainContainer>
-      <Suspense fallback={<Loading />}>
-        <Deploy />
-      </Suspense>
+      <section id="deploy-page" className="flex flex-col gap-3">
+        <h1
+          className="
+            mt-6
+            text-center
+            text-2xl
+            text-black
+            tracking-tight
+            font-bold
+          "
+        >
+          Deploy
+        </h1>
+        <Suspense fallback={<Loading />}>
+          <Deploy />
+        </Suspense>
+      </section>
     </MainContainer>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from "react-hot-toast"
 import { ResourceType } from '@/app/types/resource';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
@@ -73,6 +74,18 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
 
   const handleClickNew = () => {
     router.push(`/resources/new`);
+  }
+
+  const handleCopyToClipboard = (text:string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        console.log("Texto copiado al portapapeles:", text)
+        toast.success("Enlace copiado!")
+      })
+      .catch((err) => {
+        console.error("Error al copiar el texto:", err)
+        toast.error(err)
+      })
   }
 
   return (
@@ -151,7 +164,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                   <tr>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                      onClick={() => handleSort('name')}
+                      onClick={() => handleSort('title')}
                     >
                       Título {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
@@ -160,16 +173,23 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                 </thead>
                 <tbody>
                   {resources.map((resource) => (
-                    //TODO: sacar a componente?
                     <tr key={resource._id} className="hover:bg-gray-50 border-b">
                       <td className="px-4 py-2 text-sm text-gray-600">{resource.title}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600 w-20">
-                        <Button
-                          type="button"
-                          onClick={() => handleClickEdit(resource._id)}
-                        >
-                          Editar
-                        </Button>
+                      <td className="px-4 py-2 text-sm text-gray-600 w-40">
+                        <div className='flex gap-2'>
+                          <Button
+                            type="button"
+                            onClick={() => handleCopyToClipboard(resource.src)}
+                          >
+                            Copiar
+                          </Button>                    
+                          <Button
+                            type="button"
+                            onClick={() => handleClickEdit(resource._id)}
+                          >
+                            Editar
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

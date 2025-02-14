@@ -1,13 +1,13 @@
 import MainContainer from "@/app/components/layout/MainContainer"
-import TagForm from "../components/TagForm"
+import ResourceForm from "../components/ResourceForm"
 
-const NewTagPage = async () => {
+const NewResourcePage = async () => {
 
   return (
     <MainContainer>
-      <TagForm />
+      <ResourceForm />
     </MainContainer>
   )
 }
 
-export default NewTagPage
+export default NewResourcePage

@@ -1,8 +1,8 @@
-import SectionsContext from "@/app/context/SectionsContext";
+import SectionsContext from "@/app/context/SectionsContext"
 import { Section } from "@/app/types/sections"
 import { OptionType } from "@/app/types/select"
-import { useContext } from "react";
-import Select from 'react-select';
+import { useContext } from "react"
+import Select from 'react-select'
 
 interface SectionSelectorProps {
   onChange: (section:Section) => void
@@ -10,14 +10,14 @@ interface SectionSelectorProps {
 }
 
 const SectionSelector = ({onChange, currentSection}: SectionSelectorProps) => {
-  const { sections } = useContext(SectionsContext);
+  const { sections } = useContext(SectionsContext)
   const options = sections.map(sec => ({value: sec._id, label: sec.name}))
 
   const getCurrentSecctionValue = (current: Section | string | null) => {
-    if (!current) return null;
+    if (!current) return null
 
     if (typeof current === 'string') {
-      return options.find(o => o.value === current);
+      return options.find(o => o.value === current)
     }
 
     return {

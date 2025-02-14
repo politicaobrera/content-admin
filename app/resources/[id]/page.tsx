@@ -3,7 +3,7 @@ import Loading from "@/app/components/Loading"
 import { iResponseOne } from "@/app/types/responses"
 import getTag from "@/app/actions/data/tags/getTag"
 import ErrorMessage from "@/app/components/ErrorMessage"
-import TagForm from "../components/TagForm"
+import ResourceForm from "../components/ResourceForm"
 import { TagType } from "@/app/types/tag"
 
 const TagPage = async ({
@@ -29,7 +29,7 @@ const TagPage = async ({
 
   return (
     <MainContainer>
-      <TagForm tag={data}/>
+      <ResourceForm tag={data}/>
     </MainContainer>
   )
 }

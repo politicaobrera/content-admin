@@ -4,6 +4,7 @@ export enum ResourceSourceType {
   Image = "image", 
   Video = "video", 
   Document = "document",
+  Audio = "audio"
 }
 
 export type ResourceType = {

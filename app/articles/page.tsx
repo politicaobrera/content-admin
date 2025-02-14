@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import MainContainer from "../components/layout/MainContainer"
-import ArticlesList from "./components/ArticlesList"
+import Articles from "./components/Articles"
 import Loading from "../components/Loading"
 import NewArticleForm from "./components/NewArticleForm";
 import { Params } from "../types/requests";
@@ -27,7 +27,7 @@ const ArticlesPage = ({
         </h1>
         <NewArticleForm />
         <Suspense fallback={<Loading />}>
-          <ArticlesList searchParams={searchParams}/>
+          <Articles searchParams={searchParams}/>
         </Suspense>
       </section>
     </MainContainer>

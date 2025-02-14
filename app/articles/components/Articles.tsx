@@ -5,11 +5,11 @@ import ErrorMessage from "@/app/components/ErrorMessage"
 import ArticlesTable from "./ArticleTable"
 import { Params } from "@/app/types/requests"
 
-interface ArticlesListProps {
+interface ArticlesProps {
   searchParams: Params;
 }
 
-const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
+const Articles:React.FC<ArticlesProps> = async ({searchParams}) => {
   const {data, error, meta}:iResponseMany<ArticleType> = await getArticles(searchParams)
   console.log("meta", meta)
   if (error) {
@@ -30,4 +30,4 @@ const ArticlesList:React.FC<ArticlesListProps> = async ({searchParams}) => {
   )
 }
 
-export default ArticlesList
+export default Articles

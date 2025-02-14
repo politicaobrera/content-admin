@@ -11,7 +11,6 @@ import {
 } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import Separator from "@/app/components/layout/Separator"
-//import useAuthorHook from "../hooks/useAuthorHook"
 import { TagType } from "@/app/types/tag"
 import useTag from "../hooks/useTag"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
@@ -55,7 +54,7 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
         } 
         if(result.data){
           toast.success("Tag editado correctamente")
-          router.push('/tags')
+          router.refresh()
         }
       })
     }
@@ -66,7 +65,7 @@ const TagForm:React.FC<TagFormProps> = ({tag}) => {
       } 
       if(result.data){
         toast.success("Tag creado correctamente")
-        router.push('/tags')
+        router.refresh()
       }
     })
 

@@ -1,4 +1,4 @@
-import { BannerType, PageType } from "@/app/types/page";
+import { BannerType, PageType, Video } from "@/app/types/page";
 import editPage from "@/app/actions/data/pages/editPage";
 import { iResponseOne } from "@/app/types/responses";
 import { ArticleType } from "@/app/types/article";
@@ -13,7 +13,13 @@ export default function usePortada(){
     console.log("a guardar banners", banners)
     const {data, error} = await editPage({banners, _id: id});
     return {data, error};
-}
+  }
+
+  const saveVideos = async (videos: Video[], id:string) : Promise<iResponseOne<PageType>> => {
+    console.log("a guardar videos", videos)
+    const {data, error} = await editPage({videos, _id: id});
+    return {data, error};
+  }
   
-  return {saveArticles, saveBanners}
+  return {saveArticles, saveBanners, saveVideos}
 }

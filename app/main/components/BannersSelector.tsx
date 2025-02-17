@@ -14,7 +14,7 @@ interface BannersSelectorProps {
 }
 
 const BannersSelector = ({id, current, pageName}: BannersSelectorProps) => {
-  const [currentBanners, setCurrentBanners] = useState(current);
+  const [currentBanners, setCurrentBanners] = useState(current)
   const [addingBanner, setAddingBanner] = useState(false)
   const {saveBanners}= usePortada()
   

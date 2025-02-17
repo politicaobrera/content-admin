@@ -8,6 +8,7 @@ import { ArticleStatus, ArticleType } from "@/app/types/article"
 import { isInArray } from "@/app/utils/arrays"
 import BannersSelector from "./BannersSelector"
 import Separator from "@/app/components/layout/Separator"
+import VideosSelector from "./VideosSelector"
 
 interface PortadaProps {
   searchParams: Params;
@@ -44,6 +45,11 @@ const Portada = async ({searchParams}: PortadaProps) => {
         id={id}
         pageName={name}
         current={currentBanners}
+      />
+      <Separator />
+      <VideosSelector
+        id={id}
+        current={currentVideos}
       />
     </section>
   )

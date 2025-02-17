@@ -123,11 +123,14 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
-            <Select
-              options={options}
-              defaultValue={null}
-              onChange={handleSectionChange}
-            />
+            <div>
+              <span>Seccion: </span>
+              <Select
+                options={options}
+                defaultValue={null}
+                onChange={handleSectionChange}
+              />
+            </div>
           </div>
           <div className='mt-4 flex justify-end'>
             <Button

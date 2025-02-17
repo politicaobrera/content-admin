@@ -1,8 +1,7 @@
-import {FC, Fragment} from 'react'
+import {FC} from 'react'
 import useMainImagen from '@/app/hooks/image/useMainImage'
 import { MainImageType } from '@/app/types/image'
 import Button from '../Button'
-import ActionButtonsContainer from '../layout/ActionButtonsContainer'
 
 interface MainImageProps {
   id: string
@@ -60,7 +59,7 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
           space-y-2
         ">
           {mainImagen.state.uploadMode && (
-            <ActionButtonsContainer>
+            <div className="flex gap-2 align-middle justify-start">
               <Button
                 disabled={!mainImagen.state.file || mainImagen.state.uploading}
                 onClick={() => mainImagen.actions.onSave()}
@@ -81,7 +80,7 @@ const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
                   mainImagen.state.uploading ? 'Loading':'Cancelar'
                 }
               </Button>
-            </ActionButtonsContainer>
+            </div>
           )}
           {
             !mainImagen.state.uploadMode && (

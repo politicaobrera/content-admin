@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Select from 'react-select'
 import { ArticleStatus, ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
 import { NumericKeyDown } from '@/app/utils/inputs';
 import { PaginationMeta } from '@/app/types/responses';
 import clsx from 'clsx';
+import SectionsContext from '@/app/context/SectionsContext';
+import { OptionType } from '@/app/types/select';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -16,6 +19,8 @@ interface ArticlesTableProps {
 const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { sections } = useContext(SectionsContext)
+  const options = sections.map(sec => ({value: sec._id, label: sec.name}))
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
@@ -80,6 +85,15 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     router.push(`/articles/${id}`);
   };
 
+  const handleSectionChange = (val: OptionType|null) => {
+    if(val) {
+      const selectedSection = sections.find(sec => sec._id === val.value)
+      if (selectedSection) {
+        setFilters((prev) => ({ ...prev, section: selectedSection._id }));
+      }
+    }
+  }
+
   return (
     // sacar a componente aparte de filtros
     <div className="space-y-4 w-full">
@@ -109,15 +123,10 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
-            {
-              // TODO Combo con secciones
-            }
-            <input
-              name="section"
-              placeholder="Filtrar por sección"
-              value={filters.section}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
+            <Select
+              options={options}
+              defaultValue={null}
+              onChange={handleSectionChange}
             />
           </div>
           <div className='mt-4 flex justify-end'>

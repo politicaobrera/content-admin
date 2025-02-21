@@ -269,7 +269,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
         <Separator />
         <div className="my-5 flex flex-col gap-2 items-start flex-wrap">
           <h5>Estado</h5>
-          <div className="flex gap-3 -">
+          <div className="flex gap-3">
             <Toggle
               labelConfig={{isChecked: 'Publicada', isNotChecked: 'Borrador'}}
               value={article.status === "published"}

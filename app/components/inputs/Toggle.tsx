@@ -28,6 +28,7 @@ const Toggle = ({labelConfig, onChange, value = false, disabled = false}: Toggle
 
   return (
     <div className="flex items-center space-x-4">
+      <span className="text-sm font-medium text-black">{labelConfig.isNotChecked}</span>
       <label
         className={clsx(`
           relative
@@ -44,7 +45,7 @@ const Toggle = ({labelConfig, onChange, value = false, disabled = false}: Toggle
           onChange={handleToggle}
         />
         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-500"></div>
-        <span className="ml-3 text-sm font-medium text-black">{isChecked ? labelConfig.isChecked : labelConfig.isNotChecked}</span>
+        <span className="ml-3 text-sm font-medium text-black">{labelConfig.isChecked}</span>
       </label>
     </div>
   )

@@ -267,15 +267,17 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           mainImage={mainImage}
         />
         <Separator />
-        <div className="my-5 flex gap-3 items-center flex-wrap">
+        <div className="my-5 flex flex-col gap-2 items-start flex-wrap">
           <h5>Estado</h5>
-          <Toggle
-            labelConfig={{isChecked: 'Publicada', isNotChecked: 'Borrador'}}
-            value={article.status === "published"}
-            disabled={article.status === ArticleStatus.Published || isNotReadyForPublish}
-            onChange={(val) => setCurrentStatus(val)}
-          />
-          <ImportantMessage message="Recuerda siempre revisar bien la nota antes de publicar!" />
+          <div className="flex gap-3 -">
+            <Toggle
+              labelConfig={{isChecked: 'Publicada', isNotChecked: 'Borrador'}}
+              value={article.status === "published"}
+              disabled={article.status === ArticleStatus.Published || isNotReadyForPublish}
+              onChange={(val) => setCurrentStatus(val)}
+            />
+            <ImportantMessage message="Recuerda siempre revisar bien la nota antes de publicar!" />
+          </div>
         </div>
       </div>
     </div>

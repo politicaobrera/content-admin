@@ -5,13 +5,12 @@ export default function Home() {
   return (
     <div 
       className="
-        flex
-        flex-col
-        justify-center
+        mx-auto
         min-h-full
         py-12
         sm:px-6
         lg:px-8
+        lg:w-3/4
         bg-gray-100
       "
     >

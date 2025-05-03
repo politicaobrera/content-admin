@@ -1,3 +1,4 @@
+import { ExtendedUser } from '@/app/types/nextauth'
 import axios from 'axios'
 import NextAuth, {AuthOptions} from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -29,9 +30,10 @@ export const authOptions:AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
-      if (user?.sessionToken) {
-        token.sessionToken = user.sessionToken
-      }      
+      let auxUser = user as ExtendedUser
+      if (auxUser?.sessionToken) {
+        token.sessionToken = auxUser.sessionToken
+      }
       return token
     },
     session({ session, token }) {

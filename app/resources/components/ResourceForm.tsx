@@ -26,9 +26,9 @@ interface ResourceFormProps {
 
 const options = [
   { value: ResourceSourceType.Image, label: "Imágen" },
-  { value: ResourceSourceType.Video, label: "Video" },
-  { value: ResourceSourceType.Audio, label: "Audio" },
-  { value: ResourceSourceType.Document, label: "Documento" },
+  { value: ResourceSourceType.Video, label: "Video", isDisabled: true },
+  { value: ResourceSourceType.Audio, label: "Audio", isDisabled: true },
+  { value: ResourceSourceType.Document, label: "Documento", isDisabled: true },
 ];
 
 const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
@@ -71,7 +71,7 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
     
     if (resource) {
       // edit
-      console.log("old tag", resource)
+      console.log("old resource", resource)
       const mergedResource:ResourceType = Object.assign(
         resource,
         merged,
@@ -209,6 +209,9 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
               }
             </Button>
           </ActionButtonsContainer>
+          <Separator />
+          <h5>Link</h5>
+          <span>{resource?.src}</span>
         </form>
       </div>
     </div>

@@ -19,6 +19,12 @@ const Portada = async ({searchParams}: PortadaProps) => {
   const { data: ultimas, error:ultimasError, meta:ultimasMeta }:iResponseMany<ArticleType> = await getArticles({status: ArticleStatus.Published})
   // TODO posibility for searching an article and add it to newtoadd
   //const { data: searchedArticles, error:searchedArticlesError, total:searchedArticlesTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
+
+  if(!homePageData) {
+    // TODO what to do?
+    return (<>No hay datos portada</>)
+  }
+
   const {
     _id: id,
     articles: currentArticles,

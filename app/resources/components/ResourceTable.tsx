@@ -14,78 +14,100 @@ interface ResourceTableProps {
 
 const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   console.log("resources", resources)
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
     title: searchParams.get('title') || '',
-  });
+  })
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
     order: searchParams.get('sortOrder') || '',
-  });
+  })
 
   const [pagination, setPagination] = useState({
     page: parseInt(searchParams.get('page') || String(meta?.page) || '1', 10),
     perPage: parseInt(searchParams.get('perPage') || String(meta?.perPage) || '30', 10)
-  });
+  })
   
-  const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
+  const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage)
 
   // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {
     handleFilterSubmit()
-  }, [sort, pagination, router, searchParams]);
+  }, [sort, pagination, router, searchParams])
   
   const handleFilterSubmit = () => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams.toString())
 
-    if (filters.title) params.set('title', filters.title);
-    else params.delete('title');
+    if (filters.title) params.set('title', filters.title)
+    else params.delete('title')
 
-    if (sort.field) params.set('sortField', sort.field);
-    else params.delete('sortField');
+    if (sort.field) params.set('sortField', sort.field)
+    else params.delete('sortField')
 
-    if (sort.order) params.set('sortOrder', sort.order);
-    else params.delete('sortOrder');
+    if (sort.order) params.set('sortOrder', sort.order)
+    else params.delete('sortOrder')
 
-    params.set('page', String(pagination.page || 1));
-    params.set('perPage', String(pagination.perPage || 30));
+    params.set('page', String(pagination.page || 1))
+    params.set('perPage', String(pagination.perPage || 30))
 
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}`)
   }
 
   const handleSort = (field: string) => {
     setSort((prev) => ({
       field,
       order: prev.field === field && prev.order === 'asc' ? 'desc' : 'asc',
-    }));
-  };
+    }))
+  }
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
+    setFilters((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleClickEdit = (id: string) => {
-    router.push(`/resources/${id}`);
+    router.push(`/resources/${id}`)
   };
 
   const handleClickNew = () => {
-    router.push(`/resources/new`);
+    router.push(`/resources/new`)
   }
 
-  const handleCopyToClipboard = (text:string) => {
-    navigator.clipboard.writeText(text)
-      .then(() => {
+  const copyToClipboard = (text:string) => {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    document.body.appendChild(textarea)
+    textarea.select()
+    
+    try {
+      const successful = document.execCommand('copy')
+      if (successful) {
         console.log("Texto copiado al portapapeles:", text)
         toast.success("Enlace copiado!")
-      })
-      .catch((err) => {
-        console.error("Error al copiar el texto:", err)
-        toast.error(err)
-      })
+      } else {
+        throw new Error('Falló la copia')
+      }
+    } catch (err) {
+      console.error("Error al copiar el texto:", err)
+      toast.error("No se pudo copiar el enlace")
+    } finally {
+      document.body.removeChild(textarea)
+    }
+  }
+
+  const handleCopyToClipboard = async (text:string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      console.log("Texto copiado al portapapeles:", text)
+      toast.success("Enlace copiado!")
+    } catch (err) {
+      console.error("Error al copiar el texto:", err)
+      // Fallback al método antiguo
+      copyToClipboard(text)
+    }
   }
 
   return (
@@ -168,6 +190,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                     >
                       Título {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Preview</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
@@ -175,6 +198,31 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                   {resources.map((resource) => (
                     <tr key={resource._id} className="hover:bg-gray-50 border-b">
                       <td className="px-4 py-2 text-sm text-gray-600">{resource.title}</td>
+                      <td className="px-4 py-2 border-b">
+                        {resource.src ? (
+                          <img
+                            src={resource.src}
+                            alt={resource.title}
+                            className="h-auto w-24 object-cover rounded shadow-md"
+                          />
+                        ) :  (
+                          <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="h-8 w-8 text-gray-400"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </td>
                       <td className="px-4 py-2 text-sm text-gray-600 w-40">
                         <div className='flex gap-2'>
                           <Button

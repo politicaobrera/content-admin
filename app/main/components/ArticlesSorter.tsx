@@ -87,14 +87,14 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
 
       if (activeList === 'current') {
         setNewToAddArticles((curr) => [
-          ...curr,
           currentArticles.find((item) => item.id === active.id)!,
+          ...curr,
         ]);
         setCurrentArticles((curr) => curr.filter((item) => item.id !== active.id));
       } else {
         setCurrentArticles((curr) => [
-          ...curr,
           newToAddArticles.find((item) => item.id === active.id)!,
+          ...curr,
         ]);
         setNewToAddArticles((curr) => curr.filter((item) => item.id !== active.id));
       }

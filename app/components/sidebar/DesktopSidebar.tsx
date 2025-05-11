@@ -38,8 +38,8 @@ const DesktopSidebar:React.FC<DesktopSidebarProps> = ({currentUser}) => {
           items-center
         "
       >
-        <div className="mb-4">
-          <span>{currentUser?.name}</span>
+        <div className="mb-4 py-2 px-5 border-2 border-black rounded-xl">
+          <span className="">{currentUser?.name}</span>
         </div>
         <ul
           role="list"

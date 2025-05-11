@@ -58,7 +58,7 @@ const ResourceSelector = ({sourceType, src, onChange}: ResourceSelectorProps) =>
   return (
     <div className="flex flex-col gap-2">
       {resource.state.current && (
-        <img src={resource.state.current} className="w-92"/>
+        <img src={resource.state.current} className="w-1/2"/>
       )}
       <div>
         <Button

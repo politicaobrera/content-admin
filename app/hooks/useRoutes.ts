@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { usePathname } from "next/navigation"
+import { redirect } from 'next/navigation'
 import { signOut } from "next-auth/react"
 import useMenuOption from "./useMenuOption"
 import{
@@ -65,7 +66,9 @@ const useRoutes = () => {
       label: 'Logout',
       href: '#',
       icon: HiArrowLeftOnRectangle,
-      onClick: () => signOut(), 
+      onClick: () => {
+        signOut({ callbackUrl: '/' })
+      }, 
     },
   ], [pathname, menuOption])
 

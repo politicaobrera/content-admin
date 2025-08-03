@@ -17,5 +17,5 @@ export interface PageType {
   name: string
   videos: Video[]
   banners: BannerType[]
-  articles: ArticleType[]
+  articles: Partial<ArticleType>[]
 }

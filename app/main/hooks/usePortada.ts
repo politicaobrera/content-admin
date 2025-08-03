@@ -4,7 +4,7 @@ import { iResponseOne } from "@/app/types/responses";
 import { ArticleType } from "@/app/types/article";
 
 export default function usePortada(){
-  const saveArticles = async (articles: ArticleType[], id:string) : Promise<iResponseOne<PageType>> => {
+  const saveArticles = async (articles: Partial<ArticleType>[], id:string) : Promise<iResponseOne<PageType>> => {
       const {data, error} = await editPage({articles, _id: id});
       return {data, error};
   }

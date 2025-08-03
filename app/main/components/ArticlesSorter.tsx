@@ -37,7 +37,7 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
   const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
 
   const handleSave = async () => {
-    saveArticles(currentArticles, id).then(result => {
+    saveArticles(currentArticles.map(article => ({_id: article._id})), id).then(result => {
       if (result.error){
         toast.error(result.error.message)
       } 

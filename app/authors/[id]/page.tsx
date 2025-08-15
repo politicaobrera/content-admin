@@ -7,14 +7,11 @@ import AuthorForm from "../components/AuthorForm"
 
 const AuthorPage = async ({
   params,
-  searchParams,
 } : {
-  params: { id: string },
-  searchParams : { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>,
 }) => {
-
-  console.log("params", params)
-  const {data, error}:iResponseOne<AuthorType> = await getAuthor(params.id)
+  const {id} = await params
+  const {data, error}:iResponseOne<AuthorType> = await getAuthor(id)
   console.log("data", data)
 
   // TODO: replace error message with error page or widget and enque snackbar

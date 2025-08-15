@@ -8,14 +8,12 @@ import ArticleForm from "../components/ArticleForm"
 
 const ArticlePage = async ({
   params,
-  searchParams,
 } : {
-  params: { id: string },
-  searchParams : { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>
 }) => {
 
-  // console.log("params", params)
-  const {data, error}:iResponseOne<ArticleType> = await getArticle(params.id)
+  const {id} = await params
+  const {data, error}:iResponseOne<ArticleType> = await getArticle(id)
   // console.log("data", data)
 
   if (error) {

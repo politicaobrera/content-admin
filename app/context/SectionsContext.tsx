@@ -20,6 +20,11 @@ export function SectionsProvider({ children }: SectionsProviderProps) {
         console.log("error obteniendo secciones")
         return
       }
+      // TODO tiene que devolver data [] no tiene q ser optativa la data
+      if(!data) {
+        console.log("error obteniendo secciones")
+        return
+      }
       setSections(data);
     };
 

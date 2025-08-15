@@ -4,11 +4,12 @@ import Resources from "./components/Resources"
 import Loading from "../components/Loading"
 import { Params } from "../types/requests";
 
-const ResourcesPage = ({
+const ResourcesPage = async ({
   searchParams,
 } : {
-  searchParams : Params
+  searchParams : Promise<Params>,
 }) => {
+  const params = await searchParams
   return (
     <MainContainer>
       <section id="resources-page" className="flex flex-col gap-3 px-4">
@@ -25,7 +26,7 @@ const ResourcesPage = ({
           Recursos
         </h1>
         <Suspense fallback={<Loading />}>
-          <Resources searchParams={searchParams}/>
+          <Resources searchParams={params}/>
         </Suspense>
       </section>
     </MainContainer>

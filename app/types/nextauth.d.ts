@@ -1,13 +1,18 @@
 import NextAuth, {DefaultSession} from "next-auth"
 import {JWT} from "next-auth/jwt"
 
-interface iUser extends DefaultSession["user"] {}
-
-export interface ExtendedUser extends iUser {
-  email:string
-  name: string
-  sessionToken?: string
+interface ExtendedUser {
+    name?: string | null
+    email?: string | null
+    image?: string | null
+    sessionToken?: string  
 }
+
+// export interface ExtendedUser extends iUser {
+//   email:string
+//   name: string
+//   sessionToken?: string
+// }
 
 declare module "next-auth" {
   interface Session {

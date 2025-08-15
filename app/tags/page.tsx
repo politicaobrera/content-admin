@@ -4,11 +4,12 @@ import Tags from "./components/Tags"
 import Loading from "../components/Loading"
 import { Params } from "../types/requests";
 
-const TagsPage = ({
+const TagsPage = async ({
   searchParams,
 } : {
-  searchParams : Params
+  searchParams : Promise<Params>,
 }) => {
+  const paramas = await searchParams
   return (
     <MainContainer>
       <section id="tags-page" className="flex flex-col gap-3 px-4">
@@ -25,7 +26,7 @@ const TagsPage = ({
           Tags
         </h1>
         <Suspense fallback={<Loading />}>
-          <Tags searchParams={searchParams}/>
+          <Tags searchParams={paramas}/>
         </Suspense>
       </section>
     </MainContainer>

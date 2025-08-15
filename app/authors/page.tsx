@@ -4,11 +4,12 @@ import Authors from "./components/Authors"
 import Loading from "../components/Loading"
 import { Params } from "../types/requests";
 
-const AuthorsPage = ({
+const AuthorsPage = async ({
   searchParams,
 } : {
-  searchParams : Params
+  searchParams : Promise<Params>
 }) => {
+  const params = await searchParams
   return (
     <MainContainer>
       <section id="authors-page" className="flex flex-col gap-3 px-4">
@@ -25,7 +26,7 @@ const AuthorsPage = ({
           Autores
         </h1>
         <Suspense fallback={<Loading />}>
-          <Authors searchParams={searchParams}/>
+          <Authors searchParams={params}/>
         </Suspense>
       </section>
     </MainContainer>

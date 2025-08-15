@@ -16,6 +16,11 @@ const Tags:React.FC<TagsProps> = async ({searchParams}) => {
     return <ErrorMessage error={error}/>
   }
 
+  // TODO tiene que devolver data [] no tiene q ser optativa la data
+  if(!data) {
+    return(<div>No hay data</div>)
+  }
+
   return (
     <div
       className="

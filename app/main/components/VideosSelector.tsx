@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
-import { Video } from "@/app/types/page"
+import { Video } from "@/app/types/sitepage"
 import Input from "@/app/components/inputs/Input"
 import Button from "@/app/components/Button"
 import usePortada from "../hooks/usePortada"

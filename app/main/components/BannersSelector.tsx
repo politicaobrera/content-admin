@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast"
-import { BannerType } from "@/app/types/page"
+import { BannerType } from "@/app/types/sitepage"
 import usePortada from "../hooks/usePortada";
 import Button from "@/app/components/Button";
 import Banner from "./Banner";

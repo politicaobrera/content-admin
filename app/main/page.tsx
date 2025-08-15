@@ -6,14 +6,14 @@ import MainContainer from "../components/layout/MainContainer"
 const MainPage = async ({
   searchParams,
 } : {
-  searchParams : { [key: string]: string | string[] | undefined }
+  searchParams : Promise<{ [key: string]: string | string[] | undefined }>
 }) => {
-
+  const params = await searchParams
   return (
     <MainContainer>
       <section id="main-page" className="flex flex-col gap-3 px-4">
         <Suspense fallback={<Loading />}>
-          <Portada searchParams={searchParams} />
+          <Portada searchParams={params} />
         </Suspense>
       </section>
     </MainContainer>

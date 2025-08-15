@@ -14,18 +14,19 @@ import usePortada from "../hooks/usePortada"
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
 
+//TODO: Ver si en vez de partial hay que resolverlo con peeks y omits etc
 interface ArticlesSorterProps {
-  current: ArticleType[]
-  newToAdd: ArticleType[]
+  current: Partial<ArticleType>[]
+  newToAdd: Partial<ArticleType>[]
   id: string
 }
 
-export interface ArticleWithID extends ArticleType {
+export interface ArticleWithID extends Partial<ArticleType> {
   id: number
 }
 
-function addIDToArticles (list:ArticleType[]): ArticleWithID[] {
-  return list.map(item => ({...item, id: item.articleId}))
+function addIDToArticles (list:Partial<ArticleType>[]): ArticleWithID[] {
+  return list.map(item => ({...item, id: item?.articleId || 0}))
 }
 
 // TODO: Article or content or both sorter?

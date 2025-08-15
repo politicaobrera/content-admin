@@ -7,12 +7,11 @@ import { ResourceType } from "@/app/types/resource"
 
 const ResourcePage = async ({
   params,
-  searchParams,
 } : {
-  params: { id: string },
-  searchParams : { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>,
 }) => {
-  const {data, error}:iResponseOne<ResourceType> = await getResource(params.id)
+  const {id} = await params
+  const {data, error}:iResponseOne<ResourceType> = await getResource(id)
 
   if (error) {
     return <ErrorMessage error={error}/>

@@ -5,11 +5,12 @@ import Loading from "../components/Loading"
 import NewArticleForm from "./components/NewArticleForm";
 import { Params } from "../types/requests";
 
-const ArticlesPage = ({
+const ArticlesPage = async ({
   searchParams,
 } : {
-  searchParams : Params
+  searchParams : Promise<Params>
 }) => {
+  const params = await searchParams
   return (
     <MainContainer>
       <section id="article-page" className="flex flex-col gap-3 px-4">
@@ -27,7 +28,7 @@ const ArticlesPage = ({
         </h1>
         <NewArticleForm />
         <Suspense fallback={<Loading />}>
-          <Articles searchParams={searchParams}/>
+          <Articles searchParams={params}/>
         </Suspense>
       </section>
     </MainContainer>

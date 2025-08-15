@@ -1,6 +1,6 @@
 'use server'
 
-import { PageType } from "@/app/types/page"
+import { PageType } from "@/app/types/sitepage"
 import { iResponseMany } from "@/app/types/responses"
 import getAuthorizationHeader from "../../getAuthorizationHeader"
 import { Params } from "@/app/types/requests"

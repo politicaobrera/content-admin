@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
-import { BannerType } from "@/app/types/page"
+import { BannerType } from "@/app/types/sitepage"
 
 const compressOptions = {
   maxSizeMB: 1,

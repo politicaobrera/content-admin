@@ -1,5 +1,5 @@
-import { iResponseMany } from "@/app/types/responses"
-import { PageType } from "@/app/types/page"
+import { iResponseMany, iResponseOne } from "@/app/types/responses"
+import { PageType } from "@/app/types/sitepage"
 import getPageByName from "@/app/actions/data/pages/getPageByName"
 import ArticlesSorter from "./ArticlesSorter"
 import getArticles from "@/app/actions/data/articles/getArticles"
@@ -15,7 +15,7 @@ interface PortadaProps {
 }
 
 const Portada = async ({searchParams}: PortadaProps) => {
-  const { data: homePageData, error: homePageError }:iResponseMany<PageType> = await getPageByName("portada")
+  const { data: homePageData, error: homePageError }:iResponseOne<PageType> = await getPageByName("portada")
   const { data: ultimas, error:ultimasError, meta:ultimasMeta }:iResponseMany<ArticleType> = await getArticles({status: ArticleStatus.Published})
   // TODO posibility for searching an article and add it to newtoadd
   //const { data: searchedArticles, error:searchedArticlesError, total:searchedArticlesTotal }:iResponseMany<ArticleType> = await getArticles(searchParams)
@@ -33,17 +33,17 @@ const Portada = async ({searchParams}: PortadaProps) => {
     name
   } = homePageData as PageType;
   
-  const ultimasCleaned = ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
+  const ultimasCleaned = ultimas && ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
   // IMPORTANT TODO FOR DEV PORPOSE REMOVE LATER 
-  if(currentArticles.length === 0) {
-    currentArticles.push(ultimasCleaned.pop())
+  if(currentArticles.length === 0 && ultimasCleaned && ultimasCleaned.length > 0) {
+    currentArticles.push(ultimasCleaned.pop() as Partial<ArticleType>)
   }
   //console.log("ultima cleaned", ultimasCleaned.map((i:ArticleType) => i.articleId))
   return (
     <section id="portada" className="flex flex-col gap-5 mt-5">
       <ArticlesSorter
         current={currentArticles}
-        newToAdd={ultimasCleaned}
+        newToAdd={ultimasCleaned as Partial<ArticleType>[]}
         id={id}
       />
       <Separator />

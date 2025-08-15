@@ -1,4 +1,4 @@
-import { BannerType, PageType, Video } from "@/app/types/page";
+import { BannerType, PageType, Video } from "@/app/types/sitepage";
 import editPage from "@/app/actions/data/pages/editPage";
 import { iResponseOne } from "@/app/types/responses";
 import { ArticleType } from "@/app/types/article";

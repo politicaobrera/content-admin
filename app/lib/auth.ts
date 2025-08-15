@@ -1,0 +1,46 @@
+import { ExtendedUser } from '@/app/types/nextauth'
+import axios from 'axios'
+import {AuthOptions} from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+
+export const authOptions:AuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: 'credentials',
+      credentials: {
+        email: {label: 'email', type: 'text'},
+        password: {label: 'password', type: 'password'}
+      },
+      async authorize(credentials) {
+        if(!credentials?.email || !credentials.password) {
+          throw new Error('invalid credentials')
+        }
+        let user = await axios.post(process.env.CONTENT_SERVER_URL+'/auth/login', credentials)
+        //console.log("user", user.data)
+        user.data.name = user.data.username
+        user.data.sessionToken = user.data.authentication.sessionToken
+        return user.data
+      }
+    })
+  ],
+  debug: process.env.NODE_ENV === 'development',
+  session: {
+    strategy: 'jwt',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, user }) {
+      let auxUser = user as ExtendedUser
+      if (auxUser?.sessionToken) {
+        token.sessionToken = auxUser.sessionToken
+      }
+      return token
+    },
+    session({ session, token }) {
+      if (token && session.user) {
+        session.user.sessionToken = token.sessionToken;
+      }
+      return session;
+    },
+  },
+}

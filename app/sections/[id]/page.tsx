@@ -9,13 +9,11 @@ import SectionForm from "../components/SectionForm"
 
 const SectionPage = async ({
   params,
-  searchParams,
 } : {
-  params: { id: string },
-  searchParams : { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>,
 }) => {
-
-  const {data, error}:iResponseOne<Section> = await getSection(params.id)
+  const {id} = await params
+  const {data, error}:iResponseOne<Section> = await getSection(id)
   
   if (error) {
     return <ErrorMessage error={error}/>

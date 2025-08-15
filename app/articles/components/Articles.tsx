@@ -10,10 +10,16 @@ interface ArticlesProps {
 }
 
 const Articles:React.FC<ArticlesProps> = async ({searchParams}) => {
-  const {data, error, meta}:iResponseMany<ArticleType> = await getArticles(searchParams)
+  const params = await searchParams
+  const {data, error, meta}:iResponseMany<ArticleType> = await getArticles(params)
   console.log("meta", meta)
   if (error) {
     return <ErrorMessage error={error}/>
+  }
+
+  // TODO tiene que devolver data [] no tiene q ser optativa la data
+  if(!data) {
+    return(<div>No hay data</div>)
   }
 
   return (

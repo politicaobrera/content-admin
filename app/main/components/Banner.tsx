@@ -1,4 +1,4 @@
-import { BannerType } from "@/app/types/page"
+import { BannerType } from "@/app/types/sitepage"
 import useBanner from "../hooks/useBanner"
 import Button from "@/app/components/Button"
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form"

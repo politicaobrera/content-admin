@@ -15,7 +15,7 @@ export type PaginationMeta = {
 
 export type iResponseMany<T> = {
   error?: ResponseError,
-  data?: Data,
+  data?: T[],
   meta?: PaginationMeta
 }
 

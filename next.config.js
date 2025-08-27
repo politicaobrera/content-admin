@@ -17,20 +17,66 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             
             value:`
-              default-src 'self';
-              script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;
-              style-src 'self' 'unsafe-inline';
-              img-src 'self' blob: data: https:;
-              media-src 'self' blob:;
-              worker-src 'self' blob:;
-              child-src 'self' blob:;
-              connect-src 'self';
-              font-src 'self';
+            default-src 'self';
+              script-src 
+                'self' 
+                'unsafe-eval' 
+                'unsafe-inline' 
+                blob: 
+                https://cdn.jsdelivr.net 
+                https://www.googletagmanager.com 
+                https://www.google-analytics.com 
+                https://connect.facebook.net 
+                https://platform.twitter.com;
+              style-src 
+                'self' 
+                'unsafe-inline' 
+                https://cdn.jsdelivr.net 
+                https://fonts.googleapis.com;
+              img-src 
+                'self' 
+                blob: 
+                data: 
+                https: 
+                https://firebasestorage.googleapis.com 
+                https://www.google-analytics.com 
+                https://stats.g.doubleclick.net;
+              media-src 
+                'self' 
+                blob: 
+                https://firebasestorage.googleapis.com;
+              worker-src 
+                'self' 
+                blob:;
+              child-src 
+                'self' 
+                blob: 
+                https://www.youtube.com 
+                https://platform.twitter.com 
+                https://www.facebook.com 
+                https://player.vimeo.com;
+              connect-src 
+                'self' 
+                https://firebasestorage.googleapis.com 
+                https://www.google-analytics.com 
+                https://stats.g.doubleclick.net 
+                wss://*.firebaseio.com;
+              font-src 
+                'self' 
+                https://cdn.jsdelivr.net 
+                https://fonts.gstatic.com;
+              frame-src 
+                'self' 
+                https://www.youtube.com 
+                https://platform.twitter.com 
+                https://www.facebook.com 
+                https://player.vimeo.com 
+                https://www.instagram.com;
               object-src 'none';
               base-uri 'self';
               form-action 'self';
               frame-ancestors 'none';
-            `.replace(/\n/g, ' ').trim()
+            `.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim()
           },
         ],
       },

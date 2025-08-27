@@ -17,7 +17,8 @@ export default function Editor({ initial = [], onChange }: Props) {
   });
 
   const handleChange = async () => {
-    const html = await editor.blocksToHTMLLossy(editor.topLevelBlocks);
+    // TODO: in the future handle this in more intelligent way? preprocessing or adding blocks?
+    const html = await editor.blocksToHTMLLossy();
     onChange(html);
   };
 

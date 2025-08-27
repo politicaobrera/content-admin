@@ -1,3 +1,5 @@
+'use client'
+
 import { ArticleWithID } from "@/app/main/components/ArticlesSorter";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";

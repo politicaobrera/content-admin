@@ -17,7 +17,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             
             value:`
-            default-src 'self';
+              default-src 'self';
               script-src 
                 'self' 
                 'unsafe-eval' 
@@ -44,6 +44,7 @@ const nextConfig = {
               media-src 
                 'self' 
                 blob: 
+                https://www.youtube.com 
                 https://firebasestorage.googleapis.com;
               worker-src 
                 'self' 

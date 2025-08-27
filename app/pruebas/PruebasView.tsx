@@ -5,7 +5,7 @@ const Editor = dynamic(() => import('../components/inputs/Editor'), { ssr: false
 
 const PruebasView = () => {
    return (
-    <Editor initial={[]} onChange={(html) => console.log("html", html)}/>
+    <Editor initial={[]} onChange={(html:string) => console.log("html", html)}/>
   )
 }
 

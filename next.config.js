@@ -20,7 +20,7 @@ const nextConfig = {
               default-src 'self';
               script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;
               style-src 'self' 'unsafe-inline';
-              img-src 'self' blob: data:;
+              img-src 'self' blob: data: https:;
               media-src 'self' blob:;
               worker-src 'self' blob:;
               child-src 'self' blob:;

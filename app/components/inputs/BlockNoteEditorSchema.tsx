@@ -6,7 +6,7 @@ export const iframeBlockSpec = createReactBlockSpec(
   {
     type: 'iframe',
     propSchema: {
-      url: {
+      src: {
         default: '',
       },
       width: {
@@ -24,9 +24,9 @@ export const iframeBlockSpec = createReactBlockSpec(
       const { block } = props;
       
       return (
-        <div style={{ margin: '16px 0' }}>
+        <div style={{ margin: '16px 0', width: '100%' }}>
           <iframe
-            src={block.props.url}
+            src={block.props.src}
             width={block.props.width}
             height={block.props.height}
             style={{
@@ -35,10 +35,19 @@ export const iframeBlockSpec = createReactBlockSpec(
               maxWidth: '100%',
             }}
             allowFullScreen
-            title="Embedded content"
           />
         </div>
       );
+    },
+    parse: (element: HTMLElement) => {
+      if (element.tagName === "IFRAME") {
+        return {
+          src: element.getAttribute("src") || "www.example.com",
+          width: element.getAttribute("width") || "100%",
+          height: element.getAttribute("height") || "400px",
+        };
+      }
+      return undefined;
     },
   }
 );

@@ -1,7 +1,11 @@
+'use client'
+
 import SectionsContext from "@/app/context/SectionsContext"
 import { Section } from "@/app/types/sections"
 import { OptionType } from "@/app/types/select"
 import { useContext } from "react"
+//import dynamic from 'next/dynamic';
+//const Select = dynamic(() => import('react-select'), { ssr: false });
 import Select from 'react-select'
 
 interface SectionSelectorProps {

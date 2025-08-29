@@ -5,7 +5,7 @@ const Editor = dynamic(() => import('../components/inputs/BlockNoteEditor'), { s
 
 const PruebasView = () => {
    return (
-    <Editor initial={[]} onChange={(html:string) => console.log("html", html)}/>
+    <Editor id="prueba editor" label="Pruebas" initial={[]} onChange={(html:string) => console.log("html", html)}/>
   )
 }
 

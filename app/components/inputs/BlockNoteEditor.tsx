@@ -7,14 +7,17 @@ import { useCreateBlockNote, SuggestionMenuController, DefaultReactSuggestionIte
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
 import BlockNoteEditorSchema from './BlockNoteEditorSchema';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
   
 interface BlockNoteEditorProps {
+  label: string,
+  id: string,
   initial?: any[];
+  initialHTML?: string;
   onChange: (html: string) => void;
 }
 
-export default function BlockNoteEditor({ initial = [], onChange }: BlockNoteEditorProps) {
+export default function BlockNoteEditor({ id, label, initialHTML, initial = [], onChange }: BlockNoteEditorProps) {
 
   const insertIframe = () => ({
     title: "Insert Iframe",
@@ -23,11 +26,11 @@ export default function BlockNoteEditor({ initial = [], onChange }: BlockNoteEdi
       if (!url) return; // cancelado
       insertOrUpdateBlock(editor, {
         type: "iframe",
-        props:{url}
+        props:{src:url}
       })
     },
     aliases: ["iframe", "embed", "video", "youtube", "vimeo", "contenido"],
-    group: "Media",
+    group: "Custom",
     icon: <div style={{ width: 18, height: 18 }}>🎥</div>,
     subtext: "Insertar contenido embebido externo.",
   });
@@ -40,35 +43,67 @@ export default function BlockNoteEditor({ initial = [], onChange }: BlockNoteEdi
   ];
 
   const editor = useCreateBlockNote({
-    initialContent: initial.length ? initial : undefined,
+    //initialContent: initial.length ? initial : undefined,
     schema: BlockNoteEditorSchema,
   });
 
-const handleChange = useCallback(
-  debounce(async () => {
-    try {
-      const html = await editor.blocksToHTMLLossy();
-      onChange?.(html);
-    } catch (e) {
-      console.error(e);
+  useEffect(() => {
+    async function loadInitial() {
+      if(initial.length) {
+        editor.replaceBlocks(editor.document, initial);
+        return
+      }
+      if (initialHTML) {
+        const blocks = await editor.tryParseHTMLToBlocks(initialHTML);
+        editor.replaceBlocks(editor.document, blocks);
+      }
     }
-  }, 500),
-  [onChange]
-);
+    loadInitial();
+  }, [editor]);
+
+  const handleChange = useCallback(
+    debounce(async () => {
+      try {
+        const html = await editor.blocksToHTMLLossy();
+        onChange?.(html);
+        console.log("editor document", editor.document)
+      } catch (e) {
+        console.error(e);
+      }
+    }, 500),
+    [onChange]
+  );
 
   return (
-    <BlockNoteView
-      editor={editor}
-      theme="light"
-      onChange={handleChange}
-      slashMenu={false}
-    >
-      <SuggestionMenuController
-        triggerCharacter={"/"}
-        getItems={async (query) =>
-          filterSuggestionItems(getCustomSlashMenuItems(editor), query)
-        }
-      />
-    </BlockNoteView>
+    <div>
+      <label
+        className="
+          block
+          text-sm
+          text-gray-900
+          font-medium
+          leading-6
+        "
+        htmlFor={id}
+      >
+        {label}
+      </label>
+      <div>
+        <BlockNoteView
+          id={id}
+          editor={editor}
+          theme="dark"
+          onChange={handleChange}
+          slashMenu={false}
+        >
+          <SuggestionMenuController
+            triggerCharacter={"/"}
+            getItems={async (query) =>
+              filterSuggestionItems(getCustomSlashMenuItems(editor), query)
+            }
+          />
+        </BlockNoteView>
+      </div>
+    </div>
   ) 
 }

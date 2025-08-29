@@ -3,7 +3,7 @@
 import React, { use, useEffect, useMemo, useRef } from 'react';
 import clsx from 'clsx';
 import { Controller, Control } from 'react-hook-form';
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill/dist/quill.snow.css';
 
 export interface WYSIWYGEditorProps {
@@ -21,7 +21,7 @@ const formats = [
   'bold', 'italic', 'underline', 'strike',
   'color', 'background',
   'script',
-  'list', 'bullet', 'indent',
+  'list', 'indent',
   'align',
   'link', 'image', 'video',
 ];
@@ -52,7 +52,9 @@ const Wysiwyg: React.FC<WYSIWYGEditorProps> = ({
   useEffect(() => {
     if (window) {
       let Image = Quill.import('formats/image');
+      //@ts-ignore 
       Image.className = 'ql-embed-image';
+      //@ts-ignore 
       Quill.register(Image, true);
     }
   }, [quillRef])

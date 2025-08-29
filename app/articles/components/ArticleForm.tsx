@@ -8,25 +8,35 @@ import {
   SubmitHandler,
   useForm
 } from "react-hook-form"
+
+
+import dynamic from 'next/dynamic';
+const BlockNoteEditor = dynamic(() => import('@/app//components/inputs/BlockNoteEditor'), { ssr: false });
+const SectionSelector = dynamic(
+  () => import('@/app/components/sections/SectionSelector'),
+  { ssr: false }
+);
+
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
 import { ArticleStatus, ArticleType } from "@/app/types/article"
 import Separator from "@/app/components/layout/Separator"
 import useArticle from "../hooks/useArticle"
 import MainImage from "@/app/components/image/MainImage"
-import Wysiwyg from "@/app/components/inputs/Wysiwyg"
+//import Wysiwyg from "@/app/components/inputs/Wysiwyg"
 import ArticlePreview from "./Preview/ArticlePreview"
 import TextArea from "@/app/components/inputs/TextArea"
 import { MainImageType } from "@/app/types/image"
 import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
-import SectionSelector from "@/app/components/sections/SectionSelector"
+//import SectionSelector from "@/app/components/sections/SectionSelector"
 import { Section } from "@/app/types/sections"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
 import { TagType } from "@/app/types/tag"
 import Toggle from "@/app/components/inputs/Toggle"
 import ImportantMessage from "@/app/components/ImportantMessage"
+//import BlockNoteEditor from "@/app/components/inputs/BlockNoteEditor"
 
 interface ArticleFormProps {
   article: ArticleType
@@ -42,6 +52,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
   const [currentTags, setCurrentTags] = useState<TagType[]>(article.tags)
   const [currentStatus, setCurrentStatus] = useState<boolean>(article.status === ArticleStatus.Published)
+  const [currentContent, setCurrentContent] = useState<string>(article.content)
   const {edit} = useArticle();
 
   const {
@@ -57,7 +68,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       title: article.title,
       volanta: article.volanta || "",
       subhead: article.subhead || "",
-      content: article.content || "",
+      //content: article.content || "",
     }
   })
 
@@ -89,6 +100,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       },
       {
         section: currentSection?._id || null
+      },
+      {
+        content: currentContent
       },
       {
         tags: currentTags
@@ -125,7 +139,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   };
 
   const currentValues = watch() as ArticleType
-  const isNotReadyForPublish = !currentSection?._id || currentValues.content.trim() === "" || currentValues.title.trim() === ""? true : false
+  const isNotReadyForPublish = !currentSection?._id || currentValues.title.trim() === "" ? true : false //currentValues.content.trim() === ""
+
+  //console.log("currentContent", currentContent)
 
   return (
     <div
@@ -219,13 +235,20 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Bajada"
             rows={3}
           />
-          <Wysiwyg
+          <Separator />
+          {/* <Wysiwyg
             label="Contenido"
             id="content"
             control={control}
             errors={errors}
             required={true}
             placeHolder="Cuerpo de la nota..."
+          /> */}
+          <BlockNoteEditor 
+            label="Contenido"
+            id="content"
+            initialHTML={currentContent}
+            onChange={(html:string) => setCurrentContent(html)}
           />
           <Separator />
           <TagSelector
@@ -263,7 +286,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           "
         >Previsualizacion</h2>
         <ArticlePreview
-          article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions, tags: currentTags}}
+          article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions, tags: currentTags, content: currentContent}}
           mainImage={mainImage}
         />
         <Separator />

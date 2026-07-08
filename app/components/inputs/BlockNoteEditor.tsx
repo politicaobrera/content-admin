@@ -1,14 +1,19 @@
 'use client';
 
 import { debounce } from 'lodash'
-import { filterSuggestionItems, insertOrUpdateBlock } from '@blocknote/core';
 import { BlockNoteView } from '@blocknote/mantine';
-import { useCreateBlockNote, SuggestionMenuController, DefaultReactSuggestionItem, getDefaultReactSlashMenuItems } from '@blocknote/react';
+import {
+  useCreateBlockNote,
+  SuggestionMenuController,
+  DefaultReactSuggestionItem,
+  getDefaultReactSlashMenuItems,
+} from '@blocknote/react';
+import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions';
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
 import BlockNoteEditorSchema from './BlockNoteEditorSchema';
 import { useCallback, useEffect } from 'react';
-  
+
 interface BlockNoteEditorProps {
   label: string,
   id: string,
@@ -19,15 +24,19 @@ interface BlockNoteEditorProps {
 
 export default function BlockNoteEditor({ id, label, initialHTML, initial = [], onChange }: BlockNoteEditorProps) {
 
-  const insertIframe = () => ({
-    title: "Insert Iframe",
+  const editor = useCreateBlockNote({
+    schema: BlockNoteEditorSchema,
+  });
+
+  const insertIframe = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
+    title: "Insertar embed",
     onItemClick: () => {
-      const url = window.prompt('Enter the URL to embed:');
+      const url = window.prompt('Pegá la URL a embeber (YouTube, Vimeo, etc.):');
       if (!url) return; // cancelado
-      insertOrUpdateBlock(editor, {
+      insertOrUpdateBlockForSlashMenu(editor, {
         type: "iframe",
-        props:{src:url}
-      })
+        props: { src: url },
+      });
     },
     aliases: ["iframe", "embed", "video", "youtube", "vimeo", "contenido"],
     group: "Custom",
@@ -36,20 +45,15 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
   });
 
   const getCustomSlashMenuItems = (
-    editor: any,
+    editor: typeof BlockNoteEditorSchema.BlockNoteEditor,
   ): DefaultReactSuggestionItem[] => [
     ...getDefaultReactSlashMenuItems(editor),
-    insertIframe(),
+    insertIframe(editor),
   ];
-
-  const editor = useCreateBlockNote({
-    //initialContent: initial.length ? initial : undefined,
-    schema: BlockNoteEditorSchema,
-  });
 
   useEffect(() => {
     async function loadInitial() {
-      if(initial.length) {
+      if (initial.length) {
         editor.replaceBlocks(editor.document, initial);
         return
       }
@@ -66,7 +70,6 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
       try {
         const html = await editor.blocksToHTMLLossy();
         onChange?.(html);
-        console.log("editor document", editor.document)
       } catch (e) {
         console.error(e);
       }
@@ -76,16 +79,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
 
   return (
     <div>
-      <label
-        className="
-          block
-          text-sm
-          text-gray-900
-          font-medium
-          leading-6
-        "
-        htmlFor={id}
-      >
+      <label className="block text-sm text-gray-900 font-medium leading-6" htmlFor={id}>
         {label}
       </label>
       <div>
@@ -105,5 +99,5 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
         </BlockNoteView>
       </div>
     </div>
-  ) 
+  )
 }

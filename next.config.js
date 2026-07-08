@@ -4,9 +4,6 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ['localhost:3000', '*.my-proxy.com'],
     },
-    // swcPlugins: [
-    //   ["next-superjson-plugin", {}]
-    // ]
   },
   headers: async () => {
     return [

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from "react-hot-toast"
 import { TagType } from '@/app/types/tag';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
+import useTag from '../hooks/useTag';
 
 interface TagTableProps {
   tags: TagType[];
@@ -15,6 +17,7 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
   console.log("tags", tags)
   const router = useRouter();
   const searchParams = useSearchParams();
+  const {remove} = useTag();
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
@@ -52,7 +55,10 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
     params.set('page', String(pagination.page || 1));
     params.set('perPage', String(pagination.perPage || 30));
 
-    router.push(`?${params.toString()}`);
+    const newQuery = params.toString();
+    if (newQuery !== searchParams.toString()) {
+      router.push(`?${newQuery}`);
+    }
   }
 
   const handleSort = (field: string) => {
@@ -73,6 +79,20 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
 
   const handleClickNew = () => {
     router.push(`/tags/new`);
+  }
+
+  const handleClickDelete = async (tag: TagType) => {
+    if (!window.confirm(`¿Eliminar el tag "${tag.name}"? Esta acción no se puede deshacer.`)) {
+      return
+    }
+    const result = await remove(tag._id)
+    if (result.error) {
+      toast.error(result.error.message)
+    }
+    if (result.data) {
+      toast.success("Tag eliminado correctamente")
+      router.refresh()
+    }
   }
 
   return (
@@ -165,13 +185,22 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
                     //TODO: sacar a componente?
                     <tr key={tag._id} className="hover:bg-gray-50 border-b">
                       <td className="px-4 py-2 text-sm text-gray-600">{tag.name}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600 w-20">
-                        <Button
-                          type="button"
-                          onClick={() => handleClickEdit(tag._id)}
-                        >
-                          Editar
-                        </Button>
+                      <td className="px-4 py-2 text-sm text-gray-600 w-40">
+                        <div className='flex gap-2'>
+                          <Button
+                            type="button"
+                            onClick={() => handleClickEdit(tag._id)}
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            type="button"
+                            danger
+                            onClick={() => handleClickDelete(tag)}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

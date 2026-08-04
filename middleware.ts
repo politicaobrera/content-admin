@@ -37,5 +37,9 @@ export const config = {
     '/main/:path*',
     '/sections/:path*',
     '/articles/:path*',
+    '/publicaciones/:path*',
+    '/tags/:path*',
+    '/authors/:path*',
+    '/resources/:path*',
   ],
 }

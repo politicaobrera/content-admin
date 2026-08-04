@@ -4,51 +4,12 @@ import { initializeApp } from "firebase/app"
 
 import { getStorage } from "firebase/storage"
 
-// TODO: Add SDKs for Firebase products that you want to use
-
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-
-// Your web app's Firebase configuration
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
 const firebaseConfig = {
-
-  // apiKey: "AIzaSyBnWpcYv57m1_mMPEWPi5PrwyFknkhHcp8",
-
-  // authDomain: "politicaobrera-187ea.firebaseapp.com",
-
-  // databaseURL: "https://politicaobrera-187ea.firebaseio.com",
-
-  // projectId: "politicaobrera-187ea",
-
-  // storageBucket: "politicaobrera-187ea.appspot.com",
-
-  // messagingSenderId: "471408022688",
-
-  // appId: "1:471408022688:web:320271cd1c4549b10065c5",
-
-  // measurementId: "G-VR20HEKMVJ"
-
-
-  apiKey: "AIzaSyAdTKoSly9t7H9JwxRz4Hj-3azQEBfExBw",
-
-  authDomain: "politicaobrera-187ea.firebaseapp.com",
-
-  databaseURL: "https://politicaobrera-187ea.firebaseio.com",
-
-  projectId: "politicaobrera-187ea",
-
-  storageBucket: "politicaobrera-187ea.appspot.com",
-
-  messagingSenderId: "471408022688",
-
-  appId: "1:471408022688:web:e1e98ad6f395da8f0065c5",
-
-  measurementId: "G-3EK5J6C0R0"
-
-
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase

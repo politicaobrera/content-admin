@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Select from 'react-select'
+import { toast } from "react-hot-toast"
 import { ArticleStatus, ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
 import { NumericKeyDown } from '@/app/utils/inputs';
@@ -10,6 +11,7 @@ import { PaginationMeta } from '@/app/types/responses';
 import clsx from 'clsx';
 import SectionsContext from '@/app/context/SectionsContext';
 import { OptionType } from '@/app/types/select';
+import useArticle from '../hooks/useArticle';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -20,6 +22,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { sections } = useContext(SectionsContext)
+  const {remove} = useArticle();
   const options = sections.map(sec => ({value: sec._id, label: sec.name}))
 
   // TODO: useTable factor out
@@ -66,7 +69,10 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     params.set('page', String(pagination.page || 1));
     params.set('perPage', String(pagination.perPage || 30));
 
-    router.push(`?${params.toString()}`);
+    const newQuery = params.toString();
+    if (newQuery !== searchParams.toString()) {
+      router.push(`?${newQuery}`);
+    }
   } 
 
   const handleSort = (field: string) => {
@@ -84,6 +90,20 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const handleClickEdit = (id: string) => {
     router.push(`/articles/${id}`);
   };
+
+  const handleClickDelete = async (article: ArticleType) => {
+    if (!window.confirm(`¿Eliminar el artículo "${article.title}"? Esta acción no se puede deshacer.`)) {
+      return
+    }
+    const result = await remove(article._id)
+    if (result.error) {
+      toast.error(result.error.message)
+    }
+    if (result.data) {
+      toast.success("Artículo eliminado correctamente")
+      router.refresh()
+    }
+  }
 
   const handleSectionChange = (val: OptionType|null) => {
     if(val) {
@@ -224,13 +244,22 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section?.name || "-"}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">
-                        <Button
-                          type="button"
-                          onClick={() => handleClickEdit(article._id)}
-                        >
-                          Editar
-                        </Button>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600 w-40">
+                        <div className='flex gap-2'>
+                          <Button
+                            type="button"
+                            onClick={() => handleClickEdit(article._id)}
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            type="button"
+                            danger
+                            onClick={() => handleClickDelete(article)}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

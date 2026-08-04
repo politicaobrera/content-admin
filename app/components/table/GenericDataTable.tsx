@@ -51,8 +51,11 @@ const GenericDataTable = <T extends { _id: string }>({ data, meta, columns, enti
 
     params.set('page', String(pagination.page || 1));
     params.set('perPage', String(pagination.perPage || 30));
-    
-    router.push(`?${params.toString()}`);
+
+    const newQuery = params.toString();
+    if (newQuery !== searchParams.toString()) {
+      router.push(`?${newQuery}`);
+    }
   };
 
   const handleSort = (field: string) => {

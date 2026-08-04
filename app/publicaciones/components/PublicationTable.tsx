@@ -3,25 +3,23 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from "react-hot-toast"
-import { ResourceType } from '@/app/types/resource';
+import { PublicationType } from '@/app/types/publication';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
-import useResource from '../hooks/useResource';
+import usePublication from '../hooks/usePublication';
 
-interface ResourceTableProps {
-  resources: ResourceType[];
+interface PublicationTableProps {
+  publications: PublicationType[];
   meta: PaginationMeta | undefined;
 }
 
-const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
-  console.log("resources", resources)
+const PublicationTable = ({ publications, meta }: PublicationTableProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const {remove} = useResource()
+  const {remove} = usePublication()
 
-  // TODO: useTable factor out
   const [filters, setFilters] = useState({
-    title: searchParams.get('title') || '',
+    name: searchParams.get('name') || '',
   })
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
@@ -32,19 +30,18 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
     page: parseInt(searchParams.get('page') || String(meta?.page) || '1', 10),
     perPage: parseInt(searchParams.get('perPage') || String(meta?.perPage) || '30', 10)
   })
-  
+
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage)
 
-  // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {
     handleFilterSubmit()
   }, [sort, pagination, router, searchParams])
-  
+
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString())
 
-    if (filters.title) params.set('title', filters.title)
-    else params.delete('title')
+    if (filters.name) params.set('name', filters.name)
+    else params.delete('name')
 
     if (sort.field) params.set('sortField', sort.field)
     else params.delete('sortField')
@@ -74,58 +71,28 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   }
 
   const handleClickEdit = (id: string) => {
-    router.push(`/resources/${id}`)
+    router.push(`/publicaciones/${id}`)
+  };
+
+  const handleClickNumeros = (id: string) => {
+    router.push(`/publicaciones/${id}/numeros`)
   };
 
   const handleClickNew = () => {
-    router.push(`/resources/new`)
+    router.push(`/publicaciones/new`)
   }
 
-  const copyToClipboard = (text:string) => {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    document.body.appendChild(textarea)
-    textarea.select()
-    
-    try {
-      const successful = document.execCommand('copy')
-      if (successful) {
-        console.log("Texto copiado al portapapeles:", text)
-        toast.success("Enlace copiado!")
-      } else {
-        throw new Error('Falló la copia')
-      }
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-      toast.error("No se pudo copiar el enlace")
-    } finally {
-      document.body.removeChild(textarea)
-    }
-  }
-
-  const handleClickDelete = async (resource:ResourceType) => {
-    if (!window.confirm(`¿Eliminar el recurso "${resource.title}"? Esta acción no se puede deshacer.`)) {
+  const handleClickDelete = async (publication: PublicationType) => {
+    if (!window.confirm(`¿Eliminar la publicación "${publication.name}"? Esta acción no se puede deshacer.`)) {
       return
     }
-    const result = await remove(resource._id)
+    const result = await remove(publication._id)
     if (result.error) {
       toast.error(result.error.message)
     }
     if (result.data) {
-      toast.success("Recurso eliminado correctamente")
+      toast.success("Publicación eliminada correctamente")
       router.refresh()
-    }
-  }
-
-  const handleCopyToClipboard = async (text:string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      console.log("Texto copiado al portapapeles:", text)
-      toast.success("Enlace copiado!")
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-      // Fallback al método antiguo
-      copyToClipboard(text)
     }
   }
 
@@ -151,7 +118,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
             fullWidth
             onClick={handleClickNew}
           >
-            NUEVO RECURSO
+            NUEVA PUBLICACIÓN
           </Button>
         </div>
       </div>
@@ -167,9 +134,9 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
           <h2 className="text-lg font-semibold mb-2">Filtros</h2>
           <div className="grid grid-cols-2 gap-4">
             <input
-              name="title"
-              placeholder="Filtrar por título"
-              value={filters.title}
+              name="name"
+              placeholder="Filtrar por nombre"
+              value={filters.name}
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
             />
@@ -192,10 +159,10 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
           shadow
         "
       >
-        {resources.length === 0 ? (
+        {publications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-lg text-gray-600 font-medium">No hay recursos para mostrar</p>
-            <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos recursos.</p>
+            <p className="text-lg text-gray-600 font-medium">No hay publicaciones para mostrar</p>
+            <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevas publicaciones.</p>
           </div>
         ) : (
           <>
@@ -205,61 +172,49 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                   <tr>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                      onClick={() => handleSort('title')}
+                      onClick={() => handleSort('name')}
                     >
-                      Título {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                      Nombre {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Preview</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Logo</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {resources.map((resource) => (
-                    <tr key={resource._id} className="hover:bg-gray-50 border-b">
-                      <td className="px-4 py-2 text-sm text-gray-600">{resource.title}</td>
+                  {publications.map((publication) => (
+                    <tr key={publication._id} className="hover:bg-gray-50 border-b">
+                      <td className="px-4 py-2 text-sm text-gray-600">{publication.name}</td>
                       <td className="px-4 py-2 border-b">
-                        {resource.src ? (
+                        {publication.logoUrl ? (
                           <img
-                            src={resource.src}
-                            alt={resource.title}
+                            src={publication.logoUrl}
+                            alt={publication.name}
                             className="h-auto w-24 object-cover rounded shadow-md"
                           />
-                        ) :  (
-                          <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="h-8 w-8 text-gray-400"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
+                        ) : (
+                          <div className="flex items-center justify-center h-16 w-24 rounded bg-gray-200 shadow-md text-xs text-gray-400">
+                            Sin logo
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-600 w-56">
+                      <td className="px-4 py-2 text-sm text-gray-600 w-64">
                         <div className='flex gap-2'>
                           <Button
                             type="button"
-                            onClick={() => handleCopyToClipboard(resource.src)}
+                            onClick={() => handleClickNumeros(publication._id)}
                           >
-                            Copiar
+                            Números
                           </Button>
                           <Button
                             type="button"
-                            onClick={() => handleClickEdit(resource._id)}
+                            onClick={() => handleClickEdit(publication._id)}
                           >
                             Editar
                           </Button>
                           <Button
                             type="button"
                             danger
-                            onClick={() => handleClickDelete(resource)}
+                            onClick={() => handleClickDelete(publication)}
                           >
                             Eliminar
                           </Button>
@@ -270,10 +225,9 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                 </tbody>
               </table>
             </div>
-            {/* Paginación */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Recursos por página:</span>
+                <span className="text-sm text-gray-600">Publicaciones por página:</span>
                 <select
                   className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
                   value={pagination.perPage}
@@ -313,4 +267,4 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   );
 };
 
-export default ResourceTable;
+export default PublicationTable;

@@ -3,25 +3,29 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from "react-hot-toast"
-import { ResourceType } from '@/app/types/resource';
+import { IssueStatus, IssueType } from '@/app/types/issue';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
-import useResource from '../hooks/useResource';
+import useIssue from '../hooks/useIssue';
 
-interface ResourceTableProps {
-  resources: ResourceType[];
+interface IssueTableProps {
+  publicationId: string;
+  issues: IssueType[];
   meta: PaginationMeta | undefined;
 }
 
-const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
-  console.log("resources", resources)
+const statusLabels: Record<IssueStatus, string> = {
+  [IssueStatus.Draft]: 'Borrador',
+  [IssueStatus.Published]: 'Publicado',
+}
+
+const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const {remove} = useResource()
+  const {remove} = useIssue()
 
-  // TODO: useTable factor out
   const [filters, setFilters] = useState({
-    title: searchParams.get('title') || '',
+    status: searchParams.get('status') || '',
   })
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
@@ -32,19 +36,18 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
     page: parseInt(searchParams.get('page') || String(meta?.page) || '1', 10),
     perPage: parseInt(searchParams.get('perPage') || String(meta?.perPage) || '30', 10)
   })
-  
+
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage)
 
-  // Actualiza los query params al cambiar filtros o sorting
   useEffect(() => {
     handleFilterSubmit()
   }, [sort, pagination, router, searchParams])
-  
+
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString())
 
-    if (filters.title) params.set('title', filters.title)
-    else params.delete('title')
+    if (filters.status) params.set('status', filters.status)
+    else params.delete('status')
 
     if (sort.field) params.set('sortField', sort.field)
     else params.delete('sortField')
@@ -68,64 +71,34 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
     }))
   }
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleClickEdit = (id: string) => {
-    router.push(`/resources/${id}`)
+  const handleClickEdit = (numeroId: string) => {
+    router.push(`/publicaciones/${publicationId}/numeros/${numeroId}`)
   };
 
   const handleClickNew = () => {
-    router.push(`/resources/new`)
+    router.push(`/publicaciones/${publicationId}/numeros/new`)
   }
 
-  const copyToClipboard = (text:string) => {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    document.body.appendChild(textarea)
-    textarea.select()
-    
-    try {
-      const successful = document.execCommand('copy')
-      if (successful) {
-        console.log("Texto copiado al portapapeles:", text)
-        toast.success("Enlace copiado!")
-      } else {
-        throw new Error('Falló la copia')
-      }
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-      toast.error("No se pudo copiar el enlace")
-    } finally {
-      document.body.removeChild(textarea)
-    }
+  const handleClickVolver = () => {
+    router.push(`/publicaciones/${publicationId}`)
   }
 
-  const handleClickDelete = async (resource:ResourceType) => {
-    if (!window.confirm(`¿Eliminar el recurso "${resource.title}"? Esta acción no se puede deshacer.`)) {
+  const handleClickDelete = async (issue: IssueType) => {
+    if (!window.confirm(`¿Eliminar el número ${issue.number}? Esta acción no se puede deshacer.`)) {
       return
     }
-    const result = await remove(resource._id)
+    const result = await remove(issue._id)
     if (result.error) {
       toast.error(result.error.message)
     }
     if (result.data) {
-      toast.success("Recurso eliminado correctamente")
+      toast.success("Número eliminado correctamente")
       router.refresh()
-    }
-  }
-
-  const handleCopyToClipboard = async (text:string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      console.log("Texto copiado al portapapeles:", text)
-      toast.success("Enlace copiado!")
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-      // Fallback al método antiguo
-      copyToClipboard(text)
     }
   }
 
@@ -136,6 +109,9 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
           mt-8
           mx-auto
           max-w-md
+          flex
+          flex-col
+          gap-2
         "
       >
         <div
@@ -151,9 +127,17 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
             fullWidth
             onClick={handleClickNew}
           >
-            NUEVO RECURSO
+            NUEVO NÚMERO
           </Button>
         </div>
+        <Button
+          type="button"
+          secondary
+          fullWidth
+          onClick={handleClickVolver}
+        >
+          Volver a la publicación
+        </Button>
       </div>
       <div
         className="
@@ -166,13 +150,16 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
         <div className="p-4 bg-gray-100 rounded shadow">
           <h2 className="text-lg font-semibold mb-2">Filtros</h2>
           <div className="grid grid-cols-2 gap-4">
-            <input
-              name="title"
-              placeholder="Filtrar por título"
-              value={filters.title}
+            <select
+              name="status"
+              value={filters.status}
               onChange={handleFilterChange}
               className="p-2 border rounded w-full"
-            />
+            >
+              <option value="">Todos los estados</option>
+              <option value={IssueStatus.Draft}>Borrador</option>
+              <option value={IssueStatus.Published}>Publicado</option>
+            </select>
           </div>
           <div className='mt-4 flex justify-end'>
             <Button
@@ -192,10 +179,10 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
           shadow
         "
       >
-        {resources.length === 0 ? (
+        {issues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-lg text-gray-600 font-medium">No hay recursos para mostrar</p>
-            <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos recursos.</p>
+            <p className="text-lg text-gray-600 font-medium">No hay números para mostrar</p>
+            <p className="text-gray-500">Intenta ajustar los filtros o agrega nuevos números.</p>
           </div>
         ) : (
           <>
@@ -205,61 +192,40 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                   <tr>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
-                      onClick={() => handleSort('title')}
+                      onClick={() => handleSort('number')}
                     >
-                      Título {sort.field === 'name' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                      Número {sort.field === 'number' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Preview</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Estado</th>
+                    <th
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
+                      onClick={() => handleSort('publishDate')}
+                    >
+                      Fecha {sort.field === 'publishDate' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                    </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {resources.map((resource) => (
-                    <tr key={resource._id} className="hover:bg-gray-50 border-b">
-                      <td className="px-4 py-2 text-sm text-gray-600">{resource.title}</td>
-                      <td className="px-4 py-2 border-b">
-                        {resource.src ? (
-                          <img
-                            src={resource.src}
-                            alt={resource.title}
-                            className="h-auto w-24 object-cover rounded shadow-md"
-                          />
-                        ) :  (
-                          <div className="flex items-center justify-center h-auto w-24 rounded bg-gray-200 shadow-md">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="h-8 w-8 text-gray-400"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        )}
+                  {issues.map((issue) => (
+                    <tr key={issue._id} className="hover:bg-gray-50 border-b">
+                      <td className="px-4 py-2 text-sm text-gray-600">{issue.number}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{statusLabels[issue.status]}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">
+                        {issue.publishDate ? new Date(issue.publishDate).toLocaleDateString() : '-'}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-600 w-56">
+                      <td className="px-4 py-2 text-sm text-gray-600 w-40">
                         <div className='flex gap-2'>
                           <Button
                             type="button"
-                            onClick={() => handleCopyToClipboard(resource.src)}
-                          >
-                            Copiar
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={() => handleClickEdit(resource._id)}
+                            onClick={() => handleClickEdit(issue._id)}
                           >
                             Editar
                           </Button>
                           <Button
                             type="button"
                             danger
-                            onClick={() => handleClickDelete(resource)}
+                            onClick={() => handleClickDelete(issue)}
                           >
                             Eliminar
                           </Button>
@@ -270,10 +236,9 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                 </tbody>
               </table>
             </div>
-            {/* Paginación */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Recursos por página:</span>
+                <span className="text-sm text-gray-600">Números por página:</span>
                 <select
                   className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-600"
                   value={pagination.perPage}
@@ -313,4 +278,4 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   );
 };
 
-export default ResourceTable;
+export default IssueTable;

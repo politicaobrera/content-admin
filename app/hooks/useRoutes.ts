@@ -11,7 +11,8 @@ import{
   HiOutlineUserPlus,
   HiOutlineCloudArrowUp,
   HiOutlineTag,
-  HiDocument
+  HiDocument,
+  HiRectangleStack
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -55,6 +56,12 @@ const useRoutes = () => {
       href: '/resources',
       icon: HiDocument,
       active: pathname === '/resources',
+    },
+    {
+      label: 'Publicaciones',
+      href: '/publicaciones',
+      icon: HiRectangleStack,
+      active: pathname === '/publicaciones' || pathname.startsWith('/publicaciones/'),
     },
     {
       label: 'Desplegar',

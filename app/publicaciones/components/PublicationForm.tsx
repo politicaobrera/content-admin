@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   FieldValues,
@@ -14,7 +14,7 @@ import Separator from "@/app/components/layout/Separator"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import { PublicationType } from "@/app/types/publication"
 import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
-import ResourceSelector from "@/app/resources/components/ResourceSelector"
+import ResourceSelector, { ResourceSelectorHandle } from "@/app/resources/components/ResourceSelector"
 import usePublication from "../hooks/usePublication"
 
 interface PublicationFormProps {
@@ -24,8 +24,8 @@ interface PublicationFormProps {
 const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
-  const [currentLogoUrl, setCurrentLogoUrl] = useState<string>(publication?.logoUrl || "")
-  const [currentHeaderBannerUrl, setCurrentHeaderBannerUrl] = useState<string>(publication?.headerBannerUrl || "")
+  const logoRef = useRef<ResourceSelectorHandle>(null)
+  const bannerRef = useRef<ResourceSelectorHandle>(null)
   const {create, edit} = usePublication();
 
   const {
@@ -44,13 +44,17 @@ const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
 
   const currentName = watch("name")
 
-  const onSubmit:SubmitHandler<FieldValues | PublicationType> = (payload) => {
+  const onSubmit:SubmitHandler<FieldValues | PublicationType> = async (payload) => {
     setLoading(true)
+    const [logoUrl, headerBannerUrl] = await Promise.all([
+      logoRef.current?.resolveUrl() ?? Promise.resolve(publication?.logoUrl || ""),
+      bannerRef.current?.resolveUrl() ?? Promise.resolve(publication?.headerBannerUrl || ""),
+    ])
     const merged: Partial<PublicationType> = Object.assign(
       payload,
       {
-        logoUrl: currentLogoUrl,
-        headerBannerUrl: currentHeaderBannerUrl,
+        logoUrl,
+        headerBannerUrl,
       }
     )
 
@@ -135,21 +139,23 @@ const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
           <div className="flex flex-col gap-2">
             <h5>Logo</h5>
             <ResourceSelector
+              ref={logoRef}
               sourceType={ResourceSourceType.Image}
-              src={currentLogoUrl}
+              src={publication?.logoUrl || ""}
               fileName={`${currentName}-logo`}
               origin={ResourceOrigin.Publications}
-              onChange={setCurrentLogoUrl}
+              deferUpload
             />
           </div>
           <div className="flex flex-col gap-2">
             <h5>Banner de cabecera</h5>
             <ResourceSelector
+              ref={bannerRef}
               sourceType={ResourceSourceType.Image}
-              src={currentHeaderBannerUrl}
+              src={publication?.headerBannerUrl || ""}
               fileName={`${currentName}-banner`}
               origin={ResourceOrigin.Publications}
-              onChange={setCurrentHeaderBannerUrl}
+              deferUpload
             />
           </div>
           <Separator />

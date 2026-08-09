@@ -49,15 +49,18 @@ const useResourceFile = (
   }, [sourceType])
 
   const processFile = async () => {
-    if (file) {
-      try {
-        let compressedFile = await imageCompression(file, compressOptions);
-        const fileSrc = URL.createObjectURL(compressedFile);
-        setPreview(fileSrc)
-        setImageFileToUpload(compressedFile)
-      } catch (error) {
-        console.log("error procesando archivo de recurso", error)
-      }
+    if (!file) return
+    if (sourceType !== ResourceSourceType.Image) {
+      setImageFileToUpload(file)
+      return
+    }
+    try {
+      let compressedFile = await imageCompression(file, compressOptions);
+      const fileSrc = URL.createObjectURL(compressedFile);
+      setPreview(fileSrc)
+      setImageFileToUpload(compressedFile)
+    } catch (error) {
+      console.log("error procesando archivo de recurso", error)
     }
   }
 
@@ -73,29 +76,41 @@ const useResourceFile = (
 
   const isImageReadyForUpload = !!imageFileToUpload
 
-  const onUploadImage = async () => {
-    let url = ""
-    if (imageFileToUpload) {
-      setLoading(true)
-      try {
-        const extension = imageFileToUpload.name.split('.').pop()
-        const slug = sluged(fileName) || sluged(imageFileToUpload.name.replace(/\.[^/.]+$/, ''))
-        const originPath = origin === ResourceOrigin.Publications ? 'publications/' : ''
-        const storageRef = ref(storage, `/recursos/${originPath}${slug}.${extension}`)
-        await uploadBytesResumable(storageRef, imageFileToUpload);
-        url = await getDownloadURL(storageRef)
-        console.log("url recurso", url)
-        setCurrent(url)
-        cleanUploadTemp()
-      } catch (error) {
-        console.log("error uploading recurso", error)
-      } finally {
-        setLoading(false)
-      }
-    } else {
-      console.log("error no hay archivo para subir")
+  const uploadFile = async (fileToUpload: File): Promise<string> => {
+    setLoading(true)
+    try {
+      const extension = fileToUpload.name.split('.').pop()
+      const slug = sluged(fileName) || sluged(fileToUpload.name.replace(/\.[^/.]+$/, ''))
+      const originPath = origin === ResourceOrigin.Publications ? 'publications/' : ''
+      const storageRef = ref(storage, `/recursos/${originPath}${slug}.${extension}`)
+      await uploadBytesResumable(storageRef, fileToUpload);
+      const url = await getDownloadURL(storageRef)
+      setCurrent(url)
+      cleanUploadTemp()
+      return url
+    } catch (error) {
+      console.log("error uploading recurso", error)
+      return ""
+    } finally {
+      setLoading(false)
     }
-    return url
+  }
+
+  const onUploadImage = async () => {
+    if (!imageFileToUpload) {
+      console.log("error no hay archivo para subir")
+      return ""
+    }
+    return uploadFile(imageFileToUpload)
+  }
+
+  // uploads the pending file (if any) and returns the resulting url, or the current url if nothing changed
+  const resolveUrl = async (): Promise<string> => {
+    if (imageFileToUpload) {
+      const uploaded = await uploadFile(imageFileToUpload)
+      if (uploaded) return uploaded
+    }
+    return current || ""
   }
 
   return {
@@ -112,6 +127,7 @@ const useResourceFile = (
       setIsEditing,
       onFileChange,
       onUploadImage,
+      resolveUrl,
       cleanUploadTemp,
       setCurrent,
     }

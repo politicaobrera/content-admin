@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Controller,
@@ -17,7 +17,7 @@ import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContain
 import { IssueStatus, IssueType } from "@/app/types/issue"
 import { ArticleType } from "@/app/types/article"
 import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
-import ResourceSelector from "@/app/resources/components/ResourceSelector"
+import ResourceSelector, { ResourceSelectorHandle } from "@/app/resources/components/ResourceSelector"
 import useIssue from "../hooks/useIssue"
 import IssueArticleSelector from "./IssueArticleSelector"
 
@@ -40,9 +40,9 @@ const toDateInputValue = (value?: string) => {
 const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, issue}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
-  const [currentCoverImageSrc, setCurrentCoverImageSrc] = useState<string>(issue?.coverImage?.src || "")
-  const [currentPdfUrl, setCurrentPdfUrl] = useState<string>(issue?.pdfUrl || "")
   const [currentArticles, setCurrentArticles] = useState<Partial<ArticleType>[]>(issue?.articles ?? [])
+  const coverImageRef = useRef<ResourceSelectorHandle>(null)
+  const pdfRef = useRef<ResourceSelectorHandle>(null)
   const {create, edit} = useIssue();
 
   const {
@@ -68,16 +68,20 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, iss
   const currentNumber = watch("number")
   const issueFileName = `${publicationSlug}-numero-${currentNumber || issue?.number || ""}`
 
-  const onSubmit:SubmitHandler<FieldValues> = (payload) => {
+  const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     setLoading(true)
     const {coverImageCaption, ...rest} = payload
+    const [coverImageSrc, pdfUrl] = await Promise.all([
+      coverImageRef.current?.resolveUrl() ?? Promise.resolve(issue?.coverImage?.src || ""),
+      pdfRef.current?.resolveUrl() ?? Promise.resolve(issue?.pdfUrl || ""),
+    ])
     const merged: Partial<IssueType> = Object.assign(
       rest,
       {
         publicationId,
         number: Number(payload.number),
-        coverImage: currentCoverImageSrc ? {src: currentCoverImageSrc, caption: coverImageCaption} : undefined,
-        pdfUrl: currentPdfUrl,
+        coverImage: coverImageSrc ? {src: coverImageSrc, caption: coverImageCaption} : undefined,
+        pdfUrl,
         articles: currentArticles.map(a => ({_id: a._id})),
       }
     )
@@ -210,11 +214,12 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, iss
           <div className="flex flex-col gap-2">
             <h5>Portada (opcional)</h5>
             <ResourceSelector
+              ref={coverImageRef}
               sourceType={ResourceSourceType.Image}
-              src={currentCoverImageSrc}
+              src={issue?.coverImage?.src || ""}
               fileName={`${issueFileName}-portada`}
               origin={ResourceOrigin.Publications}
-              onChange={setCurrentCoverImageSrc}
+              deferUpload
             />
             <Input
               label="Descripción de la imagen"
@@ -229,11 +234,12 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, iss
           <div className="flex flex-col gap-2">
             <h5>PDF</h5>
             <ResourceSelector
+              ref={pdfRef}
               sourceType={ResourceSourceType.Document}
-              src={currentPdfUrl}
+              src={issue?.pdfUrl || ""}
               fileName={`${issueFileName}-pdf`}
               origin={ResourceOrigin.Publications}
-              onChange={setCurrentPdfUrl}
+              deferUpload
             />
           </div>
           <Separator />

@@ -1,23 +1,43 @@
+import { forwardRef, useImperativeHandle } from "react"
 import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
 import useResourceFile from "../hooks/useResourceFile"
 import Button from "@/app/components/Button"
+
+export interface ResourceSelectorHandle {
+  // uploads the pending file (if any was selected) and returns its url, or the current url if nothing changed
+  resolveUrl: () => Promise<string>
+}
 
 interface ResourceSelectorProps {
   sourceType: ResourceSourceType
   src: string
   fileName: string
   origin?: ResourceOrigin
-  onChange: (url:string) => void
+  onChange?: (url:string) => void
+  // when true, selecting a file only stages it: the actual upload happens when the caller invokes resolveUrl via ref (e.g. on form submit)
+  deferUpload?: boolean
 }
-const ResourceSelector = ({sourceType, src, fileName, origin, onChange}: ResourceSelectorProps) => {
+
+const ResourceSelector = forwardRef<ResourceSelectorHandle, ResourceSelectorProps>(({sourceType, src, fileName, origin, onChange, deferUpload}, ref) => {
   const resource = useResourceFile(src, sourceType, fileName, origin)
+
+  useImperativeHandle(ref, () => ({
+    resolveUrl: resource.actions.resolveUrl,
+  }))
 
   const handleSaveFile = async () => {
     const url = await resource.actions.onUploadImage()
     if (url != ""){
       resource.actions.setIsEditing(false)
       resource.actions.cleanUploadTemp()
-      onChange(url)
+      onChange?.(url)
+    }
+  }
+
+  const handleCancel = () => {
+    resource.actions.cleanUploadTemp()
+    if (deferUpload && resource.state.current) {
+      resource.actions.setIsEditing(false)
     }
   }
 
@@ -35,18 +55,18 @@ const ResourceSelector = ({sourceType, src, fileName, origin, onChange}: Resourc
           onChange={event => resource.actions.onFileChange(event.target.files?.[0] ?? null)}
         />
         <div className="flex align-middle justify-start gap-2">
-          <Button
-            onClick={() => handleSaveFile()}
-            disabled={resource.state.loading || !resource.state.file}
-          >
-            Guardar
-          </Button>
+          {!deferUpload && (
+            <Button
+              onClick={() => handleSaveFile()}
+              disabled={resource.state.loading || !resource.state.file}
+            >
+              Guardar
+            </Button>
+          )}
           <Button
             danger
             disabled={resource.state.loading || !resource.state.file}
-            onClick={() => {
-              resource.actions.cleanUploadTemp()
-            }}
+            onClick={handleCancel}
           >
             {
               resource.state.loading ? 'Cargando' : 'Cancelar'
@@ -71,6 +91,8 @@ const ResourceSelector = ({sourceType, src, fileName, origin, onChange}: Resourc
       </div>
     </div>
  )
-}
+})
+
+ResourceSelector.displayName = "ResourceSelector"
 
 export default ResourceSelector

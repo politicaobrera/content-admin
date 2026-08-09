@@ -87,13 +87,13 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
         const storageRef = ref(storage, `/imagenes/${fileName}.${extension}`)
         await uploadBytesResumable(storageRef, imageFileReadyToUpload);
         const imageUrl = await getDownloadURL(storageRef)
-        const storageRefSEO = ref(storage, `/imagenes/seo/${fileName}.${extension}`)
-        await uploadBytesResumable(storageRefSEO, imageSEOFileReadyToUpload);
-        const imageUrlSEO = await getDownloadURL(storageRefSEO)
+        const storageSEORef = ref(storage, `/imagenes/seo/${fileName}.${extension}`)
+        await uploadBytesResumable(storageSEORef, imageSEOFileReadyToUpload);
+        const imageSEOUrl = await getDownloadURL(storageSEORef)
         console.log("url", imageUrl)
-        console.log("urlSEO", imageUrlSEO)
+        console.log("urlSEO", imageSEOUrl)
         // TODO add caption from missing textfield
-        const notaImg:MainImageType = {...emptyImage,src:imageUrl, srcSEO: imageUrlSEO}
+        const notaImg:MainImageType = {...emptyImage,src:imageUrl, srcSEO: imageSEOUrl}
         setCurrentImage(notaImg)
         onUpload(notaImg)
         cleanUploadTemps()

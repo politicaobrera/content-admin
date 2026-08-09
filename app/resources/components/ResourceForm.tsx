@@ -170,9 +170,10 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
               )}
             />
           </div>
-          <ResourceSelector 
+          <ResourceSelector
             sourceType={currentValues.sourceType}
             src={currentUrl}
+            fileName={currentValues.title}
             onChange={handleResourceFileChange}
           />
           <Input

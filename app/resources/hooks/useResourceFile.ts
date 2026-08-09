@@ -2,7 +2,8 @@ import { useEffect, useState } from "react"
 import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
-import { ResourceSourceType } from "@/app/types/resource"
+import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
+import { sluged } from "@/app/utils/strings"
 
 const compressOptions = {
   maxSizeMB: 1,
@@ -25,7 +26,12 @@ const getFileAcceptType = (sourceType: ResourceSourceType) => {
   }
 };
 
-const useResourceFile = (source: string | null, sourceType: ResourceSourceType) => {
+const useResourceFile = (
+  source: string | null,
+  sourceType: ResourceSourceType,
+  fileName: string,
+  origin: ResourceOrigin = ResourceOrigin.Resources
+) => {
   const [isEditing, setIsEditing] = useState<boolean>(source ? false : true)
   const [loading, setLoading] = useState<boolean>(false)
   const [accept, setAccept] = useState<string>("")
@@ -72,7 +78,10 @@ const useResourceFile = (source: string | null, sourceType: ResourceSourceType) 
     if (imageFileToUpload) {
       setLoading(true)
       try {
-        const storageRef = ref(storage, `/recursos/${imageFileToUpload.name}`)
+        const extension = imageFileToUpload.name.split('.').pop()
+        const slug = sluged(fileName) || sluged(imageFileToUpload.name.replace(/\.[^/.]+$/, ''))
+        const originPath = origin === ResourceOrigin.Publications ? 'publications/' : ''
+        const storageRef = ref(storage, `/recursos/${originPath}${slug}.${extension}`)
         await uploadBytesResumable(storageRef, imageFileToUpload);
         url = await getDownloadURL(storageRef)
         console.log("url recurso", url)

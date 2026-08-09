@@ -1,14 +1,16 @@
-import { ResourceSourceType } from "@/app/types/resource"
+import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
 import useResourceFile from "../hooks/useResourceFile"
 import Button from "@/app/components/Button"
 
 interface ResourceSelectorProps {
   sourceType: ResourceSourceType
   src: string
+  fileName: string
+  origin?: ResourceOrigin
   onChange: (url:string) => void
 }
-const ResourceSelector = ({sourceType, src, onChange}: ResourceSelectorProps) => {
-  const resource = useResourceFile(src, sourceType)
+const ResourceSelector = ({sourceType, src, fileName, origin, onChange}: ResourceSelectorProps) => {
+  const resource = useResourceFile(src, sourceType, fileName, origin)
 
   const handleSaveFile = async () => {
     const url = await resource.actions.onUploadImage()

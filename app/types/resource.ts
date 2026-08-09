@@ -1,10 +1,15 @@
 import { TagType } from "./tag"
 
 export enum ResourceSourceType {
-  Image = "image", 
-  Video = "video", 
+  Image = "image",
+  Video = "video",
   Document = "document",
   Audio = "audio"
+}
+
+export enum ResourceOrigin {
+  Resources = "resources",
+  Publications = "publications",
 }
 
 export type ResourceType = {

@@ -13,7 +13,7 @@ import Input from "@/app/components/inputs/Input"
 import Separator from "@/app/components/layout/Separator"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import { PublicationType } from "@/app/types/publication"
-import { ResourceSourceType } from "@/app/types/resource"
+import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
 import ResourceSelector from "@/app/resources/components/ResourceSelector"
 import usePublication from "../hooks/usePublication"
 
@@ -31,6 +31,7 @@ const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: {
       errors,
     }
@@ -40,6 +41,8 @@ const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
       description: publication?.description || "",
     },
   })
+
+  const currentName = watch("name")
 
   const onSubmit:SubmitHandler<FieldValues | PublicationType> = (payload) => {
     setLoading(true)
@@ -134,6 +137,8 @@ const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
             <ResourceSelector
               sourceType={ResourceSourceType.Image}
               src={currentLogoUrl}
+              fileName={`${currentName}-logo`}
+              origin={ResourceOrigin.Publications}
               onChange={setCurrentLogoUrl}
             />
           </div>
@@ -142,6 +147,8 @@ const PublicationForm:React.FC<PublicationFormProps> = ({publication}) => {
             <ResourceSelector
               sourceType={ResourceSourceType.Image}
               src={currentHeaderBannerUrl}
+              fileName={`${currentName}-banner`}
+              origin={ResourceOrigin.Publications}
               onChange={setCurrentHeaderBannerUrl}
             />
           </div>

@@ -16,13 +16,14 @@ import Separator from "@/app/components/layout/Separator"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import { IssueStatus, IssueType } from "@/app/types/issue"
 import { ArticleType } from "@/app/types/article"
-import { ResourceSourceType } from "@/app/types/resource"
+import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
 import ResourceSelector from "@/app/resources/components/ResourceSelector"
 import useIssue from "../hooks/useIssue"
 import IssueArticleSelector from "./IssueArticleSelector"
 
 interface IssueFormProps {
   publicationId: string
+  publicationSlug: string
   issue?: IssueType
 }
 
@@ -36,7 +37,7 @@ const toDateInputValue = (value?: string) => {
   return new Date(value).toISOString().split("T")[0]
 }
 
-const IssueForm:React.FC<IssueFormProps> = ({publicationId, issue}) => {
+const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, issue}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
   const [currentCoverImageSrc, setCurrentCoverImageSrc] = useState<string>(issue?.coverImage?.src || "")
@@ -48,6 +49,7 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, issue}) => {
     register,
     control,
     handleSubmit,
+    watch,
     formState: {
       errors,
     }
@@ -62,6 +64,9 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, issue}) => {
       status: issue?.status || IssueStatus.Draft,
     },
   })
+
+  const currentNumber = watch("number")
+  const issueFileName = `${publicationSlug}-numero-${currentNumber || issue?.number || ""}`
 
   const onSubmit:SubmitHandler<FieldValues> = (payload) => {
     setLoading(true)
@@ -207,6 +212,8 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, issue}) => {
             <ResourceSelector
               sourceType={ResourceSourceType.Image}
               src={currentCoverImageSrc}
+              fileName={`${issueFileName}-portada`}
+              origin={ResourceOrigin.Publications}
               onChange={setCurrentCoverImageSrc}
             />
             <Input
@@ -224,6 +231,8 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, issue}) => {
             <ResourceSelector
               sourceType={ResourceSourceType.Document}
               src={currentPdfUrl}
+              fileName={`${issueFileName}-pdf`}
+              origin={ResourceOrigin.Publications}
               onChange={setCurrentPdfUrl}
             />
           </div>

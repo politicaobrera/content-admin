@@ -1,4 +1,5 @@
 import MainContainer from "@/app/components/layout/MainContainer"
+import Breadcrumbs from "@/app/components/layout/Breadcrumbs"
 import { iResponseOne } from "@/app/types/responses"
 import getPublication from "@/app/actions/data/publications/getPublication"
 import ErrorMessage from "@/app/components/ErrorMessage"
@@ -23,6 +24,10 @@ const PublicationPage = async ({
 
   return (
     <MainContainer>
+      <Breadcrumbs items={[
+        {label: 'Publicaciones', href: '/publicaciones'},
+        {label: data.name},
+      ]}/>
       <PublicationForm publication={data}/>
     </MainContainer>
   )

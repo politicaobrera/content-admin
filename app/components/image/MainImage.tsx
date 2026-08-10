@@ -1,100 +1,92 @@
-import {FC} from 'react'
-import useMainImagen from '@/app/hooks/image/useMainImage'
+import { forwardRef, useImperativeHandle } from 'react'
+import useMainImage from '@/app/hooks/image/useMainImage'
 import { MainImageType } from '@/app/types/image'
 import Button from '../Button'
 
-interface MainImageProps {
-  id: string
-  image: MainImageType | undefined
-  fileName: string
-  entity?: string
-  onUpload: (img: MainImageType) => void
+export interface MainImageHandle {
+  // uploads the pending file (if any was selected) and returns the resulting image, or the current image if nothing changed
+  resolveImage: () => Promise<MainImageType | null>
 }
 
-const MainImage:FC<MainImageProps> = ({id, image, fileName, onUpload}) => {
-  const mainImagen = useMainImagen(image, fileName, onUpload)
+interface MainImageProps {
+  id: string
+  label: string
+  image: MainImageType | undefined
+  fileName: string
+}
+
+const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, label, image, fileName}, ref) => {
+  const mainImage = useMainImage(image, fileName)
+
+  useImperativeHandle(ref, () => ({
+    resolveImage: mainImage.actions.resolveImage,
+  }))
+
   return (
     <>
-        <h5>Imagen principal</h5>
-        <div>
-        {!mainImagen.state.uploadMode && (
-            // TODO: Extraer a un nuevo componente
-            <section className="mb-3">
-            {
-              mainImagen.state.currentImage && (
-                <div>
-                  <img
-                    src={mainImagen.state.currentImage.src}
-                  />
-                </div>
-              )
-            }
-            </section>
-        )}
-        {mainImagen.state.uploadMode && (
-          // TODO: MOVE TO EXTERNAL COMPONENT
+      <h5>{label}</h5>
+      <div>
+        {!mainImage.state.uploadMode && (
           <section className="mb-3">
-            {mainImagen.state.preview && (
+            {mainImage.state.currentImage && (
+              <div>
+                <img
+                  src={mainImage.state.currentImage.src}
+                />
+              </div>
+            )}
+          </section>
+        )}
+        {mainImage.state.uploadMode && (
+          <section className="mb-3">
+            {mainImage.state.preview && (
               <div>
                 <div className='mb-2'>
-                  <img src={mainImagen.state.preview}/>
+                  <img src={mainImage.state.preview}/>
                 </div>
                 <div className='preview-img-upload'>
-                  <img src={mainImagen.state.previewSEO}/>
+                  <img src={mainImage.state.previewSEO}/>
                 </div>
               </div>
             )}
             <div className='desde-pc'>
-              {/* TODO: Cambiar por un dropzone? */}
               <input
                 id={id}
                 type="file"
                 accept="image/*"
-                onChange={event => mainImagen.actions.onFileChange(event.target.files?.[0] ?? null)}
+                onChange={event => mainImage.actions.onFileChange(event.target.files?.[0] ?? null)}
               />
             </div>
           </section>
         )}
-        <div className="
-          space-y-2
-        ">
-          {mainImagen.state.uploadMode && (
+        <div className="space-y-2">
+          {mainImage.state.uploadMode && (
             <div className="flex gap-2 align-middle justify-start">
               <Button
-                disabled={!mainImagen.state.file || mainImagen.state.uploading}
-                onClick={() => mainImagen.actions.onSave()}
-              >
-                {
-                  mainImagen.state.uploading ? 'Loading':'Guardar'
-                }
-              </Button>
-              <Button
                 danger
-                disabled={!mainImagen.state.currentImage || mainImagen.state.uploading}
+                disabled={!mainImage.state.currentImage || mainImage.state.uploading}
                 onClick={() => {
-                  mainImagen.actions.onToggleMode()
-                  mainImagen.actions.cleanUploadTemps()
+                  mainImage.actions.onToggleMode()
+                  mainImage.actions.cleanUploadTemps()
                 }}
               >
-                {
-                  mainImagen.state.uploading ? 'Loading':'Cancelar'
-                }
+                Cancelar
               </Button>
             </div>
           )}
-          {
-            !mainImagen.state.uploadMode && (
-              <Button
-                onClick={() => mainImagen.actions.onToggleMode()}
-              >
-                Modificar
-              </Button>
-            )
-          }
+          {!mainImage.state.uploadMode && (
+            <Button
+              onClick={() => mainImage.actions.onToggleMode()}
+            >
+              Modificar
+            </Button>
+          )}
         </div>
       </div>
     </>
   )
-}
+})
+
+MainImage.displayName = "MainImage"
 
 export default MainImage

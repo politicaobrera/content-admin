@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { 
@@ -22,11 +22,10 @@ import Input from "@/app/components/inputs/Input"
 import { ArticleStatus, ArticleType } from "@/app/types/article"
 import Separator from "@/app/components/layout/Separator"
 import useArticle from "../hooks/useArticle"
-import MainImage from "@/app/components/image/MainImage"
+import MainImage, { MainImageHandle } from "@/app/components/image/MainImage"
 //import Wysiwyg from "@/app/components/inputs/Wysiwyg"
 import ArticlePreview from "./Preview/ArticlePreview"
 import TextArea from "@/app/components/inputs/TextArea"
-import { MainImageType } from "@/app/types/image"
 import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
 //import SectionSelector from "@/app/components/sections/SectionSelector"
@@ -46,7 +45,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   console.log("articulo con data", article)
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
-  const [mainImage, _] = useState<MainImageType|undefined>(article.image ?? undefined)
+  const mainImageRef = useRef<MainImageHandle>(null)
   const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(article.authors)
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
   const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
@@ -72,28 +71,13 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     }
   })
 
-  const handleMainImage = async (img:MainImageType) => {
-    console.log("old article", article)
-    console.log("voy a updatear imagen", img)
-    edit({image: img, _id: article._id}).then(result => {
-      if (result.error){
-        toast.error(result.error.message)
-      } 
-      if(result.data){
-        toast.success("Imagen Nota actualizada correctamente")
-        router.refresh()
-      }
-    })
-  }
-
-  const onSubmit:SubmitHandler<FieldValues> = (payload) => {
+  const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     setLoading(true)
-    console.log("voy a guardar", payload)
-    console.log("old article", article)
+    const resolvedImage = await mainImageRef.current?.resolveImage() ?? article.image ?? undefined
     const merged:ArticleType = Object.assign(
       article,
       payload,
-      {image: mainImage},
+      {image: resolvedImage ?? undefined},
       {
         authors: currentAuthors,
         authorsDescriptions: currentDescriptions
@@ -111,15 +95,13 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
         status: currentStatus ? ArticleStatus.Published : ArticleStatus.Draft
       }
     )
-    console.log("merged", merged)
-    edit(merged).then(result => {
-      if (result.error){
-        toast.error(result.error.message)
-      } 
-      if(result.data){
-        toast.success("Nota editada correctamente")
-      }
-    })
+    const result = await edit(merged)
+    if (result.error){
+      toast.error(result.error.message)
+    }
+    if(result.data){
+      toast.success("Nota editada correctamente")
+    }
     setLoading(false)
     router.refresh()
   }
@@ -198,10 +180,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           </div>
           <Separator />
           <MainImage
+            ref={mainImageRef}
             id="main-image"
-            onUpload={handleMainImage}
+            label="Imagen principal"
             fileName={article.slug}
-            image={mainImage}
+            image={article.image}
           />
           <Separator />
           <SectionSelector
@@ -287,7 +270,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
         >Previsualizacion</h2>
         <ArticlePreview
           article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions, tags: currentTags, content: currentContent}}
-          mainImage={mainImage}
+          mainImage={article.image}
         />
         <Separator />
         <div className="my-5 flex flex-col gap-2 items-start flex-wrap">

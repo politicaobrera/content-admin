@@ -25,6 +25,7 @@ interface IssueFormProps {
   publicationId: string
   publicationSlug: string
   issue?: IssueType
+  nextNumber?: number
 }
 
 const statusOptions = [
@@ -37,7 +38,7 @@ const toDateInputValue = (value?: string) => {
   return new Date(value).toISOString().split("T")[0]
 }
 
-const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, issue}) => {
+const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, issue, nextNumber}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
   const [currentArticles, setCurrentArticles] = useState<Partial<ArticleType>[]>(issue?.articles ?? [])
@@ -55,7 +56,7 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, iss
     }
   } = useForm<FieldValues>({
     defaultValues:{
-      number: issue?.number ?? "",
+      number: issue?.number ?? nextNumber ?? "",
       description: issue?.description || "",
       coverImageCaption: issue?.coverImage?.caption || "",
       headerKicker: issue?.headerKicker || "",
@@ -79,7 +80,7 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, iss
       rest,
       {
         publicationId,
-        number: Number(payload.number),
+        number: issue ? Number(payload.number) : nextNumber,
         coverImage: coverImageSrc ? {src: coverImageSrc, caption: coverImageCaption} : undefined,
         pdfUrl,
         articles: currentArticles.map(a => ({_id: a._id})),
@@ -139,16 +140,27 @@ const IssueForm:React.FC<IssueFormProps> = ({publicationId, publicationSlug, iss
           className="space-y-6"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Input
-            label="Número"
-            id="number"
-            type="number"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="1"
-          />
+          {issue ? (
+            <Input
+              label="Número"
+              id="number"
+              type="number"
+              register={register}
+              required={true}
+              disabled={loading}
+              errors={errors}
+              placeHolder="1"
+            />
+          ) : (
+            <div>
+              <label className="block text-sm text-gray-900 font-medium leading-6">
+                Número
+              </label>
+              <p className="mt-2 text-sm text-gray-700">
+                Se asignará automáticamente el número <strong>{nextNumber}</strong> (siguiente disponible).
+              </p>
+            </div>
+          )}
           <Input
             label="Descripción"
             id="description"

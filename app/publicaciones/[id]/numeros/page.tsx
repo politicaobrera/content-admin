@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import MainContainer from "@/app/components/layout/MainContainer"
+import Breadcrumbs from "@/app/components/layout/Breadcrumbs"
 import Loading from "@/app/components/Loading"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import { Params } from "@/app/types/requests"
@@ -30,6 +31,13 @@ const NumerosPage = async ({
   return (
     <MainContainer>
       <section id="numeros-page" className="flex flex-col gap-3 px-4">
+          <Breadcrumbs
+            items={[
+              {label: 'Publicaciones', href: '/publicaciones'},
+              {label: data.name, href: `/publicaciones/${id}`},
+              {label: 'Números'},
+            ]}
+          />
         <h1 className="mt-6 text-center text-2xl text-black tracking-tight font-bold">
           Números de {data.name}
         </h1>

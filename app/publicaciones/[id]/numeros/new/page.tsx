@@ -1,8 +1,11 @@
 import MainContainer from "@/app/components/layout/MainContainer"
-import { iResponseOne } from "@/app/types/responses"
+import Breadcrumbs from "@/app/components/layout/Breadcrumbs"
+import { iResponseOne, iResponseMany } from "@/app/types/responses"
 import getPublication from "@/app/actions/data/publications/getPublication"
+import getIssues from "@/app/actions/data/issues/getIssues"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import { PublicationType } from "@/app/types/publication"
+import { IssueType } from "@/app/types/issue"
 import IssueForm from "../components/IssueForm"
 
 const NewIssuePage = async ({
@@ -11,7 +14,10 @@ const NewIssuePage = async ({
   params: Promise<{ id: string }>,
 }) => {
   const { id } = await params
-  const {data, error}:iResponseOne<PublicationType> = await getPublication(id)
+  const [{data, error}, {data: lastIssues}]:[iResponseOne<PublicationType>, iResponseMany<IssueType>] = await Promise.all([
+    getPublication(id),
+    getIssues({publicationId: id, sortField: 'number', sortOrder: 'desc', page: '1', perPage: '1'}),
+  ])
 
   if (error) {
     return <ErrorMessage error={error}/>
@@ -21,9 +27,17 @@ const NewIssuePage = async ({
     return <div>No hay Publicación</div>
   }
 
+  const nextNumber = (lastIssues?.[0]?.number ?? 0) + 1
+
   return (
     <MainContainer>
-      <IssueForm publicationId={id} publicationSlug={data.slug} />
+      <Breadcrumbs items={[
+        {label: 'Publicaciones', href: '/publicaciones'},
+        {label: data.name, href: `/publicaciones/${id}`},
+        {label: 'Números', href: `/publicaciones/${id}/numeros`},
+        {label: 'Nuevo número'},
+      ]}/>
+      <IssueForm publicationId={id} publicationSlug={data.slug} nextNumber={nextNumber} />
     </MainContainer>
   )
 }

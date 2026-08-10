@@ -1,4 +1,5 @@
 import MainContainer from "@/app/components/layout/MainContainer"
+import Breadcrumbs from "@/app/components/layout/Breadcrumbs"
 import { iResponseOne } from "@/app/types/responses"
 import getIssue from "@/app/actions/data/issues/getIssue"
 import getPublication from "@/app/actions/data/publications/getPublication"
@@ -36,6 +37,12 @@ const IssuePage = async ({
 
   return (
     <MainContainer>
+      <Breadcrumbs items={[
+        {label: 'Publicaciones', href: '/publicaciones'},
+        {label: publicationData.name, href: `/publicaciones/${id}`},
+        {label: 'Números', href: `/publicaciones/${id}/numeros`},
+        {label: `Número ${data.number}`},
+      ]}/>
       <IssueForm publicationId={id} publicationSlug={publicationData.slug} issue={data}/>
     </MainContainer>
   )

@@ -16,22 +16,15 @@ const compressOptionsSEO = {
   useWebWorker: true
 }
 
-const emptyImage:MainImageType = {
-  caption: '',
-  src: '',
-  srcSEO: '',
-}
-
-const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload: (img:MainImageType) => void) => {
-  const [uploadMode, setUploadMode] = useState<boolean>(true)
+const useMainImage = (image: MainImageType | undefined, fileName: string) => {
+  const [uploadMode, setUploadMode] = useState<boolean>(!image)
   const [uploading, setUploading] = useState<boolean>(false)
-  const [currentImage, setCurrentImage] = useState<MainImageType|null>(image ?? null)
-  const [file, setFile] = useState<File|null>(null); // archivo que suben desde la pc temporal
-  const [imageFileReadyToUpload, setImageFileReadyToUpload] = useState<File|null>(null)
-  const [imageSEOFileReadyToUpload, setImageSEOFileReadyToUpload] = useState<File|null>(null)
+  const [currentImage, setCurrentImage] = useState<MainImageType | null>(image ?? null)
+  const [file, setFile] = useState<File | null>(null) // archivo que suben desde la pc temporal
+  const [imageFileReadyToUpload, setImageFileReadyToUpload] = useState<File | null>(null)
+  const [imageSEOFileReadyToUpload, setImageSEOFileReadyToUpload] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>('')
   const [previewSEO, setPreviewSEO] = useState<string>('')
-  const [percent, setPercent] = useState<number>(0)// revisar luego
 
   useEffect(() => {
     if (image) {
@@ -45,68 +38,70 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
 
   useEffect(() => {
     processFile()
-  },[file])
+  }, [file])
 
   const processFile = async () => {
-    if (file) {
-      try {
-        let compressedFile = await imageCompression(file, compressOptions);
-        let compressedFileSEO = await imageCompression(file, compressOptionsSEO);
-        const fileSrc = URL.createObjectURL(compressedFile);
-        const fileSrcSEO = URL.createObjectURL(compressedFileSEO);
-        setPreview(fileSrc)
-        setPreviewSEO(fileSrcSEO)
-        setImageFileReadyToUpload(compressedFile)
-        setImageSEOFileReadyToUpload(compressedFileSEO)
-      } catch (error) {
-        console.log("error processing files", error)
-      }
+    if (!file) return
+    try {
+      const compressedFile = await imageCompression(file, compressOptions)
+      const compressedFileSEO = await imageCompression(file, compressOptionsSEO)
+      setPreview(URL.createObjectURL(compressedFile))
+      setPreviewSEO(URL.createObjectURL(compressedFileSEO))
+      setImageFileReadyToUpload(compressedFile)
+      setImageSEOFileReadyToUpload(compressedFileSEO)
+    } catch (error) {
+      console.log("error procesando imagen principal", error)
     }
   }
-  
+
   const onToggleMode = async () => {
     setUploadMode(!uploadMode)
   }
 
-  const onFileChange = async (f:File|null) => {
+  const onFileChange = async (f: File | null) => {
     setFile(f)
   }
 
   const cleanUploadTemps = () => {
+    setFile(null)
     setPreview('')
     setPreviewSEO('')
     setImageFileReadyToUpload(null)
     setImageSEOFileReadyToUpload(null)
   }
 
-  const onSave = async () => {
-    if (imageFileReadyToUpload && imageSEOFileReadyToUpload) {
-      setUploading(true)
-      try {
-        const extension = imageFileReadyToUpload.name.split('.').pop()
-        const storageRef = ref(storage, `/imagenes/${fileName}.${extension}`)
-        await uploadBytesResumable(storageRef, imageFileReadyToUpload);
-        const imageUrl = await getDownloadURL(storageRef)
-        const storageSEORef = ref(storage, `/imagenes/seo/${fileName}.${extension}`)
-        await uploadBytesResumable(storageSEORef, imageSEOFileReadyToUpload);
-        const imageSEOUrl = await getDownloadURL(storageSEORef)
-        console.log("url", imageUrl)
-        console.log("urlSEO", imageSEOUrl)
-        // TODO add caption from missing textfield
-        const notaImg:MainImageType = {...emptyImage,src:imageUrl, srcSEO: imageSEOUrl}
-        setCurrentImage(notaImg)
-        onUpload(notaImg)
-        cleanUploadTemps()
-        onToggleMode()
-      } catch (error) {
-        console.log("error uploading", error)
-        // TODO inform to final user propperly
-      } finally {
-        setUploading(false)
+  const uploadPending = async (): Promise<MainImageType | null> => {
+    if (!imageFileReadyToUpload || !imageSEOFileReadyToUpload) return null
+    setUploading(true)
+    try {
+      const extension = imageFileReadyToUpload.name.split('.').pop()
+      const storageRef = ref(storage, `/imagenes/${fileName}.${extension}`)
+      await uploadBytesResumable(storageRef, imageFileReadyToUpload)
+      const imageUrl = await getDownloadURL(storageRef)
+      const storageSEORef = ref(storage, `/imagenes/seo/${fileName}.${extension}`)
+      await uploadBytesResumable(storageSEORef, imageSEOFileReadyToUpload)
+      const imageSEOUrl = await getDownloadURL(storageSEORef)
+      const uploaded: MainImageType = {
+        caption: currentImage?.caption || '',
+        src: imageUrl,
+        srcSEO: imageSEOUrl,
       }
-    } else {
-      console.log("error no hay archivo de imagen y de seo!!!!!!!")
+      setCurrentImage(uploaded)
+      cleanUploadTemps()
+      setUploadMode(false)
+      return uploaded
+    } catch (error) {
+      console.log("error uploading imagen principal", error)
+      return null
+    } finally {
+      setUploading(false)
     }
+  }
+
+  // uploads the pending file (if any) and returns the resulting image, or the current image if nothing changed
+  const resolveImage = async (): Promise<MainImageType | null> => {
+    const uploaded = await uploadPending()
+    return uploaded ?? currentImage
   }
 
   return {
@@ -114,16 +109,15 @@ const useMainImage = (image:MainImageType | undefined, fileName:string, onUpload
       uploadMode,
       currentImage,
       file,
-      percent,
       preview,
       previewSEO,
-      uploading
+      uploading,
     },
-    actions: { 
+    actions: {
       onToggleMode,
-      cleanUploadTemps,
       onFileChange,
-      onSave,
+      cleanUploadTemps,
+      resolveImage,
     },
   }
 }

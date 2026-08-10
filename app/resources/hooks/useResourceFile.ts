@@ -108,7 +108,10 @@ const useResourceFile = (
   const resolveUrl = async (): Promise<string> => {
     if (imageFileToUpload) {
       const uploaded = await uploadFile(imageFileToUpload)
-      if (uploaded) return uploaded
+      if (uploaded) {
+        setIsEditing(false)
+        return uploaded
+      }
     }
     return current || ""
   }

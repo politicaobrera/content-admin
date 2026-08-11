@@ -23,5 +23,7 @@ export type ArticleType = {
   image?: MainImageType
   lastModifiedBy: string
   createdAt: string
+  updatedAt: string
+  publishedAt: string | null
   status: ArticleStatus
 }

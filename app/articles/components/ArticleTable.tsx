@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import SectionsContext from '@/app/context/SectionsContext';
 import { OptionType } from '@/app/types/select';
 import useArticle from '../hooks/useArticle';
+import { hasPendingChangesSincePublish } from '@/app/utils/articles';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -30,6 +31,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     articleId: searchParams.get('articleId') || '',
     title: searchParams.get('title') || '',
     section: searchParams.get('section') || '',
+    changedSincePublish: searchParams.get('changedSincePublish') === 'true',
   });
   const [sort, setSort] = useState({
     field: searchParams.get('sortField') || '',
@@ -60,6 +62,9 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     if (filters.section) params.set('section', filters.section);
     else params.delete('section');
 
+    if (filters.changedSincePublish) params.set('changedSincePublish', 'true');
+    else params.delete('changedSincePublish');
+
     if (sort.field) params.set('sortField', sort.field);
     else params.delete('sortField');
 
@@ -85,6 +90,10 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleChangedSincePublishToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters((prev) => ({ ...prev, changedSincePublish: e.target.checked }));
   };
 
   const handleClickEdit = (id: string) => {
@@ -152,6 +161,17 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
               />
             </div>
           </div>
+          <div className="mt-4 flex items-center gap-2">
+            <input
+              id="changedSincePublish"
+              type="checkbox"
+              checked={filters.changedSincePublish}
+              onChange={handleChangedSincePublishToggle}
+            />
+            <label htmlFor="changedSincePublish">
+              Publicadas con cambios pendientes (últimos 7 días)
+            </label>
+          </div>
           <div className='mt-4 flex justify-end'>
             <Button
               type="button"
@@ -206,12 +226,15 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {articles.map((article) => (
+                  {articles.map((article) => {
+                    const pendingChanges = hasPendingChangesSincePublish(article);
+                    return (
                     <tr
                       key={article.articleId}
                       className={clsx(`
                         hover:bg-gray-50`,
-                        article.status === ArticleStatus.Published && 'border-l-gray-700 border-l-4'
+                        article.status === ArticleStatus.Published && 'border-l-gray-700 border-l-4',
+                        pendingChanges && 'bg-yellow-50 border-l-yellow-500'
                       )}
                     >
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.articleId}</td>
@@ -240,7 +263,14 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-2 border-b text-sm text-gray-600">{article.title}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600">
+                        {article.title}
+                        {pendingChanges && (
+                          <span className="ml-2 rounded bg-yellow-500 px-2 py-0.5 text-xs font-semibold text-white">
+                            Cambios sin publicar
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section?.name || "-"}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
@@ -262,7 +292,8 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

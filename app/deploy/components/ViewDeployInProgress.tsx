@@ -1,7 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import useDeploy from "../hooks/useDeploy"
+import useArticle from "@/app/articles/hooks/useArticle"
 import { toast } from "react-hot-toast"
 import { Job } from "@/app/types/github"
 import { calculateDuration } from "@/app/utils/time"
@@ -13,7 +15,10 @@ interface ViewDeployInProgressProps {
 const ViewDeployInProgress = ({ runId }: ViewDeployInProgressProps) => {
     const [jobs, setJobs] = useState<Job[]>([])
     const [loading, setLoading] = useState(true)
-    const {getProcess} = useDeploy()
+    const {getProcess, getRun} = useDeploy()
+    const {markPublishedSynced} = useArticle()
+    const router = useRouter()
+    const handledCompletionRef = useRef(false)
 
     const fetchProgress = useCallback(async () => {
       if (!runId) return;
@@ -31,12 +36,34 @@ const ViewDeployInProgress = ({ runId }: ViewDeployInProgressProps) => {
         setLoading(false);
       }
     }, [runId, getProcess]);
-  
+
+    const checkRunCompletion = useCallback(async (onComplete: () => void) => {
+      if (!runId || handledCompletionRef.current) return;
+      const result = await getRun(runId);
+      if (result.data?.status !== "completed") return;
+
+      handledCompletionRef.current = true;
+      onComplete();
+
+      if (result.data.conclusion === "success") {
+        const syncResult = await markPublishedSynced();
+        if (syncResult.error) {
+          toast.error(syncResult.error.message);
+        } else {
+          toast.success("Deploy exitoso: se actualizó el estado de las notas publicadas con cambios pendientes");
+        }
+      }
+      router.refresh();
+    }, [runId, getRun, markPublishedSynced, router]);
+
     useEffect(() => {
       fetchProgress();
-      const interval = setInterval(fetchProgress, 5000);
+      const interval = setInterval(() => {
+        fetchProgress();
+        checkRunCompletion(() => clearInterval(interval));
+      }, 5000);
       return () => clearInterval(interval);
-    }, [fetchProgress]);
+    }, [fetchProgress, checkRunCompletion]);
   
     if (loading) return <p>🔄 Cargando progreso...</p>
     if (jobs.length === 0) return <p>📭 No hay información de progreso.</p>

@@ -1,6 +1,7 @@
 import getDeployProcess from "@/app/actions/data/deploy/getDeployProcess";
+import getDeployRun from "@/app/actions/data/deploy/getDeployRun";
 import throwDeployProcess from "@/app/actions/data/deploy/throwDeployProcess";
-import { GitHubWorkflowJobs, Job } from "@/app/types/github";
+import { GitHubWorkflowJobs, Workflow } from "@/app/types/github";
 import { iResponseOne } from "@/app/types/responses";
 
 export default function useDeploy(){
@@ -14,6 +15,11 @@ export default function useDeploy(){
     return {data, error};
   }
 
-  return {throwProcess, getProcess}
+  const getRun = async (runId: number) : Promise<iResponseOne<Workflow>> => {
+    const {data, error} = await getDeployRun(runId);
+    return {data, error};
+  }
+
+  return {throwProcess, getProcess, getRun}
 
 }

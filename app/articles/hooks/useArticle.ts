@@ -1,6 +1,7 @@
 import { ArticleType } from "@/app/types/article";
 import editArticle from "@/app/actions/data/articles/editArticle";
 import deleteArticle from "@/app/actions/data/articles/deleteArticle";
+import markPublishedArticlesSynced from "@/app/actions/data/articles/markPublishedArticlesSynced";
 import { iResponseOne } from "@/app/types/responses";
 
 export default function useArticle(){
@@ -14,5 +15,10 @@ export default function useArticle(){
         return {data, error};
     }
 
-    return {edit, remove}
+    const markPublishedSynced = async () : Promise<iResponseOne<{ modifiedCount: number }>> => {
+        const {data, error} = await markPublishedArticlesSynced();
+        return {data, error};
+    }
+
+    return {edit, remove, markPublishedSynced}
 }

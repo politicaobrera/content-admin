@@ -32,6 +32,7 @@ import { AuthorType } from "@/app/types/author"
 import { Section } from "@/app/types/sections"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
+import ContentLookupPanel from "./ContentLookupPanel"
 import { TagType } from "@/app/types/tag"
 import Toggle from "@/app/components/inputs/Toggle"
 import ImportantMessage from "@/app/components/ImportantMessage"
@@ -233,6 +234,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             initialHTML={currentContent}
             onChange={(html:string) => setCurrentContent(html)}
           />
+          <Separator />
+          <ContentLookupPanel excludeArticleId={article._id} />
           <Separator />
           <TagSelector
             onChange={(newTags) => setCurrentTags(newTags)}

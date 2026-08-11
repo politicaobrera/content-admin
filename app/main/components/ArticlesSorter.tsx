@@ -8,6 +8,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable"
 import DraggableArticle from "@/app/main/components/DraggableArticle"
+import ArticleSearchPanel from "@/app/main/components/ArticleSearchPanel"
 import { ArticleType } from "@/app/types/article"
 import Button from "@/app/components/Button"
 import usePortada from "../hooks/usePortada"
@@ -47,6 +48,13 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
       }
     })
     router.refresh()
+  }
+
+  const handleAddSearchedArticle = (article: Partial<ArticleType>) => {
+    const [withId] = addIDToArticles([article])
+    const alreadyPresent = [...currentArticles, ...newToAddArticles].some((item) => item.id === withId.id)
+    if (alreadyPresent) return
+    setNewToAddArticles((curr) => [withId, ...curr])
   }
 
   const handleDragStart = (event: any) => {
@@ -105,7 +113,10 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      {/*TODO <div>Filtros</div> */}
+      <ArticleSearchPanel
+        excludeArticleIds={[...currentArticles, ...newToAddArticles].map((article) => article.id)}
+        onAddArticle={handleAddSearchedArticle}
+      />
       <div className="flex gap-10">
         <DndContext
           collisionDetection={closestCenter}

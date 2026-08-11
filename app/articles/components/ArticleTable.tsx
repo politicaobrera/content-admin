@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Select from 'react-select'
 import { toast } from "react-hot-toast"
@@ -13,6 +13,7 @@ import SectionsContext from '@/app/context/SectionsContext';
 import { OptionType } from '@/app/types/select';
 import useArticle from '../hooks/useArticle';
 import { hasPendingChangesSincePublish } from '@/app/utils/articles';
+import { getArticleChangesSincePublish } from '@/app/utils/articleChanges';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -25,6 +26,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const { sections } = useContext(SectionsContext)
   const {remove} = useArticle();
   const options = sections.map(sec => ({value: sec._id, label: sec.name}))
+  const [expandedArticleId, setExpandedArticleId] = useState<string | null>(null);
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState({
@@ -228,9 +230,11 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                 <tbody>
                   {articles.map((article) => {
                     const pendingChanges = hasPendingChangesSincePublish(article);
+                    const changes = pendingChanges ? getArticleChangesSincePublish(article) : null;
+                    const isExpanded = expandedArticleId === article._id;
                     return (
+                    <Fragment key={article.articleId}>
                     <tr
-                      key={article.articleId}
                       className={clsx(`
                         hover:bg-gray-50`,
                         article.status === ArticleStatus.Published && 'border-l-gray-700 border-l-4',
@@ -266,9 +270,13 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                       <td className="px-4 py-2 border-b text-sm text-gray-600">
                         {article.title}
                         {pendingChanges && (
-                          <span className="ml-2 rounded bg-yellow-500 px-2 py-0.5 text-xs font-semibold text-white">
-                            Cambios sin publicar
-                          </span>
+                          <button
+                            type="button"
+                            className="ml-2 rounded bg-yellow-500 px-2 py-0.5 text-xs font-semibold text-white"
+                            onClick={() => setExpandedArticleId(isExpanded ? null : article._id)}
+                          >
+                            Cambios sin publicar {isExpanded ? '▲' : '▼'}
+                          </button>
                         )}
                       </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section?.name || "-"}</td>
@@ -292,6 +300,30 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                         </div>
                       </td>
                     </tr>
+                    {isExpanded && changes && (
+                      <tr key={`${article.articleId}-changes`} className="bg-yellow-50">
+                        <td colSpan={7} className="px-4 py-3 border-b text-sm text-gray-700">
+                          <p className="font-semibold mb-1">
+                            Cambios desde la última publicación
+                            {article.lastModifiedBy && ` (por ${article.lastModifiedBy})`}:
+                          </p>
+                          {changes.fieldChanges.length === 0 && !changes.contentChanged && (
+                            <p>Sin cambios detectados en los campos comparados.</p>
+                          )}
+                          <ul className="list-disc list-inside">
+                            {changes.fieldChanges.map((change) => (
+                              <li key={change.field}>
+                                <span className="font-medium">{change.label}:</span> &quot;{change.from}&quot; → &quot;{change.to}&quot;
+                              </li>
+                            ))}
+                            {changes.contentChanged && (
+                              <li><span className="font-medium">Contenido:</span> cambió</li>
+                            )}
+                          </ul>
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                     );
                   })}
                 </tbody>

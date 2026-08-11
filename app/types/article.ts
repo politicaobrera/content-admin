@@ -8,6 +8,16 @@ export enum ArticleStatus {
   Published = "published",
 }
 
+export type PublishedSnapshot = {
+  title: string
+  subhead?: string
+  volanta?: string
+  content: string
+  section: { _id: string, name: string } | null
+  tags: { _id: string, name: string }[]
+  authors: { _id: string, name: string }[]
+}
+
 export type ArticleType = {
   _id: string
   title: string
@@ -25,5 +35,6 @@ export type ArticleType = {
   createdAt: string
   updatedAt: string
   publishedAt: string | null
+  publishedSnapshot: PublishedSnapshot | null
   status: ArticleStatus
 }

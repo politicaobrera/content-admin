@@ -14,9 +14,11 @@ interface SectionSelectorProps {
   isClearable?: boolean
 }
 
+const extraOption = [{value: '', label: "Todas"}]
+
 const SectionSelector = ({onChange, currentSection, isClearable = false}: SectionSelectorProps) => {
   const { sections } = useContext(SectionsContext)
-  const options = sections.map(sec => ({value: sec._id, label: sec.name}))
+  const options = extraOption.concat(sections.map(sec => ({value: sec._id, label: sec.name})))
 
   const getCurrentSecctionValue = (current: Section | string | null) => {
     if (!current) return null
@@ -34,7 +36,7 @@ const SectionSelector = ({onChange, currentSection, isClearable = false}: Sectio
   const currentValue = getCurrentSecctionValue(currentSection)
 
   const handleSectionChange = (val: OptionType|null) => {
-    if(!val) {
+    if(!val || !val.value) {
       if (isClearable) onChange(null)
       return
     }

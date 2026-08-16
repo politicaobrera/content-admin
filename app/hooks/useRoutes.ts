@@ -74,7 +74,7 @@ const useRoutes = () => {
       href: '#',
       icon: HiArrowLeftOnRectangle,
       onClick: () => {
-        signOut({ callbackUrl: '/' })
+        signOut({ callbackUrl: window.location.origin + '/' })
       }, 
     },
   ], [pathname, menuOption])

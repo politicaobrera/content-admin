@@ -112,7 +112,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     setCurrentDescriptions(descriptions)
   }
 
-  const handleSectionChange = (section:Section) => {
+  const handleSectionChange = (section:Section|null) => {
     console.log("section changed", section)
     setCurrentSection(section)
   }

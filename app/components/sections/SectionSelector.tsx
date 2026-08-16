@@ -9,11 +9,12 @@ import { useContext } from "react"
 import Select from 'react-select'
 
 interface SectionSelectorProps {
-  onChange: (section:Section) => void
+  onChange: (section:Section|null) => void
   currentSection: Section | string | null
+  isClearable?: boolean
 }
 
-const SectionSelector = ({onChange, currentSection}: SectionSelectorProps) => {
+const SectionSelector = ({onChange, currentSection, isClearable = false}: SectionSelectorProps) => {
   const { sections } = useContext(SectionsContext)
   const options = sections.map(sec => ({value: sec._id, label: sec.name}))
 
@@ -33,10 +34,12 @@ const SectionSelector = ({onChange, currentSection}: SectionSelectorProps) => {
   const currentValue = getCurrentSecctionValue(currentSection)
 
   const handleSectionChange = (val: OptionType|null) => {
-    if(val) {
-      const selectedSection = sections.find(sec => sec._id === val.value)
-      if (selectedSection) onChange(selectedSection)
+    if(!val) {
+      if (isClearable) onChange(null)
+      return
     }
+    const selectedSection = sections.find(sec => sec._id === val.value)
+    if (selectedSection) onChange(selectedSection)
   }
 
   return (
@@ -45,8 +48,10 @@ const SectionSelector = ({onChange, currentSection}: SectionSelectorProps) => {
       <div>
         <Select
           options={options}
-          defaultValue={currentValue}
+          value={currentValue}
           onChange={handleSectionChange}
+          isClearable={isClearable}
+          placeholder={isClearable ? "Todas las secciones" : "Seleccionar..."}
         />
       </div>
     </div>

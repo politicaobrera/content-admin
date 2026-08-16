@@ -16,12 +16,17 @@ interface ArticleSearchPanelProps {
 }
 
 const MIN_TITLE_LENGTH = 2
+// se pide bastante más de lo que se va a mostrar porque los resultados que ya están
+// en "Orden actual"/"Últimas notas" se ocultan (dnd-kit necesita ids únicos entre ambas
+// columnas) — en secciones muy activas, la mayoría de los últimos N ya están ahí
+const SEARCH_PER_PAGE = '50'
 
 const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPanelProps) => {
   const [title, setTitle] = useState("")
   const [section, setSection] = useState<Section | null>(null)
   const [tags, setTags] = useState<TagType[]>([])
   const [results, setResults] = useState<Partial<ArticleType>[]>([])
+  const [hiddenCount, setHiddenCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const debouncedTitle = useDebouncedValue(title)
 
@@ -30,6 +35,7 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
   useEffect(() => {
     if (!hasFilter) {
       setResults([])
+      setHiddenCount(0)
       return
     }
 
@@ -41,13 +47,16 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
       ...(section ? { section: section._id } : {}),
       ...(tags.length > 0 ? { tags: tags.map(t => t._id) } : {}),
       status: ArticleStatus.Published,
-      perPage: '20',
+      perPage: SEARCH_PER_PAGE,
     }).then(({ data, error }) => {
       if (cancelled) return
       if (error) {
         console.log("error al buscar articulos para portada", error)
       }
-      setResults((data ?? []).filter(a => !excludeArticleIds.includes(a.articleId)))
+      const matches = data ?? []
+      const visible = matches.filter(a => !excludeArticleIds.includes(a.articleId))
+      setResults(visible)
+      setHiddenCount(matches.length - visible.length)
       setLoading(false)
     })
 
@@ -64,14 +73,22 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
-      <div className="flex gap-6 flex-wrap items-start">
-        <div className="min-w-[220px]">
-          <SectionSelector currentSection={section} onChange={setSection} />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <SectionSelector currentSection={section} onChange={setSection} isClearable />
         <TagSelector currentTags={tags} onChange={setTags} />
       </div>
       {loading && <p>Buscando...</p>}
-      {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}
+      {!loading && hasFilter && results.length === 0 && hiddenCount === 0 && <p>Sin resultados</p>}
+      {!loading && hasFilter && results.length === 0 && hiddenCount > 0 && (
+        <p className="text-sm text-gray-500">
+          {hiddenCount === 1 ? "La única nota encontrada ya" : `Las ${hiddenCount} notas encontradas ya`} está{hiddenCount === 1 ? '' : 'n'} en &quot;Orden actual&quot; o &quot;Últimas notas&quot;.
+        </p>
+      )}
+      {!loading && hiddenCount > 0 && results.length > 0 && (
+        <p className="text-sm text-gray-500">
+          {hiddenCount} resultado{hiddenCount === 1 ? '' : 's'} más no se muestra{hiddenCount === 1 ? '' : 'n'} porque ya está{hiddenCount === 1 ? '' : 'n'} en &quot;Orden actual&quot; o &quot;Últimas notas&quot;.
+        </p>
+      )}
       {!loading && results.length > 0 && (
         <ul className="flex flex-col gap-1 max-h-64 overflow-scroll">
           {results.map(article => (

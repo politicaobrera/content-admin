@@ -69,6 +69,9 @@ When adding a new entity or endpoint, mirror this existing pattern (server actio
 # Contexto del otro proyecto (CMS backend)
    @E:\cloudeProjects\repos\content-server/CLAUDE.md
 
+# Contexto del otro proyecto cliente publico (react gatsby site)
+   @E:\cloudeProjects\repos\politicaobrera-reloaded/CLAUDE.md
+
 ## Notes
 
 - `app/pruebas/` is a scratch/testing page, not production functionality.

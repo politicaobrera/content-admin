@@ -75,7 +75,7 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         <SectionSelector currentSection={section} onChange={setSection} isClearable />
-        <TagSelector currentTags={tags} onChange={setTags} />
+        <TagSelector currentTags={tags} onChange={setTags} showSearch/>
       </div>
       {loading && <p>Buscando...</p>}
       {!loading && hasFilter && results.length === 0 && hiddenCount === 0 && <p>Sin resultados</p>}

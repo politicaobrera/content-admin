@@ -6,9 +6,9 @@ import TagList from "./TagList"
 interface TagSelectorProps {
   onChange: (tags:TagType[]) => void
   currentTags: TagType[]
-  showSearch?: boolean
+  dontShowSearch?: boolean
 }
-const TagSelector = ({onChange, currentTags = [], showSearch = false}: TagSelectorProps) => {
+const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSelectorProps) => {
   const searchTagRef = useRef<HTMLInputElement>(null)
   const [searchResults, setSearchResults] = useState<TagType[]>([])
   const {searchByName} = useTag()
@@ -54,7 +54,7 @@ const TagSelector = ({onChange, currentTags = [], showSearch = false}: TagSelect
         />
       </div>
       <div className="flex flex-col gap-2">
-        {showSearch && (<h6>Buscar</h6>)}
+        {!dontShowSearch && (<h6>Buscar</h6>)}
         <input
           type="text"
           className="w-full border-2"

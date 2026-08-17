@@ -13,12 +13,13 @@ import { toast } from "react-hot-toast"
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
 import Separator from "@/app/components/layout/Separator"
-import { ResourceSourceType, ResourceType } from "@/app/types/resource"
+import { ExternalSource, ResourceSourceType, ResourceType } from "@/app/types/resource"
 import useResource from "../hooks/useResource"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
 import { TagType } from "@/app/types/tag"
 import ResourceSelector from "./ResourceSelector"
+import ExternalSourcesEditor from "./ExternalSourcesEditor"
 
 interface ResourceFormProps {
   resource?: ResourceType
@@ -26,9 +27,9 @@ interface ResourceFormProps {
 
 const options = [
   { value: ResourceSourceType.Image, label: "Imágen" },
-  { value: ResourceSourceType.Video, label: "Video", isDisabled: true },
-  { value: ResourceSourceType.Audio, label: "Audio", isDisabled: true },
-  { value: ResourceSourceType.Document, label: "Documento", isDisabled: true },
+  { value: ResourceSourceType.Video, label: "Video" },
+  { value: ResourceSourceType.Audio, label: "Audio" },
+  { value: ResourceSourceType.Document, label: "Documento" },
 ];
 
 const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
@@ -37,6 +38,7 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [currentTags, setCurrentTags] = useState<TagType[]>(resource?.tags || [])
   const [currentUrl, setCurrentUrl] = useState<string>(resource?.src || "")
+  const [currentExternalSources, setCurrentExternalSources] = useState<ExternalSource[]>(resource?.externalSources || [])
   const {create, edit} = useResource();
 
   const {
@@ -65,6 +67,9 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
       },
       {
         src: currentUrl
+      },
+      {
+        externalSources: currentExternalSources
       }
     )
     console.log("voy a guardar resource", merged)
@@ -108,6 +113,12 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
   const handleCancel = () => {
     router.push(`/resources`);
   };
+
+  const handleCopyCurrentUrl = () => {
+    if (!currentUrl) return
+    navigator.clipboard.writeText(currentUrl)
+    toast.success("URL copiada al portapapeles")
+  }
 
   const currentValues = watch() as ResourceType
 
@@ -175,6 +186,34 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
             src={currentUrl}
             fileName={currentValues.title}
             onChange={handleResourceFileChange}
+          />
+          <div className="flex flex-col gap-2">
+            <label className="block text-sm text-gray-900 font-medium leading-6" htmlFor="external-url">
+              O pegá directamente una URL existente (ej: video ya subido a YouTube), en vez de subir un archivo
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="external-url"
+                type="text"
+                placeholder="https://youtube.com/..."
+                className="border-2 p-1 flex-1"
+                value={currentUrl}
+                onChange={(e) => setCurrentUrl(e.target.value)}
+              />
+              <button
+                type="button"
+                className="underline text-sm"
+                onClick={handleCopyCurrentUrl}
+                disabled={!currentUrl}
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
+          <Separator />
+          <ExternalSourcesEditor
+            sources={currentExternalSources}
+            onChange={setCurrentExternalSources}
           />
           <Input
             label="Leyenda"

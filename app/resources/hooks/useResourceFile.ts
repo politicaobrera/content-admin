@@ -26,6 +26,21 @@ const getFileAcceptType = (sourceType: ResourceSourceType) => {
   }
 };
 
+// separa el bucket por tipo de recurso en vez de tirar todo bajo /recursos/
+const getStorageFolder = (sourceType: ResourceSourceType) => {
+  switch (sourceType) {
+    case ResourceSourceType.Video:
+      return "videos"
+    case ResourceSourceType.Audio:
+      return "audios"
+    case ResourceSourceType.Document:
+      return "documentos"
+    case ResourceSourceType.Image:
+    default:
+      return "imagenes"
+  }
+};
+
 const useResourceFile = (
   source: string | null,
   sourceType: ResourceSourceType,
@@ -82,7 +97,8 @@ const useResourceFile = (
       const extension = fileToUpload.name.split('.').pop()
       const slug = sluged(fileName) || sluged(fileToUpload.name.replace(/\.[^/.]+$/, ''))
       const originPath = origin === ResourceOrigin.Publications ? 'publications/' : ''
-      const storageRef = ref(storage, `/recursos/${originPath}${slug}.${extension}`)
+      const folder = getStorageFolder(sourceType)
+      const storageRef = ref(storage, `/recursos/${folder}/${originPath}${slug}.${extension}`)
       await uploadBytesResumable(storageRef, fileToUpload);
       const url = await getDownloadURL(storageRef)
       setCurrent(url)

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from "react-hot-toast"
-import { ResourceType } from '@/app/types/resource';
+import { ResourceSourceType, ResourceType } from '@/app/types/resource';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useResource from '../hooks/useResource';
@@ -218,7 +218,15 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                     <tr key={resource._id} className="hover:bg-gray-50 border-b">
                       <td className="px-4 py-2 text-sm text-gray-600">{resource.title}</td>
                       <td className="px-4 py-2 border-b">
-                        {resource.src ? (
+                        {resource.src && resource.sourceType === ResourceSourceType.Video ? (
+                          <video src={resource.src} className="h-auto w-24 rounded shadow-md" muted />
+                        ) : resource.src && resource.sourceType === ResourceSourceType.Audio ? (
+                          <span className="text-sm text-gray-600">🔊 Audio</span>
+                        ) : resource.src && resource.sourceType === ResourceSourceType.Document ? (
+                          <a href={resource.src} target="_blank" rel="noopener noreferrer" className="underline text-blue-600 text-sm">
+                            Ver documento
+                          </a>
+                        ) : resource.src ? (
                           <img
                             src={resource.src}
                             alt={resource.title}
@@ -242,27 +250,41 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-600 w-56">
-                        <div className='flex gap-2'>
-                          <Button
-                            type="button"
-                            onClick={() => handleCopyToClipboard(resource.src)}
-                          >
-                            Copiar
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={() => handleClickEdit(resource._id)}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            type="button"
-                            danger
-                            onClick={() => handleClickDelete(resource)}
-                          >
-                            Eliminar
-                          </Button>
+                      <td className="px-4 py-2 text-sm text-gray-600 w-64">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-wrap gap-1">
+                            <Button
+                              type="button"
+                              onClick={() => handleCopyToClipboard(resource.src)}
+                            >
+                              Copiar propio
+                            </Button>
+                            {(resource.externalSources || []).map((source, idx) => (
+                              <Button
+                                key={idx}
+                                type="button"
+                                secondary
+                                onClick={() => handleCopyToClipboard(source.url)}
+                              >
+                                Copiar {source.label || `externo ${idx + 1}`}
+                              </Button>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              onClick={() => handleClickEdit(resource._id)}
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              type="button"
+                              danger
+                              onClick={() => handleClickDelete(resource)}
+                            >
+                              Eliminar
+                            </Button>
+                          </div>
                         </div>
                       </td>
                     </tr>

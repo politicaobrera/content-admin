@@ -18,6 +18,24 @@ interface ResourceSelectorProps {
   deferUpload?: boolean
 }
 
+const ResourcePreview = ({ sourceType, src }: { sourceType: ResourceSourceType, src: string }) => {
+  switch (sourceType) {
+    case ResourceSourceType.Video:
+      return <video src={src} controls className="w-1/2" />
+    case ResourceSourceType.Audio:
+      return <audio src={src} controls />
+    case ResourceSourceType.Document:
+      return (
+        <a href={src} target="_blank" rel="noopener noreferrer" className="underline text-blue-600">
+          Ver documento
+        </a>
+      )
+    case ResourceSourceType.Image:
+    default:
+      return <img src={src} className="w-1/2" />
+  }
+}
+
 const ResourceSelector = forwardRef<ResourceSelectorHandle, ResourceSelectorProps>(({sourceType, src, fileName, origin, onChange, deferUpload}, ref) => {
   const resource = useResourceFile(src, sourceType, fileName, origin)
 
@@ -48,6 +66,9 @@ const ResourceSelector = forwardRef<ResourceSelectorHandle, ResourceSelectorProp
           <div className='mb-2'>
             <img src={resource.state.preview} className="w-92"/>
           </div>
+        )}
+        {!resource.state.preview && resource.state.file && (
+          <p className="text-sm text-gray-600">Archivo seleccionado: {resource.state.file.name}</p>
         )}
         <input
           type="file"
@@ -80,7 +101,7 @@ const ResourceSelector = forwardRef<ResourceSelectorHandle, ResourceSelectorProp
   return (
     <div className="flex flex-col gap-2">
       {resource.state.current && (
-        <img src={resource.state.current} className="w-1/2"/>
+        <ResourcePreview sourceType={sourceType} src={resource.state.current} />
       )}
       <div>
         <Button

@@ -17,9 +17,19 @@ const MIN_TITLE_LENGTH = 2
 
 interface ContentLookupPanelProps {
   excludeArticleId?: string
+  relatedArticles: Partial<ArticleType>[]
+  relatedResources: Partial<ResourceType>[]
+  onChangeRelatedArticles: (items: Partial<ArticleType>[]) => void
+  onChangeRelatedResources: (items: Partial<ResourceType>[]) => void
 }
 
-const ContentLookupPanel = ({ excludeArticleId }: ContentLookupPanelProps) => {
+const ContentLookupPanel = ({
+  excludeArticleId,
+  relatedArticles,
+  relatedResources,
+  onChangeRelatedArticles,
+  onChangeRelatedResources,
+}: ContentLookupPanelProps) => {
   const [entity, setEntity] = useState<LookupEntity>('articles')
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState<TagType[]>([])
@@ -28,6 +38,7 @@ const ContentLookupPanel = ({ excludeArticleId }: ContentLookupPanelProps) => {
   const debouncedTitle = useDebouncedValue(title)
 
   const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || tags.length > 0
+  const currentRelated = entity === 'articles' ? relatedArticles : relatedResources
 
   useEffect(() => {
     if (!hasFilter) {
@@ -70,9 +81,27 @@ const ContentLookupPanel = ({ excludeArticleId }: ContentLookupPanelProps) => {
     toast.success("Slug copiado al portapapeles")
   }
 
+  const handleLink = (item: LookupResult) => {
+    const alreadyLinked = currentRelated.some((i) => i._id === item._id)
+    if (alreadyLinked) return
+    if (entity === 'articles') {
+      onChangeRelatedArticles([...relatedArticles, item])
+    } else {
+      onChangeRelatedResources([...relatedResources, item])
+    }
+  }
+
+  const handleUnlink = (item: Partial<ArticleType> | Partial<ResourceType>) => {
+    if (entity === 'articles') {
+      onChangeRelatedArticles(relatedArticles.filter((i) => i._id !== item._id))
+    } else {
+      onChangeRelatedResources(relatedResources.filter((i) => i._id !== item._id))
+    }
+  }
+
   return (
     <div className="flex flex-col gap-3 border-2 border-gray-400 rounded-md p-3">
-      <h3 className="font-bold text-lg">Buscar notas / recursos para vincular</h3>
+      <h3 className="font-bold text-lg">Notas / recursos relacionados</h3>
       <div className="flex gap-4">
         <button
           type="button"
@@ -89,6 +118,21 @@ const ContentLookupPanel = ({ excludeArticleId }: ContentLookupPanelProps) => {
           Recursos
         </button>
       </div>
+
+      {currentRelated.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {currentRelated.map((item) => (
+            <div
+              key={item._id}
+              className="p-2 rounded-md bg-yellow-500 flex font-bold items-center gap-2"
+            >
+              {item.title}
+              <button type="button" onClick={() => handleUnlink(item)}>✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <input
         type="text"
         placeholder="Buscar por título..."
@@ -101,22 +145,33 @@ const ContentLookupPanel = ({ excludeArticleId }: ContentLookupPanelProps) => {
       {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}
       {!loading && results.length > 0 && (
         <ul className="flex flex-col gap-1 max-h-64 overflow-scroll">
-          {results.map((item) => (
-            <li
-              key={item._id}
-              className="flex items-center gap-2 border-2 border-black rounded-md p-1"
-            >
-              <span className="font-semibold">{item.title}</span>
-              <span className="ml-auto text-sm text-gray-500">/{item.slug}</span>
-              <button
-                type="button"
-                className="underline text-sm"
-                onClick={() => handleCopySlug(item)}
+          {results.map((item) => {
+            const alreadyLinked = currentRelated.some((i) => i._id === item._id)
+            return (
+              <li
+                key={item._id}
+                className="flex items-center gap-2 border-2 border-black rounded-md p-1"
               >
-                Copiar slug
-              </button>
-            </li>
-          ))}
+                <span className="font-semibold">{item.title}</span>
+                <span className="ml-auto text-sm text-gray-500">/{item.slug}</span>
+                <button
+                  type="button"
+                  className="underline text-sm"
+                  onClick={() => handleCopySlug(item)}
+                >
+                  Copiar slug
+                </button>
+                <button
+                  type="button"
+                  className="underline text-sm disabled:opacity-50"
+                  disabled={alreadyLinked}
+                  onClick={() => handleLink(item)}
+                >
+                  {alreadyLinked ? 'Vinculada' : 'Vincular'}
+                </button>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>

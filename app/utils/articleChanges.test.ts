@@ -26,6 +26,8 @@ const baseArticle: ArticleType = {
     tags: [{ _id: "t-1", name: "Tag Uno" }],
     authors: [{ _id: "a-1", name: "Autor Uno" }],
   },
+  relatedArticles: [],
+  relatedResources: [],
   status: ArticleStatus.Published,
 }
 

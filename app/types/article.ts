@@ -2,6 +2,7 @@ import { Section } from "./sections"
 import { MainImageType } from "./image"
 import { AuthorType } from "./author"
 import { TagType } from "./tag"
+import { ResourceType } from "./resource"
 
 export enum ArticleStatus {
   Draft = "draft",
@@ -36,5 +37,7 @@ export type ArticleType = {
   updatedAt: string
   publishedAt: string | null
   publishedSnapshot: PublishedSnapshot | null
+  relatedArticles: Partial<ArticleType>[]
+  relatedResources: Partial<ResourceType>[]
   status: ArticleStatus
 }

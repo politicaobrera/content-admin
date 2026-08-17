@@ -30,6 +30,7 @@ import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
 //import SectionSelector from "@/app/components/sections/SectionSelector"
 import { Section } from "@/app/types/sections"
+import { ResourceType } from "@/app/types/resource"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
 import ContentLookupPanel from "./ContentLookupPanel"
@@ -53,6 +54,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentTags, setCurrentTags] = useState<TagType[]>(article.tags)
   const [currentStatus, setCurrentStatus] = useState<boolean>(article.status === ArticleStatus.Published)
   const [currentContent, setCurrentContent] = useState<string>(article.content)
+  const [currentRelatedArticles, setCurrentRelatedArticles] = useState<Partial<ArticleType>[]>(article.relatedArticles || [])
+  const [currentRelatedResources, setCurrentRelatedResources] = useState<Partial<ResourceType>[]>(article.relatedResources || [])
   const {edit} = useArticle();
 
   const {
@@ -91,6 +94,10 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       },
       {
         tags: currentTags
+      },
+      {
+        relatedArticles: currentRelatedArticles,
+        relatedResources: currentRelatedResources
       },
       {
         status: currentStatus ? ArticleStatus.Published : ArticleStatus.Draft
@@ -235,7 +242,13 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             onChange={(html:string) => setCurrentContent(html)}
           />
           <Separator />
-          <ContentLookupPanel excludeArticleId={article._id} />
+          <ContentLookupPanel
+            excludeArticleId={article._id}
+            relatedArticles={currentRelatedArticles}
+            relatedResources={currentRelatedResources}
+            onChangeRelatedArticles={setCurrentRelatedArticles}
+            onChangeRelatedResources={setCurrentRelatedResources}
+          />
           <Separator />
           <TagSelector
             onChange={(newTags) => setCurrentTags(newTags)}

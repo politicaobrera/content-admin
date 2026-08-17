@@ -5,8 +5,8 @@ import { GitHubWorkflowJobs, Workflow } from "@/app/types/github";
 import { iResponseOne } from "@/app/types/responses";
 
 export default function useDeploy(){
-  const throwProcess = async () : Promise<iResponseOne<any>> => {
-    const {data, error} = await throwDeployProcess();
+  const throwProcess = async (fullRebuild: boolean = false) : Promise<iResponseOne<any>> => {
+    const {data, error} = await throwDeployProcess(fullRebuild);
     return {data, error};
   }
 

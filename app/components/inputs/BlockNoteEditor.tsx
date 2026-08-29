@@ -87,7 +87,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
       <label className="block text-sm text-gray-900 font-medium leading-6" htmlFor={id}>
         {label}
       </label>
-      <div>
+      <div className="prose prose-invert prose-a:text-blue-400 prose-a:font-semibold prose-a:no-underline hover:prose-a:text-blue-300">
         <BlockNoteView
           id={id}
           editor={editor}

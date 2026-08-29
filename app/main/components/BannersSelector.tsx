@@ -32,8 +32,9 @@ const BannersSelector = ({id, current, pageName}: BannersSelectorProps) => {
     saveBanners(newCurrentBanners, id).then(result => {
       if (result.error){
         toast.error(result.error.message)
-      } 
+      }
       if(result.data){
+        setCurrentBanners(result.data.banners)
         setAddingBanner(false)
         toast.success("banner de portada actualizado correctamente")
       }

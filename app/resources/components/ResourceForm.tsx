@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { 
+import {
   Controller,
   FieldValues,
   SubmitHandler,
@@ -18,7 +18,7 @@ import useResource from "../hooks/useResource"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
 import { TagType } from "@/app/types/tag"
-import ResourceSelector from "./ResourceSelector"
+import ResourceSelector, { ResourceSelectorHandle } from "./ResourceSelector"
 import ExternalSourcesEditor from "./ExternalSourcesEditor"
 import { useClipboard } from "@/app/hooks/useClipboard"
 
@@ -41,6 +41,7 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
   const [currentTags, setCurrentTags] = useState<TagType[]>(resource?.tags || [])
   const [currentUrl, setCurrentUrl] = useState<string>(resource?.src || "")
   const [currentExternalSources, setCurrentExternalSources] = useState<ExternalSource[]>(resource?.externalSources || [])
+  const resourceFileRef = useRef<ResourceSelectorHandle>(null)
   const {create, edit} = useResource();
 
   const {
@@ -60,15 +61,19 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
     },
   })
 
-  const onSubmit:SubmitHandler<FieldValues | ResourceType> = (payload) => {
+  const onSubmit:SubmitHandler<FieldValues | ResourceType> = async (payload) => {
     setLoading(true)
+    const initialSrc = resource?.src || ""
+    const resolvedFileUrl = await resourceFileRef.current?.resolveUrl()
+    // resolveUrl only uploads and returns a new url when a file was staged; otherwise it echoes the initial src, so fall back to the (possibly manually edited) external url in that case
+    const resolvedUrl = resolvedFileUrl && resolvedFileUrl !== initialSrc ? resolvedFileUrl : currentUrl
     const merged: Partial<ResourceType> = Object.assign(
       payload,
       {
         tags: currentTags
       },
       {
-        src: currentUrl
+        src: resolvedUrl
       },
       {
         externalSources: currentExternalSources
@@ -106,10 +111,6 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
       }
     })
     setLoading(false)
-  }
-
-  const handleResourceFileChange = async (url:string) => {
-    setCurrentUrl(url)
   }
 
   const handleCancel = () => {
@@ -189,10 +190,11 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
             />
           </div>
           <ResourceSelector
+            ref={resourceFileRef}
             sourceType={currentValues.sourceType}
             src={currentUrl}
             fileName={currentValues.title}
-            onChange={handleResourceFileChange}
+            deferUpload
           />
           <div className="flex flex-col gap-2">
             <label className="block text-sm text-gray-900 font-medium leading-6" htmlFor="external-url">

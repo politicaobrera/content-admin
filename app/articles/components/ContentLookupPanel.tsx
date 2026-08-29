@@ -10,6 +10,7 @@ import { TagType } from "@/app/types/tag"
 import TagSelector from "@/app/components/tags/TagSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 import { Section } from "@/app/types/sections"
+import { useClipboard } from "@/app/hooks/useClipboard"
 
 type LookupEntity = 'articles' | 'resources'
 type LookupResult = { _id: string, title: string, slug: string, section?: Section}
@@ -31,6 +32,7 @@ const ContentLookupPanel = ({
   onChangeRelatedArticles,
   onChangeRelatedResources,
 }: ContentLookupPanelProps) => {
+  const { copyToClipboard } = useClipboard()
   const [entity, setEntity] = useState<LookupEntity>('articles')
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState<TagType[]>([])
@@ -79,27 +81,13 @@ const ContentLookupPanel = ({
 
   const handleCopySlug = async (item: LookupResult) => {
     const text = `https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
-     try {
-      if (navigator?.clipboard) {
-        await navigator.clipboard.writeText(text)
-        toast.success("Enlace copiado!")
-        return
-      }
-      
-      // Fallback para navegadores antiguos
-      const textArea = document.createElement('textarea')
-      textArea.value = text
-      textArea.style.position = 'fixed'
-      textArea.style.left = '-9999px'
-      textArea.style.top = '-9999px'
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
-      toast.success("Enlace copiado!!")
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-    }   
+    const success = await copyToClipboard(text)
+    if (success) {
+      console.log("Enlace al portapapeles:", text)
+      toast.success("Enlace copiado al portapapeles!!")
+      return
+    }
+    toast.error("No se pudo copiar el enlace")
   }
 
   const handleLink = (item: LookupResult) => {

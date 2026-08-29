@@ -7,6 +7,7 @@ import { ResourceSourceType, ResourceType } from '@/app/types/resource';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useResource from '../hooks/useResource';
+import { useClipboard } from '@/app/hooks/useClipboard';
 
 interface ResourceTableProps {
   resources: ResourceType[];
@@ -14,6 +15,7 @@ interface ResourceTableProps {
 }
 
 const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
+  const { copyToClipboard } = useClipboard()
   console.log("resources", resources)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -81,28 +83,6 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
     router.push(`/resources/new`)
   }
 
-  const copyToClipboard = (text:string) => {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    document.body.appendChild(textarea)
-    textarea.select()
-    
-    try {
-      const successful = document.execCommand('copy')
-      if (successful) {
-        console.log("Texto copiado al portapapeles:", text)
-        toast.success("Enlace copiado!!!")
-      } else {
-        throw new Error('Falló la copia')
-      }
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-      toast.error("No se pudo copiar el enlace")
-    } finally {
-      document.body.removeChild(textarea)
-    }
-  }
-
   const handleClickDelete = async (resource:ResourceType) => {
     if (!window.confirm(`¿Eliminar el recurso "${resource.title}"? Esta acción no se puede deshacer.`)) {
       return
@@ -118,16 +98,13 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   }
 
   const handleCopyToClipboard = async (text:string) => {
-    // TODO mover esto a un hook useClipboard
-    try {
-      await navigator.clipboard.writeText(text)
-      console.log("Texto copiado al portapapeles:", text)
-      toast.success("Enlace copiado!")
-    } catch (err) {
-      console.error("Error al copiar el texto:", err)
-      // Fallback al método antiguo
-      copyToClipboard(text)
-    }
+    const success = await copyToClipboard(text)
+    if (success) {
+      console.log("Enlace al portapapeles:", text)
+      toast.success("Enlace copiado al portapapeles!")
+      return
+    } 
+    toast.error("No se pudo copiar el enlace")
   }
 
   return (

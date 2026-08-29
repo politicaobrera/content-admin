@@ -103,6 +103,21 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
           />
         </BlockNoteView>
       </div>
+      <style jsx>{`
+          .bn-editor a {
+            color: #60a5fa !important;
+            text-decoration: underline !important;
+            text-decoration-thickness: 2px !important;
+            text-underline-offset: 2px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+          }
+          .bn-editor a:hover {
+            color: #93bbfc !important;
+            text-decoration-thickness: 3px !important;
+            text-underline-offset: 3px !important;
+          }
+        `}</style>      
     </div>
   )
 }

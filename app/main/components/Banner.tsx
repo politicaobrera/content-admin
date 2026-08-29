@@ -8,9 +8,10 @@ interface BannerProps {
   item: BannerType | null
   pageName?: string
   onChange: (banner: BannerType) => void
+  onDelete?: (banner: BannerType) => void
 }
 
-const Banner = ({item, onChange, pageName}: BannerProps) => {
+const Banner = ({item, onChange, onDelete, pageName}: BannerProps) => {
   const bannerItem = useBanner(item, pageName)
   const {
     register,
@@ -24,6 +25,15 @@ const Banner = ({item, onChange, pageName}: BannerProps) => {
       link: item?.link || '',
     }
   })
+
+  const handleDelete = async () => {
+    if (!bannerItem.state.banner) return
+    if (!window.confirm("¿Eliminar este banner? Esta acción no se puede deshacer.")) {
+      return
+    }
+    await bannerItem.actions.deleteImage(bannerItem.state.banner.src)
+    onDelete?.(bannerItem.state.banner)
+  }
 
   const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
     console.log(payload)
@@ -60,11 +70,18 @@ const Banner = ({item, onChange, pageName}: BannerProps) => {
         <div>
           Link: {bannerItem.state.banner.link}
         </div>
-        <div>
+        <div className="flex gap-2">
           <Button
             onClick={() => bannerItem.actions.setIsEditing(true)}
           >
             Modificar
+          </Button>
+          <Button
+            danger
+            disabled={bannerItem.state.loading}
+            onClick={handleDelete}
+          >
+            Eliminar
           </Button>
         </div>
       </div>

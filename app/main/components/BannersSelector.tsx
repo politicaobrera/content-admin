@@ -41,13 +41,26 @@ const BannersSelector = ({id, current, pageName}: BannersSelectorProps) => {
     })
   }
 
+  const handleDeleteBanner = async (banner: BannerType) => {
+    const newCurrentBanners = currentBanners.filter(i => i._id !== banner._id)
+    const result = await saveBanners(newCurrentBanners, id)
+    if (result.error){
+      toast.error(result.error.message)
+      return
+    }
+    if(result.data){
+      setCurrentBanners(result.data.banners)
+      toast.success("banner de portada eliminado correctamente")
+    }
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <h5>Banners</h5>
       <div className="flex flex-col gap-2">
         <div className="flex gap-4">
           {currentBanners.map((i, idx) => (
-            <Banner key={"banner-item-"+idx} item={i} onChange={handleChangeBanner} pageName={pageName} />
+            <Banner key={"banner-item-"+idx} item={i} onChange={handleChangeBanner} onDelete={handleDeleteBanner} pageName={pageName} />
           ))}
         </div>
         {

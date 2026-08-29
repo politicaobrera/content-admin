@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage"
 import { BannerType } from "@/app/types/sitepage"
 
 const compressOptions = {
@@ -47,6 +47,15 @@ const useBanner = (banner: BannerType | null, pageName?: string) => {
 
   const isImageReadyForUpload = !!imageFileToUpload
 
+  const deleteImage = async (url: string) => {
+    if (!url) return
+    try {
+      await deleteObject(ref(storage, url))
+    } catch (error) {
+      console.log("error eliminando banner de firebase", error)
+    }
+  }
+
   const onUploadImage = async () => {
     let url = ""
     if (imageFileToUpload) {
@@ -86,6 +95,7 @@ const useBanner = (banner: BannerType | null, pageName?: string) => {
       onUploadImage,
       cleanUploadTemp,
       setCurrentBanner,
+      deleteImage,
     }
   }
 }

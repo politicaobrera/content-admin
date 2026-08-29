@@ -2,7 +2,7 @@ import { buildQueryString } from './query'
 
 describe('buildQueryString', () => {
   it('builds a query string from simple key/value pairs', () => {
-    expect(buildQueryString({ name: 'tag-name', page: 2 })).toBe('name=tag-name&page=2')
+    expect(buildQueryString({ name: 'tag-name', page: "2" })).toBe('name=tag-name&page=2')
   })
 
   it('repeats the key for array values', () => {

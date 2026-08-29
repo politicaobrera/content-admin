@@ -91,7 +91,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
         <BlockNoteView
           id={id}
           editor={editor}
-          theme="dark"
+          theme="light"
           onChange={handleChange}
           slashMenu={false}
         >
@@ -103,7 +103,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
           />
         </BlockNoteView>
       </div>
-      <style jsx>{`
+      {/* <style>{`
           .bn-editor a {
             color: #60a5fa !important;
             text-decoration: underline !important;
@@ -117,7 +117,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
             text-decoration-thickness: 3px !important;
             text-underline-offset: 3px !important;
           }
-        `}</style>      
+        `}</style>       */}
     </div>
   )
 }

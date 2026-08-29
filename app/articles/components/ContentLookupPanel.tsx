@@ -9,9 +9,10 @@ import { ResourceType } from "@/app/types/resource"
 import { TagType } from "@/app/types/tag"
 import TagSelector from "@/app/components/tags/TagSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
+import { Section } from "@/app/types/sections"
 
 type LookupEntity = 'articles' | 'resources'
-type LookupResult = { _id: string, title: string, slug: string }
+type LookupResult = { _id: string, title: string, slug: string, section?: Section}
 
 const MIN_TITLE_LENGTH = 2
 
@@ -77,7 +78,7 @@ const ContentLookupPanel = ({
   }, [debouncedTitle, tags, entity, excludeArticleId, hasFilter])
 
   const handleCopySlug = (item: LookupResult) => {
-    navigator.clipboard.writeText(`/${item.slug}`)
+    navigator.clipboard.writeText(`https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`)
     toast.success("Slug copiado al portapapeles")
   }
 

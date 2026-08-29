@@ -26,6 +26,11 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
 
   const editor = useCreateBlockNote({
     schema: BlockNoteEditorSchema,
+    domAttributes: {
+      editor: {
+        style: 'min-height: 200px;',
+      },
+    }
   });
 
   const insertIframe = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
@@ -89,7 +94,6 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
           theme="dark"
           onChange={handleChange}
           slashMenu={false}
-          style={{minBlockSize: '200px'}}
         >
           <SuggestionMenuController
             triggerCharacter={"/"}

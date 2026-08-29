@@ -20,6 +20,7 @@ import TagSelector from "@/app/components/tags/TagSelector"
 import { TagType } from "@/app/types/tag"
 import ResourceSelector from "./ResourceSelector"
 import ExternalSourcesEditor from "./ExternalSourcesEditor"
+import { useClipboard } from "@/app/hooks/useClipboard"
 
 interface ResourceFormProps {
   resource?: ResourceType
@@ -33,6 +34,7 @@ const options = [
 ];
 
 const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
+  const { copyToClipboard } = useClipboard()
   console.log("recurso con data", resource)
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
@@ -114,10 +116,15 @@ const ResourceForm:React.FC<ResourceFormProps> = ({resource}) => {
     router.push(`/resources`);
   };
 
-  const handleCopyCurrentUrl = () => {
+  const handleCopyCurrentUrl = async () => {
     if (!currentUrl) return
-    navigator.clipboard.writeText(currentUrl)
-    toast.success("URL copiada al portapapeles")
+    const success = await copyToClipboard(currentUrl)
+    if (success) {
+      toast.success("Enlace copiado al portapapeles")
+      return
+    } 
+    toast.error("No se pudo copiar el enlace")
+
   }
 
   const currentValues = watch() as ResourceType

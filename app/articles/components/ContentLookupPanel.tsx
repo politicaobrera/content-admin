@@ -77,9 +77,16 @@ const ContentLookupPanel = ({
     return () => { cancelled = true }
   }, [debouncedTitle, tags, entity, excludeArticleId, hasFilter])
 
-  const handleCopySlug = (item: LookupResult) => {
-    navigator.clipboard.writeText(`https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`)
-    toast.success("Slug copiado al portapapeles")
+  const handleCopySlug = async (item: LookupResult) => {
+    const text = `https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
+     try {
+      await navigator.clipboard.writeText(text)
+      console.log("Texto copiado al portapapeles:", text)
+      toast.success("Enlace copiado!")
+    } catch (err) {
+      console.error("Error al copiar el texto:", err)
+      // Fallback al método antiguo
+    }   
   }
 
   const handleLink = (item: LookupResult) => {
@@ -160,7 +167,7 @@ const ContentLookupPanel = ({
                   className="underline text-sm"
                   onClick={() => handleCopySlug(item)}
                 >
-                  Copiar slug
+                  Copiar enlace
                 </button>
                 <button
                   type="button"

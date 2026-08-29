@@ -257,7 +257,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
                               type="button"
                               onClick={() => handleCopyToClipboard(resource.src)}
                             >
-                              Copiar propio
+                              Copiar link
                             </Button>
                             {(resource.externalSources || []).map((source, idx) => (
                               <Button

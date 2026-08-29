@@ -24,7 +24,7 @@ const FilterUnwantedRequestsMiddleware = (req: NextRequest) => {
   return null;
 };
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   const filtered = FilterUnwantedRequestsMiddleware(req)
   if (filtered) {
     return filtered

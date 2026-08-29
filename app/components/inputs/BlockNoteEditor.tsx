@@ -89,6 +89,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
           theme="dark"
           onChange={handleChange}
           slashMenu={false}
+          style={{minHeight: '200px'}}
         >
           <SuggestionMenuController
             triggerCharacter={"/"}

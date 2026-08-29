@@ -9,9 +9,10 @@ interface BannerProps {
   pageName?: string
   onChange: (banner: BannerType) => void
   onDelete?: (banner: BannerType) => void
+  onCancel?: () => void
 }
 
-const Banner = ({item, onChange, onDelete, pageName}: BannerProps) => {
+const Banner = ({item, onChange, onDelete, onCancel, pageName}: BannerProps) => {
   const bannerItem = useBanner(item, pageName)
   const {
     register,
@@ -155,7 +156,10 @@ const Banner = ({item, onChange, onDelete, pageName}: BannerProps) => {
           </Button>
           <Button
             danger
-            onClick={() => bannerItem.actions.setIsEditing(false)}
+            onClick={() => {
+              bannerItem.actions.setIsEditing(false)
+              onCancel?.()
+            }}
           >
             Cancelar
           </Button>

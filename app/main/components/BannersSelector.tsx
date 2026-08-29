@@ -65,7 +65,7 @@ const BannersSelector = ({id, current, pageName}: BannersSelectorProps) => {
         </div>
         {
           addingBanner && (
-            <Banner item={null} onChange={handleChangeBanner} pageName={pageName} />
+            <Banner item={null} onChange={handleChangeBanner} onCancel={() => setAddingBanner(false)} pageName={pageName} />
           )
         }
       </div>

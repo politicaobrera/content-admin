@@ -118,6 +118,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   }
 
   const handleCopyToClipboard = async (text:string) => {
+    // TODO mover esto a un hook useClipboard
     try {
       await navigator.clipboard.writeText(text)
       console.log("Texto copiado al portapapeles:", text)

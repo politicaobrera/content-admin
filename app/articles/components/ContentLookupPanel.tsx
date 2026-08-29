@@ -80,12 +80,25 @@ const ContentLookupPanel = ({
   const handleCopySlug = async (item: LookupResult) => {
     const text = `https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
      try {
-      await navigator.clipboard.writeText(text)
-      console.log("Texto copiado al portapapeles:", text)
+      if (navigator?.clipboard) {
+        await navigator.clipboard.writeText(text)
+        toast.success("Enlace copiado!")
+        return
+      }
+      
+      // Fallback para navegadores antiguos
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-9999px'
+      textArea.style.top = '-9999px'
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
       toast.success("Enlace copiado!")
     } catch (err) {
       console.error("Error al copiar el texto:", err)
-      // Fallback al método antiguo
     }   
   }
 

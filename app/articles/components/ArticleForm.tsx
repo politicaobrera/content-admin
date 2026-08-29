@@ -16,6 +16,7 @@ const SectionSelector = dynamic(
   () => import('@/app/components/sections/SectionSelector'),
   { ssr: false }
 );
+const ContentLookupPanel = dynamic(() => import('@/app//articles/components/ContentLookupPanel'), { ssr: false });
 
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
@@ -33,7 +34,6 @@ import { Section } from "@/app/types/sections"
 import { ResourceType } from "@/app/types/resource"
 import ActionButtonsContainer from "@/app/components/layout/ActionButtonsContainer"
 import TagSelector from "@/app/components/tags/TagSelector"
-import ContentLookupPanel from "./ContentLookupPanel"
 import { TagType } from "@/app/types/tag"
 import Toggle from "@/app/components/inputs/Toggle"
 import ImportantMessage from "@/app/components/ImportantMessage"

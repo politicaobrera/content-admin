@@ -91,7 +91,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
       const successful = document.execCommand('copy')
       if (successful) {
         console.log("Texto copiado al portapapeles:", text)
-        toast.success("Enlace copiado!")
+        toast.success("Enlace copiado!!!")
       } else {
         throw new Error('Falló la copia')
       }

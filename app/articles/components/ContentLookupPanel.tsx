@@ -96,7 +96,7 @@ const ContentLookupPanel = ({
       textArea.select()
       document.execCommand('copy')
       document.body.removeChild(textArea)
-      toast.success("Enlace copiado!")
+      toast.success("Enlace copiado!!")
     } catch (err) {
       console.error("Error al copiar el texto:", err)
     }   

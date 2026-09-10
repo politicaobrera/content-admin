@@ -41,5 +41,6 @@ export const config = {
     '/tags/:path*',
     '/authors/:path*',
     '/resources/:path*',
+    '/events/:path*',
   ],
 }

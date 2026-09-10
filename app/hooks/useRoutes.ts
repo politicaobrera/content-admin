@@ -12,7 +12,8 @@ import{
   HiOutlineCloudArrowUp,
   HiOutlineTag,
   HiDocument,
-  HiRectangleStack
+  HiRectangleStack,
+  HiOutlineCalendarDays
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -62,6 +63,12 @@ const useRoutes = () => {
       href: '/publicaciones',
       icon: HiRectangleStack,
       active: pathname === '/publicaciones' || pathname.startsWith('/publicaciones/'),
+    },
+    {
+      label: 'Eventos',
+      href: '/events',
+      icon: HiOutlineCalendarDays,
+      active: pathname === '/events' || pathname.startsWith('/events/'),
     },
     {
       label: 'Desplegar',

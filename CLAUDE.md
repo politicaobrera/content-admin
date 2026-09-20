@@ -67,12 +67,22 @@ When adding a new entity or endpoint, mirror this existing pattern (server actio
 **CSP.** `next.config.js` sets a strict Content-Security-Policy allowlisting specific third-party domains (YouTube, Twitter, Facebook, Vimeo, Instagram, Google Analytics, Firebase Storage, jsdelivr, Google Fonts). When integrating a new embed or external asset/script source, update this policy.
 
 # Contexto del otro proyecto (CMS backend)
-   @E:\cloudeProjects\repos\content-server/CLAUDE.md
+   @D:\cloudeProjects\repos\content-server/CLAUDE.md
 
 # Contexto del otro proyecto cliente publico (react gatsby site)
-   @E:\cloudeProjects\repos\politicaobrera-reloaded/CLAUDE.md
+   @D:\cloudeProjects\repos\politicaobrera-reloaded/CLAUDE.md
 
 ## Notes
 
 - `app/pruebas/` is a scratch/testing page, not production functionality.
 - Server actions log errors in Spanish (e.g. `Error al obtener los articulos`) — match this convention for user-facing/log messages in that layer.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

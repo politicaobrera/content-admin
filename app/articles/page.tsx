@@ -3,6 +3,7 @@ import MainContainer from "../components/layout/MainContainer"
 import Articles from "./components/Articles"
 import Loading from "../components/Loading"
 import NewArticleForm from "./components/NewArticleForm";
+import NewArticlesFromWordForm from "./components/NewArticlesFromWordForm";
 import { Params } from "../types/requests";
 
 const ArticlesPage = async ({
@@ -27,6 +28,7 @@ const ArticlesPage = async ({
           Notas
         </h1>
         <NewArticleForm />
+        <NewArticlesFromWordForm />
         <Suspense fallback={<Loading />}>
           <Articles searchParams={params}/>
         </Suspense>

@@ -66,9 +66,11 @@ const parseWordArticle = async (
     }
 
     const bodyParagraphs = paragraphs.slice(lastLabelParagraphIndex + 1)
+    // un <p>&nbsp;</p> entre párrafos reproduce el salto de línea en blanco
+    // que deja Word entre párrafos, tal como lo espera BlockNoteEditor
     const content = bodyParagraphs
       .map((paragraphLines) => `<p>${paragraphLines.join(" ")}</p>`)
-      .join("")
+      .join("<p>&nbsp;</p>")
 
     return {
       data: {

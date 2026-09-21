@@ -7,7 +7,7 @@ import clsx from "clsx"
 import Button from "@/app/components/Button"
 import useCreateArticlesFromWord from "@/app/articles/hooks/useCreateArticlesFromWord"
 
-const ACCEPTED_EXTENSIONS = [".doc", ".docx"]
+const ACCEPTED_EXTENSIONS = [".docx"]
 
 const NewArticlesFromWordForm = () => {
   const router = useRouter()
@@ -21,7 +21,7 @@ const NewArticlesFromWordForm = () => {
       ACCEPTED_EXTENSIONS.some((ext) => file.name.toLowerCase().endsWith(ext))
     )
     if (files.length === 0) {
-      toast.error("Seleccioná uno o más archivos Word (.doc, .docx)")
+      toast.error("Seleccioná uno o más archivos Word (.docx)")
       return
     }
 
@@ -85,7 +85,7 @@ const NewArticlesFromWordForm = () => {
         )}
       >
         <p className="text-sm text-gray-500">
-          Arrastrá uno o más archivos Word aquí, o
+          Arrastrá uno o más archivos Word (.docx) aquí, o buscalos con el botón
         </p>
         <Button
           type="button"

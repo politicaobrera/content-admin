@@ -12,7 +12,7 @@ export type ParseWordArticleError = {
   reason: string
 }
 
-const LABEL_REGEX = /^\s*(titulo|t[ií]tulo|volanta|bajada|autores?)\s*:\s*(.*)$/i
+const LABEL_REGEX = /^\s*(titulo|t[ií]tulo|volanta|bajada|autor(?:es)?)\s*:\s*(.*)$/i
 
 const normalizeLabel = (label: string): "titulo" | "volanta" | "bajada" | "autor" => {
   const lower = label.toLowerCase()
@@ -28,23 +28,32 @@ const parseWordArticle = async (
   try {
     const arrayBuffer = await file.arrayBuffer()
     const { value: rawText } = await mammoth.extractRawText({ arrayBuffer })
-    const lines = rawText.split("\n").map((line: string) => line.trim())
+    // mammoth separa párrafos con líneas vacías; cada párrafo puede tener
+    // varias líneas (saltos de línea "duros" dentro del mismo párrafo de Word)
+    const paragraphs = rawText
+      .split(/\r?\n\r?\n/)
+      .map((paragraph) => paragraph.split(/\r?\n/).map((line) => line.trim()).filter((line) => line.length > 0))
+      .filter((paragraphLines) => paragraphLines.length > 0)
 
     let title: string | undefined
     let volanta: string | undefined
     let subhead: string | undefined
-    let lastLabelIndex = -1
+    let lastLabelParagraphIndex = -1
 
-    lines.forEach((line: string, index: number) => {
-      const match = line.match(LABEL_REGEX)
-      if (!match) return
-      const label = normalizeLabel(match[1])
-      const value = match[2].trim()
-      lastLabelIndex = index
-      if (label === "titulo") title = value
-      if (label === "volanta") volanta = value
-      if (label === "bajada") subhead = value
-      // autor se detecta pero se ignora por el momento
+    paragraphs.forEach((paragraphLines, index) => {
+      const hasLabel = paragraphLines.some((line) => LABEL_REGEX.test(line))
+      if (!hasLabel) return
+      lastLabelParagraphIndex = index
+      paragraphLines.forEach((line) => {
+        const match = line.match(LABEL_REGEX)
+        if (!match) return
+        const label = normalizeLabel(match[1])
+        const value = match[2].trim()
+        if (label === "titulo") title = value
+        if (label === "volanta") volanta = value
+        if (label === "bajada") subhead = value
+        // autor se detecta pero se ignora por el momento
+      })
     })
 
     if (!title) {
@@ -56,10 +65,10 @@ const parseWordArticle = async (
       }
     }
 
-    const bodyLines = lines
-      .slice(lastLabelIndex + 1)
-      .filter((line: string) => line.length > 0)
-    const content = bodyLines.map((line: string) => `<p>${line}</p>`).join("")
+    const bodyParagraphs = paragraphs.slice(lastLabelParagraphIndex + 1)
+    const content = bodyParagraphs
+      .map((paragraphLines) => `<p>${paragraphLines.join(" ")}</p>`)
+      .join("")
 
     return {
       data: {

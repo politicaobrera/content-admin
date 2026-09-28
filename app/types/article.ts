@@ -36,6 +36,7 @@ export type ArticleType = {
   createdAt: string
   updatedAt: string
   publishedAt: string | null
+  lastSyncedAt: string | null
   publishedSnapshot: PublishedSnapshot | null
   relatedArticles: Partial<ArticleType>[]
   relatedResources: Partial<ResourceType>[]

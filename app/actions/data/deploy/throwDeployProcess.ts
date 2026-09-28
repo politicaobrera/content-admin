@@ -9,7 +9,7 @@ const repo = process.env.GITHUB_REPO;
 const workflow = process.env.WORKFLOW;
 
 const throwDeployProcess = async function (fullRebuild: boolean = false):Promise<iResponseOne<any>> {
-  console.log(`throwing github build and deploy action (fullRebuild=${fullRebuild})`)
+  console.log(`throwing github build and deploy action (fullRebuild=${fullRebuild}) owner:${owner}, repo:${repo}, workflow:${workflow}`)
   try {
     const response:any = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow}/dispatches`,

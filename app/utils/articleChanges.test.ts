@@ -17,6 +17,7 @@ const baseArticle: ArticleType = {
   createdAt: "2026-08-01T00:00:00.000Z",
   updatedAt: "2026-08-05T00:00:00.000Z",
   publishedAt: "2026-08-01T00:00:00.000Z",
+  lastSyncedAt: "2026-08-01T00:00:00.000Z",
   publishedSnapshot: {
     title: "Título original",
     subhead: "Bajada original",

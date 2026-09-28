@@ -8,6 +8,7 @@ describe("hasPendingChangesSincePublish", () => {
     expect(hasPendingChangesSincePublish({
       status: ArticleStatus.Draft,
       publishedAt: "2026-08-01T00:00:00.000Z",
+      lastSyncedAt: "2026-08-01T00:00:00.000Z",
       updatedAt: "2026-08-05T00:00:00.000Z",
     }, NOW)).toBe(false)
   })
@@ -16,6 +17,7 @@ describe("hasPendingChangesSincePublish", () => {
     expect(hasPendingChangesSincePublish({
       status: ArticleStatus.Published,
       publishedAt: null,
+      lastSyncedAt:null,
       updatedAt: "2026-08-05T00:00:00.000Z",
     }, NOW)).toBe(false)
   })
@@ -24,6 +26,7 @@ describe("hasPendingChangesSincePublish", () => {
     expect(hasPendingChangesSincePublish({
       status: ArticleStatus.Published,
       publishedAt: "2026-08-05T00:00:00.000Z",
+      lastSyncedAt: "2026-08-05T00:00:00.000Z",
       updatedAt: "2026-08-05T00:00:00.000Z",
     }, NOW)).toBe(false)
   })
@@ -32,6 +35,7 @@ describe("hasPendingChangesSincePublish", () => {
     expect(hasPendingChangesSincePublish({
       status: ArticleStatus.Published,
       publishedAt: "2026-08-05T00:00:00.000Z",
+      lastSyncedAt: "2026-08-05T00:00:00.000Z",
       updatedAt: "2026-08-10T00:00:00.000Z",
     }, NOW)).toBe(true)
   })
@@ -40,6 +44,7 @@ describe("hasPendingChangesSincePublish", () => {
     expect(hasPendingChangesSincePublish({
       status: ArticleStatus.Published,
       publishedAt: "2026-07-01T00:00:00.000Z",
+      lastSyncedAt: "2026-07-01T00:00:00.000Z",
       updatedAt: "2026-07-20T00:00:00.000Z",
     }, NOW)).toBe(false)
   })

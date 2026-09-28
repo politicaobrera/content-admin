@@ -21,7 +21,7 @@ const throwDeployProcess = async function (fullRebuild: boolean = false):Promise
         },
         cache: 'no-store',
         method: 'POST',
-        body: JSON.stringify({ref: "master", inputs: { full_rebuild: String(fullRebuild) }})
+        body: JSON.stringify({ref: "main", inputs: { full_rebuild: String(fullRebuild) }})
       }
     );
     if(!response.ok) {

@@ -74,7 +74,7 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
     debounce(async () => {
       try {
         const html = await editor.blocksToHTMLLossy();
-        onChange?.(html);
+        onChange?.(html.replace(/<p><\/p>/g, '<p>&nbsp;</p>'));
       } catch (e) {
         console.error(e);
       }

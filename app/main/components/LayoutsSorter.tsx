@@ -13,7 +13,11 @@ import Button from "@/app/components/Button"
 import usePortada from "../hooks/usePortada"
 import { LAYOUT_CATALOG, LayoutCatalogEntry } from "../layoutCatalog"
 import DraggableLayout from "./DraggableLayout"
+import DroppableColumn from "./DroppableColumn"
 import LayoutSchematicPreview from "./LayoutSchematicPreview"
+
+const CURRENT_COLUMN_ID = "sortable-layouts-current"
+const AVAILABLE_COLUMN_ID = "sortable-layouts-available"
 
 interface LayoutsSorterProps {
   current: string[]
@@ -61,7 +65,11 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
     }
 
     const activeList = layouts.find((item) => item.slug === active.id) ? 'current' : 'available'
-    const overList = layouts.find((item) => item.slug === over.id) ? 'current' : 'available'
+    const overList = over.id === CURRENT_COLUMN_ID
+      ? 'current'
+      : over.id === AVAILABLE_COLUMN_ID
+        ? 'available'
+        : layouts.find((item) => item.slug === over.id) ? 'current' : 'available'
 
     if (activeList === overList) {
       if (activeList === 'current') {
@@ -107,9 +115,9 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
             <div className="bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Orden actual</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 min-h-[200px]">
+            <DroppableColumn id={CURRENT_COLUMN_ID}>
               <SortableContext
-                id="sortable-layouts-current"
+                id={CURRENT_COLUMN_ID}
                 items={layouts.map((layout) => layout.slug)}
                 strategy={verticalListSortingStrategy}
               >
@@ -117,15 +125,15 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
                   <DraggableLayout key={layout.slug} layout={layout} idx={idx} />
                 ))}
               </SortableContext>
-            </div>
+            </DroppableColumn>
           </div>
           <div className="flex flex-col flex-1">
             <div className="bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Disponibles</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 min-h-[200px]">
+            <DroppableColumn id={AVAILABLE_COLUMN_ID}>
               <SortableContext
-                id="sortable-layouts-available"
+                id={AVAILABLE_COLUMN_ID}
                 items={available.map((layout) => layout.slug)}
                 strategy={verticalListSortingStrategy}
               >
@@ -133,7 +141,7 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
                   <DraggableLayout key={layout.slug} layout={layout} idx={idx} showIndex={false} />
                 ))}
               </SortableContext>
-            </div>
+            </DroppableColumn>
           </div>
           <DragOverlay>
             {activeItem ? (

@@ -18,4 +18,5 @@ export interface PageType {
   videos: Video[]
   banners: BannerType[]
   articles: Partial<ArticleType>[]
+  layouts: string[]
 }

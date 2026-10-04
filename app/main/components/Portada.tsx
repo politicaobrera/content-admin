@@ -9,6 +9,8 @@ import { isInArray } from "@/app/utils/arrays"
 import BannersSelector from "./BannersSelector"
 import Separator from "@/app/components/layout/Separator"
 import VideosSelector from "./VideosSelector"
+import LayoutsSorter from "./LayoutsSorter"
+import PortadaTabs from "./PortadaTabs"
 
 interface PortadaProps {
   searchParams: Params;
@@ -30,6 +32,7 @@ const Portada = async ({searchParams}: PortadaProps) => {
     articles: currentArticles,
     banners: currentBanners,
     videos: currentVideos,
+    layouts: currentLayouts,
     name
   } = homePageData as PageType;
   
@@ -41,21 +44,30 @@ const Portada = async ({searchParams}: PortadaProps) => {
   //console.log("ultima cleaned", ultimasCleaned.map((i:ArticleType) => i.articleId))
   return (
     <section id="portada" className="flex flex-col gap-5 mt-5">
-      <ArticlesSorter
-        current={currentArticles}
-        newToAdd={ultimasCleaned as Partial<ArticleType>[]}
-        id={id}
-      />
-      <Separator />
-      <BannersSelector
-        id={id}
-        pageName={name}
-        current={currentBanners}
-      />
-      <Separator />
-      <VideosSelector
-        id={id}
-        current={currentVideos}
+      <PortadaTabs
+        articlesTab={
+          <div className="flex flex-col gap-5">
+            <ArticlesSorter
+              current={currentArticles}
+              newToAdd={ultimasCleaned as Partial<ArticleType>[]}
+              id={id}
+            />
+            <Separator />
+            <BannersSelector
+              id={id}
+              pageName={name}
+              current={currentBanners}
+            />
+            <Separator />
+            <VideosSelector
+              id={id}
+              current={currentVideos}
+            />
+          </div>
+        }
+        layoutsTab={
+          <LayoutsSorter current={currentLayouts ?? []} id={id} />
+        }
       />
     </section>
   )

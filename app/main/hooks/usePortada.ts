@@ -20,6 +20,11 @@ export default function usePortada(){
     const {data, error} = await editPage({videos, _id: id});
     return {data, error};
   }
-  
-  return {saveArticles, saveBanners, saveVideos}
+
+  const saveLayouts = async (layouts: string[], id:string) : Promise<iResponseOne<PageType>> => {
+    const {data, error} = await editPage({layouts, _id: id});
+    return {data, error};
+  }
+
+  return {saveArticles, saveBanners, saveVideos, saveLayouts}
 }

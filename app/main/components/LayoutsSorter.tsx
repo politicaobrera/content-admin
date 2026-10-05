@@ -115,7 +115,7 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
             <div className="bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Orden actual</h2>
             </div>
-            <DroppableColumn id={CURRENT_COLUMN_ID}>
+            <DroppableColumn id={CURRENT_COLUMN_ID} className="min-h-[200px]">
               <SortableContext
                 id={CURRENT_COLUMN_ID}
                 items={layouts.map((layout) => layout.slug)}
@@ -131,7 +131,7 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
             <div className="bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Disponibles</h2>
             </div>
-            <DroppableColumn id={AVAILABLE_COLUMN_ID}>
+            <DroppableColumn id={AVAILABLE_COLUMN_ID} className="min-h-[200px]">
               <SortableContext
                 id={AVAILABLE_COLUMN_ID}
                 items={available.map((layout) => layout.slug)}

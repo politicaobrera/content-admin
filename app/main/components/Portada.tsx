@@ -37,11 +37,6 @@ const Portada = async ({searchParams}: PortadaProps) => {
   } = homePageData as PageType;
   
   const ultimasCleaned = ultimas && ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
-  // IMPORTANT TODO FOR DEV PORPOSE REMOVE LATER 
-  if(currentArticles.length === 0 && ultimasCleaned && ultimasCleaned.length > 0) {
-    currentArticles.push(ultimasCleaned.pop() as Partial<ArticleType>)
-  }
-  //console.log("ultima cleaned", ultimasCleaned.map((i:ArticleType) => i.articleId))
   return (
     <section id="portada" className="flex flex-col gap-5 mt-5">
       <PortadaTabs

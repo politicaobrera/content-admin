@@ -8,12 +8,16 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable"
 import DraggableArticle from "@/app/main/components/DraggableArticle"
+import DroppableColumn from "@/app/main/components/DroppableColumn"
 import ArticleSearchPanel from "@/app/main/components/ArticleSearchPanel"
 import { ArticleType } from "@/app/types/article"
 import Button from "@/app/components/Button"
 import usePortada from "../hooks/usePortada"
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
+
+const CURRENT_COLUMN_ID = "sortable-actual"
+const NEW_TO_ADD_COLUMN_ID = "sortable-ultimas"
 
 //TODO: Ver si en vez de partial hay que resolverlo con peeks y omits etc
 interface ArticlesSorterProps {
@@ -74,9 +78,11 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
     const activeList = currentArticles.find((item) => item.id === active.id)
       ? 'current'
       : 'newToAdd';
-    const overList = currentArticles.find((item) => item.id === over.id)
+    const overList = over.id === CURRENT_COLUMN_ID
       ? 'current'
-      : 'newToAdd';
+      : over.id === NEW_TO_ADD_COLUMN_ID
+        ? 'newToAdd'
+        : currentArticles.find((item) => item.id === over.id) ? 'current' : 'newToAdd';
 
     if (activeList === overList) {
       if (activeList === 'current') {
@@ -127,9 +133,9 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Orden actual</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-[75vh] overflow-scroll">
+            <DroppableColumn id={CURRENT_COLUMN_ID} className="h-[75vh] overflow-scroll">
               <SortableContext
-                id="sortable-actual"
+                id={CURRENT_COLUMN_ID}
                 items={currentArticles.map((article) => article.id)}
                 strategy={verticalListSortingStrategy}
               >
@@ -137,15 +143,15 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
                   <DraggableArticle key={article.id} article={article} idx={idx} />
                 ))}
               </SortableContext>
-            </div>
+            </DroppableColumn>
           </div>
           <div className=" flex flex-col">
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Últimas notas</h2>
             </div>
-            <div className="border-dashed border-gray-700 border-2 p-2 w-auto mt-1 h-[75vh] overflow-scroll">
+            <DroppableColumn id={NEW_TO_ADD_COLUMN_ID} className="h-[75vh] overflow-scroll">
               <SortableContext
-                id="sortable-ultimas"
+                id={NEW_TO_ADD_COLUMN_ID}
                 items={newToAddArticles.map((article) => article.id)}
                 strategy={verticalListSortingStrategy}
               >
@@ -153,7 +159,7 @@ const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
                   <DraggableArticle key={article.id} article={article} idx={idx} showIndex={false}/>
                 ))}
               </SortableContext>
-            </div>
+            </DroppableColumn>
           </div>
           <DragOverlay>
             {activeItem ? (

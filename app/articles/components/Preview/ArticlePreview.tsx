@@ -75,7 +75,7 @@ const ArticlePreview = ({article, mainImage}:ArticlePreviewProps) => {
       <img className="w-full h-auto mt-2" src={mainImage?.src}></img>
 
       <div className="mt-10 text-left overflow-hidden break-all">
-        <div dangerouslySetInnerHTML={{ __html: article.content }} />
+        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: article.content }} />
       </div>
       <div className='mt-5'>
         <TagList

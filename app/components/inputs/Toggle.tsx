@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ToggleProps {
   labelConfig: {
@@ -14,6 +14,13 @@ interface ToggleProps {
 const Toggle = ({labelConfig, onChange, value = false, disabled = false}: ToggleProps) => {
   const [isChecked, setIsChecked] = useState<boolean>(value)
   const [isLocked, setIsLocked] = useState<boolean>(false)
+
+  // resincroniza el estado visual cuando el padre cambia `value` por su cuenta (p. ej.
+  // una campaña pasada a Borrador fuerza isActive=false desde afuera, sin pasar por
+  // handleToggle acá abajo)
+  useEffect(() => {
+    setIsChecked(value)
+  }, [value])
 
   const handleToggle = () => {
     if (disabled || isLocked) return

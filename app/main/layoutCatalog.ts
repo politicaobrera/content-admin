@@ -13,6 +13,9 @@ export const LAYOUT_CATALOG: LayoutCatalogEntry[] = [
   { slug: "duo-strip-7", label: "Dúo + tira horizontal (7 notas)", articleCount: 7 },
   { slug: "photo-strip-5", label: "Tira de fotos (5 notas)", articleCount: 5 },
   { slug: "magazine-spread-6", label: "Spread revista (6 notas)", articleCount: 6 },
+  { slug: "breaking-news-1", label: "Último momento (1 nota)", articleCount: 1 },
+  { slug: "timeline-strip-6", label: "Al minuto (6 notas)", articleCount: 6 },
+  { slug: "split-feature-5", label: "Split editorial (5 notas)", articleCount: 5 },
 ]
 
 export const DEFAULT_LAYOUT_ORDER = [

@@ -64,6 +64,30 @@ function LayoutBoxes({ slug }: { slug: string }) {
           </div>
         </div>
       )
+    case "breaking-news-1":
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <div className={clsx(BOX, "h-14 w-full")} />
+        </div>
+      )
+    case "timeline-strip-6":
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <div className={clsx(BOX, "h-4 w-full")} />
+          <div className="flex gap-1">
+            {Array.from({ length: 6 }).map((_, i) => <div key={i} className={clsx(BOX, "h-7 flex-1")} />)}
+          </div>
+        </div>
+      )
+    case "split-feature-5":
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <div className="flex gap-1"><div className={clsx(BOX, "h-10 w-1/2")} /><div className={clsx(BOX, "h-10 w-1/2")} /></div>
+          <div className="flex gap-1">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className={clsx(BOX, "h-6 flex-1")} />)}
+          </div>
+        </div>
+      )
     default:
       return <div className={clsx(BOX, "h-8 w-full")} />
   }

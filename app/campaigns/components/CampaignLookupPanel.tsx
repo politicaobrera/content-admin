@@ -89,7 +89,7 @@ const CampaignLookupPanel = ({
 
   const handleCopySlug = async (item: LookupResult) => {
     if (!item.slug) return
-    const text = `https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
+    const text = `${process.env.NEXT_PUBLIC_SITE_URL}${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
     const success = await copyToClipboard(text)
     if (success) {
       toast.success("Enlace copiado al portapapeles!!")

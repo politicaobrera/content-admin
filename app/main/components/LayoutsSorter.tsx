@@ -15,6 +15,7 @@ import { LAYOUT_CATALOG, LayoutCatalogEntry } from "../layoutCatalog"
 import DraggableLayout from "./DraggableLayout"
 import DroppableColumn from "./DroppableColumn"
 import LayoutSchematicPreview from "./LayoutSchematicPreview"
+import PortadaPreviewIframe from "./PortadaPreviewIframe"
 
 const CURRENT_COLUMN_ID = "sortable-layouts-current"
 const AVAILABLE_COLUMN_ID = "sortable-layouts-available"
@@ -164,6 +165,12 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
       </div>
       <div className="flex align-middle justify-end">
         <Button onClick={handleSave}>Guardar Orden</Button>
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
+          <h2 className="text-2xl font-bold">Previsualización real</h2>
+        </div>
+        <PortadaPreviewIframe layouts={layouts} />
       </div>
     </div>
   )

@@ -11,6 +11,7 @@ import Separator from "@/app/components/layout/Separator"
 import VideosSelector from "./VideosSelector"
 import LayoutsSorter from "./LayoutsSorter"
 import PortadaTabs from "./PortadaTabs"
+import { PortadaDraftProvider } from "../context/PortadaDraftContext"
 
 interface PortadaProps {
   searchParams: Params;
@@ -37,34 +38,37 @@ const Portada = async ({searchParams}: PortadaProps) => {
   } = homePageData as PageType;
   
   const ultimasCleaned = ultimas && ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
+  const initialDraftArticles = currentArticles.map((item) => ({ ...item, id: item?.articleId || 0 }))
+
   return (
-    <section id="portada" className="flex flex-col gap-5 mt-5">
-      <PortadaTabs
-        articlesTab={
-          <div className="flex flex-col gap-5">
-            <ArticlesSorter
-              current={currentArticles}
-              newToAdd={ultimasCleaned as Partial<ArticleType>[]}
-              id={id}
-            />
-            <Separator />
-            <BannersSelector
-              id={id}
-              pageName={name}
-              current={currentBanners}
-            />
-            <Separator />
-            <VideosSelector
-              id={id}
-              current={currentVideos}
-            />
-          </div>
-        }
-        layoutsTab={
-          <LayoutsSorter current={currentLayouts ?? []} id={id} />
-        }
-      />
-    </section>
+    <PortadaDraftProvider initialArticles={initialDraftArticles}>
+      <section id="portada" className="flex flex-col gap-5 mt-5">
+        <PortadaTabs
+          articlesTab={
+            <div className="flex flex-col gap-5">
+              <ArticlesSorter
+                newToAdd={ultimasCleaned as Partial<ArticleType>[]}
+                id={id}
+              />
+              <Separator />
+              <BannersSelector
+                id={id}
+                pageName={name}
+                current={currentBanners}
+              />
+              <Separator />
+              <VideosSelector
+                id={id}
+                current={currentVideos}
+              />
+            </div>
+          }
+          layoutsTab={
+            <LayoutsSorter current={currentLayouts ?? []} id={id} />
+          }
+        />
+      </section>
+    </PortadaDraftProvider>
   )
 }
 

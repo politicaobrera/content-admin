@@ -80,7 +80,7 @@ const ContentLookupPanel = ({
   }, [debouncedTitle, tags, entity, excludeArticleId, hasFilter])
 
   const handleCopySlug = async (item: LookupResult) => {
-    const text = `https://politicaobrerareloadedtest.firebaseapp.com${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
+    const text = `${process.env.NEXT_PUBLIC_SITE_URL}${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
     const success = await copyToClipboard(text)
     if (success) {
       console.log("Enlace al portapapeles:", text)

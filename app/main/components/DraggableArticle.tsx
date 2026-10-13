@@ -1,6 +1,6 @@
 'use client'
 
-import { ArticleWithID } from "@/app/main/components/ArticlesSorter";
+import { ArticleWithID } from "@/app/main/context/PortadaDraftContext";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";

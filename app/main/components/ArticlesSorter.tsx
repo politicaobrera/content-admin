@@ -15,19 +15,15 @@ import Button from "@/app/components/Button"
 import usePortada from "../hooks/usePortada"
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
+import { ArticleWithID, usePortadaDraft } from "../context/PortadaDraftContext"
 
 const CURRENT_COLUMN_ID = "sortable-actual"
 const NEW_TO_ADD_COLUMN_ID = "sortable-ultimas"
 
 //TODO: Ver si en vez de partial hay que resolverlo con peeks y omits etc
 interface ArticlesSorterProps {
-  current: Partial<ArticleType>[]
   newToAdd: Partial<ArticleType>[]
   id: string
-}
-
-export interface ArticleWithID extends Partial<ArticleType> {
-  id: number
 }
 
 function addIDToArticles (list:Partial<ArticleType>[]): ArticleWithID[] {
@@ -35,10 +31,12 @@ function addIDToArticles (list:Partial<ArticleType>[]): ArticleWithID[] {
 }
 
 // TODO: Article or content or both sorter?
-const ArticlesSorter = ({ current, newToAdd, id }: ArticlesSorterProps) => {
+const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
   const {saveArticles}= usePortada();
   const router = useRouter()
-  const [currentArticles, setCurrentArticles] = useState(addIDToArticles(current));
+  // currentArticles vive en el contexto compartido (PortadaDraftContext) en vez de un
+  // useState local, para que LayoutsSorter vea el orden actual sin tener que guardar antes
+  const { draftArticles: currentArticles, setDraftArticles: setCurrentArticles } = usePortadaDraft()
   const [newToAddArticles, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
   const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
 

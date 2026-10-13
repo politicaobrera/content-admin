@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
+// el sitio público (Gatsby) se embebe en un iframe para la previsualización real de
+// portada (ver app/main/components/PortadaPreviewIframe.tsx) — su origen necesita estar
+// en frame-src más abajo, si no el navegador bloquea el iframe antes de intentar cargarlo
+const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL || ''
+
 const nextConfig = {
   experimental: {
     serverActions: {
@@ -63,12 +68,13 @@ const nextConfig = {
                 'self' 
                 https://cdn.jsdelivr.net 
                 https://fonts.gstatic.com;
-              frame-src 
-                'self' 
-                https://www.youtube.com 
-                https://platform.twitter.com 
-                https://www.facebook.com 
-                https://player.vimeo.com 
+              frame-src
+                'self'
+                ${SITE_ORIGIN}
+                https://www.youtube.com
+                https://platform.twitter.com
+                https://www.facebook.com
+                https://player.vimeo.com
                 https://www.instagram.com;
               object-src 'none';
               base-uri 'self';

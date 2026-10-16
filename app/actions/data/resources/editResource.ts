@@ -19,12 +19,16 @@ const editResource = async function (data:Partial<ResourceType>):Promise<iRespon
   })
 
   if(!response.ok) {
-    console.log(`Error al editar el recurso ${data._id} (${response.status}): ${response.statusText}`)
+    // el backend manda un mensaje descriptivo en el body (ej: "falta subir un
+    // archivo...") — sin leerlo, el toast siempre mostraba el genérico "Bad Request"
+    const body = await response.json().catch(() => null)
+    const message = body?.error || `Error al editar el recurso ${data._id} (${response.status}): ${response.statusText}`
+    console.log(`Error al editar el recurso ${data._id} (${response.status}): ${message}`)
     return {
       error: {
         status: response.status,
         statusText: response.statusText,
-        message: `Error al editar el recurso ${data._id}(${response.status}): ${response.statusText}`,
+        message,
       },
     }
   }

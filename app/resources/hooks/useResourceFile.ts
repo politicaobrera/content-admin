@@ -61,6 +61,13 @@ const useResourceFile = (
 
   useEffect(() =>{
     setAccept(getFileAcceptType(sourceType))
+    // si ya había un archivo elegido para el tipo anterior (ej: un video), cambiar el
+    // tipo a Documento lo subiría igual a la carpeta de Storage del tipo nuevo sin que
+    // el archivo en sí cambie — se limpia para forzar a elegir de nuevo con el tipo ya
+    // seleccionado.
+    setFile(null)
+    setImageFileToUpload(null)
+    setPreview('')
   }, [sourceType])
 
   const processFile = async () => {
@@ -96,9 +103,13 @@ const useResourceFile = (
     try {
       const extension = fileToUpload.name.split('.').pop()
       const slug = sluged(fileName) || sluged(fileToUpload.name.replace(/\.[^/.]+$/, ''))
+      // el slug solo (p. ej. derivado del título) no es único: dos recursos con el
+      // mismo nombre pisaban el mismo path en Storage y uno terminaba apuntando al
+      // archivo del otro. El timestamp garantiza un path distinto en cada subida.
+      const uniqueSlug = `${slug}-${Date.now()}`
       const originPath = origin === ResourceOrigin.Publications ? 'publications/' : ''
       const folder = getStorageFolder(sourceType)
-      const storageRef = ref(storage, `/recursos/${folder}/${originPath}${slug}.${extension}`)
+      const storageRef = ref(storage, `/recursos/${folder}/${originPath}${uniqueSlug}.${extension}`)
       await uploadBytesResumable(storageRef, fileToUpload);
       const url = await getDownloadURL(storageRef)
       setCurrent(url)

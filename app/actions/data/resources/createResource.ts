@@ -20,12 +20,16 @@ const createResource = async function (data:ResourceType):Promise<iResponseOne<R
     )
 
     if(!response.ok) {
-      console.log(`Error al crear el recurso (${response.status}): ${response.statusText}`)
+      // el backend manda un mensaje descriptivo en el body (ej: "falta subir un
+      // archivo...") — sin leerlo, el toast siempre mostraba el genérico "Bad Request"
+      const body = await response.json().catch(() => null)
+      const message = body?.error || `Error al crear el recurso (${response.status}): ${response.statusText}`
+      console.log(`Error al crear el recurso (${response.status}): ${message}`)
       return {
         error: {
           status: response.status,
           statusText: response.statusText,
-          message: `Error al crear el recurso (${response.status}): ${response.statusText}`,
+          message,
         },
       }
     }

@@ -31,6 +31,8 @@ const Input: React.FC<InputProps> = ({
   placeHolder,
 }) => {
   
+    const error = errors[id]
+
     return (
       <div>
         {label && (
@@ -45,6 +47,7 @@ const Input: React.FC<InputProps> = ({
           htmlFor={id}
         >
           {label}
+          {required && <span className="text-rose-500 ml-0.5">*</span>}
         </label>
         )}
         <div className="mt-2">
@@ -54,6 +57,8 @@ const Input: React.FC<InputProps> = ({
             disabled={disabled}
             placeholder={placeHolder}
             autoComplete={id}
+            aria-invalid={error ? "true" : undefined}
+            aria-describedby={error ? `${id}-error` : undefined}
             {...register(id, { required })}
             className={clsx(`
               form-input
@@ -73,11 +78,18 @@ const Input: React.FC<InputProps> = ({
               placeholder:text-gray-400
               sm:text-sm
               sm:leading-6`,
-              errors[id] && 'focus:ring-rose-500',
+              error && 'ring-rose-400 focus:ring-rose-500',
               disabled && 'opacity-50 cursor-default'
             )}
           />
         </div>
+        {error && (
+          <p id={`${id}-error`} className="mt-1 text-sm text-rose-600">
+            {typeof error.message === 'string' && error.message
+              ? error.message
+              : 'Este campo es obligatorio'}
+          </p>
+        )}
       </div>
     );
 };

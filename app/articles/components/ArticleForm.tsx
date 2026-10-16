@@ -160,7 +160,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             <ActionButtonsContainer>
               <Button
                 type="submit"
-                disabled={loading}
+                loading={loading}
               >
                 GUARDAR
               </Button>
@@ -169,9 +169,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
                 disabled={loading}
                 onClick={handleCancel}
               >
-                {
-                  loading ? 'Loading' : 'Cancelar'
-                }
+                Cancelar
               </Button>
             </ActionButtonsContainer>
             <Input
@@ -191,6 +189,8 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             ref={mainImageRef}
             id="main-image"
             label="Imagen principal"
+            // article.slug ya viene como "{articleId}-{titulo-sluggeado}" (lo arma el
+            // backend en articles.controller.ts), así que ya es único por sí solo.
             fileName={article.slug}
             image={article.image}
           />
@@ -257,7 +257,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           <ActionButtonsContainer>
             <Button
               type="submit"
-              disabled={loading}
+              loading={loading}
             >
               GUARDAR
             </Button>
@@ -266,9 +266,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
               disabled={loading}
               onClick={handleCancel}
             >
-              {
-                loading ? 'Loading' : 'Cancelar'
-              }
+              Cancelar
             </Button>
           </ActionButtonsContainer>
         </form>

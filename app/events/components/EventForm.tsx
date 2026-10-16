@@ -181,20 +181,16 @@ const EventForm:React.FC<EventFormProps> = ({event}) => {
           <ActionButtonsContainer>
             <Button
               type="submit"
-              disabled={loading}
+              loading={loading}
             >
-              {
-                loading ? 'Loading' : 'Guardar'
-              }
+              Guardar
             </Button>
             <Button
               danger
               disabled={loading}
               onClick={handleCancel}
             >
-              {
-                loading ? 'Loading' : 'Cancelar'
-              }
+              Cancelar
             </Button>
           </ActionButtonsContainer>
         </form>

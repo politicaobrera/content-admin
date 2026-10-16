@@ -6,24 +6,13 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
 import { Video } from "@/app/types/sitepage"
 import Input from "@/app/components/inputs/Input"
 import Button from "@/app/components/Button"
+import VideoPreviewPlayer from "./VideoPreviewPlayer"
 import usePortada from "../hooks/usePortada"
 
 interface VideosSelectorProps {
   current: Video[]
   id: string
 }
-
-interface VideoFormValues {
-  title1?: string
-  url1?: string
-  title2?: string
-  url2?: string
-  title3?: string
-  url3?: string
-  title4?: string
-  url4?: string
-}
-
 
 function videoArrayToFlatStructure(array: Video[]): {[key:string]:string} {
   const result:any = {}
@@ -62,38 +51,26 @@ function flatStructureToVideoArray(values: {[key:string]:string}): Video[] {
 }
 
 const VideosSelector = ({id, current}: VideosSelectorProps) => {
-  const [currentVideos, setCurrentVideos] = useState(current)
   const [loading, setLoading] = useState<boolean>(false)
   const {saveVideos}= usePortada()
   const {
     register,
     handleSubmit,
+    watch,
     formState: {
       errors,
-    } 
+    }
   } = useForm<FieldValues>({
-    // defaultValues:{
-    //   title1: '',
-    //   url1: '',
-    //   title2: '',
-    //   url2: '',
-    //   title3: '',
-    //   url3: '',
-    //   title4: '',
-    //   url4: '',
-    // }
-    defaultValues: videoArrayToFlatStructure(currentVideos)
+    defaultValues: videoArrayToFlatStructure(current)
   })
 
   const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
-    console.log(payload)
     setLoading(true)
     const newVids:Video[] = flatStructureToVideoArray(payload)
-    console.log("newVids", newVids)
     saveVideos(newVids, id).then(result => {
       if (result.error){
         toast.error(result.error.message)
-      } 
+      }
       if(result.data){
         toast.success("videos de portada actualizado correctamente")
       }
@@ -104,93 +81,42 @@ const VideosSelector = ({id, current}: VideosSelectorProps) => {
   return (
     <div className="flex flex-col gap-3">
       <h5>Videos</h5>
+      <p className="text-sm text-gray-500">
+        Estos 4 videos se muestran en el carrousel de la portada del sitio público. El preview
+        refleja exactamente cómo se va a ver cada video ahí.
+      </p>
       <form
         className="space-y-6"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex flex-col gap-2">
-          <Input
-            label="1"
-            id="title1"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Título del primer video"
-          />
-          <Input
-            id="url1"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="url del video"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Input
-            label="2"
-            id="title2"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Título del segundo video"
-          />
-          <Input
-            id="url2"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="url del video"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Input
-            label="Título 3"
-            id="title3"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Título del tercero video"
-          />
-          <Input
-            id="url3"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="url del video"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Input
-            label="Título 4"
-            id="title4"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="Título del cuarto video"
-          />
-          <Input
-            id="url4"
-            type="text"
-            register={register}
-            required={true}
-            disabled={loading}
-            errors={errors}
-            placeHolder="url del video"
-          />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {[1, 2, 3, 4].map((num) => (
+            <div key={num} className="flex flex-col gap-2 rounded-md border-2 border-gray-200 p-3">
+              <span className="text-sm font-semibold text-gray-700">Video {num}</span>
+              <VideoPreviewPlayer
+                url={watch(`url${num}`)}
+                title={watch(`title${num}`)}
+              />
+              <Input
+                id={`title${num}`}
+                type="text"
+                register={register}
+                required={true}
+                disabled={loading}
+                errors={errors}
+                placeHolder={`Título del video ${num}`}
+              />
+              <Input
+                id={`url${num}`}
+                type="text"
+                register={register}
+                required={true}
+                disabled={loading}
+                errors={errors}
+                placeHolder="url del video"
+              />
+            </div>
+          ))}
         </div>
         <Button
           type="submit"

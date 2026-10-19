@@ -12,19 +12,13 @@ interface PortadaPreviewIframeProps {
   layouts: LayoutInstance[]
 }
 
-// El contador de notas (liviano, solo cuenta lo que ya está en memoria) se muestra
-// siempre. El <iframe> con el sitio real es pesado — pedirle a Gatsby que cargue y
-// renderice mientras el editor todavía está acomodando layouts/notas sería ruidoso y
-// lento sin necesidad — así que solo se monta cuando el editor toca "Previsualizar", y
-// una vez generada, un cambio posterior en layouts/notas no la actualiza solo: hay que
-// volver a tocar el botón (que pasa a avisar "desactualizada") para refrescarla.
+// El iframe (pesado) solo se monta al tocar "Previsualizar"; un cambio posterior en
+// layouts/notas no la refresca solo, marca "desactualizada" hasta el próximo click.
 const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
   const { draftArticles } = usePortadaDraft()
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [iframeReady, setIframeReady] = useState(false)
-  // true desde que se generó/actualizó la última preview hasta que layouts o notas
-  // vuelven a cambiar — controla el aviso de "desactualizada" en el botón
   const [isStale, setIsStale] = useState(false)
 
   const needed = layouts.reduce((sum, instance) => {
@@ -45,12 +39,8 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
     )
   }
 
-  // el evento `load` nativo del <iframe> dispara cuando el documento terminó de
-  // cargar, lo que puede pasar ANTES de que React hidrate /preview-portada y su
-  // useEffect llegue a registrar el listener de "message" — un postMessage mandado
-  // en ese instante se pierde en silencio y la preview queda colgada. En vez de
-  // confiar en `load`, se espera el handshake "politicaobrera-preview-ready" que esa
-  // página manda apenas su listener queda activo (ver preview-portada.tsx).
+  // se espera el handshake "politicaobrera-preview-ready" en vez de confiar en `load`
+  // del iframe, que dispara antes de que React hidrate y registre el listener ahí
   useEffect(() => {
     if (!showPreview) return
     const onHandshake = (event: MessageEvent) => {
@@ -62,8 +52,6 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
     return () => window.removeEventListener("message", onHandshake)
   }, [showPreview])
 
-  // apenas el iframe (recién montado o recargado) confirma que está listo, manda el
-  // borrador una sola vez — no hay re-posteo automático por cambios posteriores
   useEffect(() => {
     if (iframeReady) {
       postDraft()
@@ -72,8 +60,6 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [iframeReady])
 
-  // marca la preview ya generada como desactualizada ante cualquier cambio posterior
-  // de layouts/notas — no reenvía nada sola, solo informa en el botón
   useEffect(() => {
     if (showPreview) setIsStale(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,8 +70,6 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
       setShowPreview(true)
       return
     }
-    // ya está montado: forzar una recarga del iframe para volver a correr el handshake
-    // y reenviar el borrador actual
     setIframeReady(false)
     if (iframeRef.current) iframeRef.current.src = `${SITE_URL}${PREVIEW_PATH}`
   }

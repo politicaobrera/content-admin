@@ -1,8 +1,6 @@
 interface SeparatorProps {
   label?: string,
-  // heading: encabezado destacado de un bloque grande del formulario (ej. "Contenido",
-  // "Autores") en vez del label chico que ya usan los inputs individuales — mismo
-  // tamaño/peso que un <h2>, para que el bloque se distinga a simple vista del resto
+  // heading: encabezado destacado tipo <h2> en vez de la línea divisoria chica
   heading?: boolean,
 }
 

@@ -37,7 +37,7 @@ const EventTable = ({ events, meta }: EventTableProps) => {
 
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
 
-  // debounce para los campos de texto libre (no disparar una navegación por tecla tipeada)
+  // debounce para no navegar en cada tecla tipeada
   useEffect(() => {
     const timeout = setTimeout(() => handleFilterSubmit(), 350);
     return () => clearTimeout(timeout);

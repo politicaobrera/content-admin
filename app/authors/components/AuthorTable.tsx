@@ -33,8 +33,7 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
   
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
 
-  // Actualiza los query params al cambiar filtros o sorting, con debounce para los
-  // campos de texto libre (no disparar una navegación por tecla tipeada)
+  // debounce para no navegar en cada tecla tipeada
   useEffect(() => {
     const timeout = setTimeout(() => handleFilterSubmit(), 350);
     return () => clearTimeout(timeout);

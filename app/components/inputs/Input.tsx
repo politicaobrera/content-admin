@@ -16,8 +16,7 @@ export interface InputProps {
   required?: boolean,
   disabled?: boolean,
   placeHolder?: string,
-  // campo destacado por ser el más importante del formulario (ej. Título de una
-  // nota) — label y texto más grandes que el resto de los inputs estándar
+  // label y texto más grandes, para el campo más importante del formulario
   large?: boolean,
 }
 // TODO aceptar un mensaje de error optativo, si lo hay, agregar el mensaje de error bajo el input ?

@@ -51,8 +51,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   });
   const totalPages = Math.ceil(meta?.total || 1 / pagination.perPage);
 
-  // Actualiza los query params al cambiar filtros o sorting — con debounce para los
-  // campos de texto libre (articleId/title), para no disparar una navegación por tecla
+  // debounce para no navegar en cada tecla tipeada
   useEffect(() => {
     const timeout = setTimeout(() => handleFilterSubmit(), 350);
     return () => clearTimeout(timeout);

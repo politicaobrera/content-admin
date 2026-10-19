@@ -12,8 +12,7 @@ interface SectionSelectorProps {
   onChange: (section:Section|null) => void
   currentSection: Section | string | null
   isClearable?: boolean
-  // false cuando el formulario que lo embebe ya pone su propio heading de sección
-  // destacado arriba (ej. ArticleForm) — evita el label "Sección" duplicado
+  // false cuando el formulario ya pone su propio heading arriba
   showLabel?: boolean
 }
 

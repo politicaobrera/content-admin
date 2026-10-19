@@ -12,9 +12,6 @@ interface LayoutContextMenuProps {
   onSaveParams: (params: Record<string, string>) => void
 }
 
-// Menú contextual (click derecho) de una instancia de layout en "Orden actual": permite
-// quitarla de la portada, o — si el layout del catálogo declara `params` — editar los
-// valores de esta instancia puntual (ej. el título del kicker de "Al minuto").
 const LayoutContextMenu = ({ catalogEntry, anchor, currentParams, onClose, onRemove, onSaveParams }: LayoutContextMenuProps) => {
   const [editingParams, setEditingParams] = useState(false)
   const [draftParams, setDraftParams] = useState<Record<string, string>>(currentParams ?? {})

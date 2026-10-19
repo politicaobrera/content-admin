@@ -10,9 +10,8 @@ interface SectionTableProps {
   sections: Section[];
 }
 
-// Sin paginación/filtros de servidor como las otras tablas: la cantidad de secciones
-// es fija y chica (están hardcodeadas como links en el Header del sitio público), así
-// que el filtro de texto filtra del lado del cliente sobre la lista completa.
+// sin paginación/filtros de servidor: la cantidad de secciones es fija y chica, el
+// filtro de texto filtra del lado del cliente sobre la lista completa
 const SectionTable = ({ sections }: SectionTableProps) => {
   const router = useRouter();
   const [filters, setFilters] = useState<Record<string, any>>({ name: '' });

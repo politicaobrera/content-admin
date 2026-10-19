@@ -36,9 +36,7 @@ function resolveCatalogEntry(slug: string): LayoutCatalogEntry | undefined {
   return LAYOUT_CATALOG.find((entry) => entry.slug === slug)
 }
 
-// "Disponibles" muestra cada entrada del catálogo que todavía no esté en uso — salvo
-// las marcadas `repeatable` (como "Al minuto"), que siempre quedan disponibles para
-// agregar otra instancia más, con sus propios params, aunque ya haya una o más en uso.
+// las marcadas `repeatable` quedan disponibles aunque ya haya una instancia en uso
 function resolveAvailable(currentSlugs: string[]): LayoutCatalogEntry[] {
   return LAYOUT_CATALOG.filter((entry) => entry.repeatable || !currentSlugs.includes(entry.slug))
 }
@@ -52,10 +50,7 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
   const { saveLayouts } = usePortada()
   const router = useRouter()
   const [layouts, setLayouts] = useState<LayoutInstance[]>(normalizeLayoutInstances(current))
-  // "Disponibles" se deriva siempre de `layouts` — no es estado propio — para que no
-  // haga falta sincronizarlo a mano en cada mutación (agregar, quitar, reordenar).
-  // dnd-kit necesita un id único por draggable; en esta columna es simplemente el slug,
-  // porque cada entrada del catálogo aparece como máximo una vez acá.
+  // derivado de `layouts`, no estado propio, para no tener que sincronizarlo a mano
   const available = useMemo(() => resolveAvailable(layouts.map((l) => l.slug)), [layouts])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
@@ -100,15 +95,10 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
     }
 
     if (activeList === 'available' && overList === 'available') {
-      // reordenar "Disponibles" no tiene efecto sobre la portada — no hace falta,
-      // pero se deja sin romper si dnd-kit dispara el evento
       return
     }
 
     if (activeList === 'available' && overList === 'current') {
-      // arrastrar desde "Disponibles" crea una instancia nueva — la entrada del
-      // catálogo nunca se "consume" (si es repeatable sigue en Disponibles; si no lo
-      // es, resolveAvailable ya la ocultará en el próximo render porque ahora está en uso)
       const catalogEntry = LAYOUT_CATALOG.find((entry) => entry.slug === active.id)
       if (!catalogEntry) return
       const newInstance: LayoutInstance = { slug: catalogEntry.slug, instanceId: createLayoutInstanceId(catalogEntry.slug) }
@@ -123,8 +113,6 @@ const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
     }
 
     if (activeList === 'current' && overList === 'available') {
-      // arrastrar una instancia de "Orden actual" a "Disponibles" la elimina de la
-      // portada (mismo efecto que "Eliminar de la lista" en el menú contextual)
       setLayouts((curr) => curr.filter((item) => item.instanceId !== active.id))
     }
   }

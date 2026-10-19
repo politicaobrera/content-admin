@@ -8,11 +8,8 @@ export interface LayoutCatalogEntry {
   slug: string
   label: string
   articleCount: number
-  // parámetros que el editor puede fijar por instancia de este layout en la portada
-  // (ej. el título del kicker de "Al minuto") — layouts sin esto no muestran la
-  // opción de "Asignar valor" en el menú contextual del editor
   params?: LayoutParamSchema[]
-  // true si este layout puede agregarse más de una vez a la misma portada
+  // permite más de una instancia en la misma portada
   repeatable?: boolean
 }
 
@@ -57,9 +54,8 @@ export function createLayoutInstanceId(slug: string): string {
   return `${slug}-${Date.now()}-${instanceCounter}`
 }
 
-// `current` (lo que viene guardado en la Page) puede traer el formato viejo (string
-// suelto, el slug) o el nuevo ({slug, instanceId, params}) — se normaliza acá una sola
-// vez. Mismo criterio que normalizeLayoutInstances en el repo del sitio público.
+// `current` puede traer el formato viejo (string suelto) o el nuevo
+// ({slug, instanceId, params}) — mismo criterio que en el repo del sitio público.
 export function normalizeLayoutInstances(raw: unknown): LayoutInstance[] {
   if (!Array.isArray(raw)) return []
   return raw.map((entry) => {

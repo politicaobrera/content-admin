@@ -10,12 +10,11 @@ export interface MainImageHandle {
 
 interface MainImageProps {
   id: string
-  label: string
   image: MainImageType | undefined
   fileName: string
 }
 
-const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, label, image, fileName}, ref) => {
+const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileName}, ref) => {
   const mainImage = useMainImage(image, fileName)
 
   useImperativeHandle(ref, () => ({
@@ -24,7 +23,6 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, label, image
 
   return (
     <>
-      <h5>{label}</h5>
       <div>
         {!mainImage.state.uploadMode && (
           <section className="mb-3">

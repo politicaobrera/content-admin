@@ -21,12 +21,21 @@ function DraggableArticle({ article, idx, showIndex = true }: DraggableArticlePr
     transition,
   };
 
+  // click derecho abre el artículo en una pestaña nueva para editarlo — el izquierdo
+  // (listeners de dnd-kit) sigue siendo el que arrastra para reordenar
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (!article._id) return;
+    e.preventDefault();
+    window.open(`/articles/${article._id}`, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div
       style={style}
       ref={setNodeRef}
       {...attributes}
       {...listeners}
+      onContextMenu={handleContextMenu}
       className="
         relative
         bg-white

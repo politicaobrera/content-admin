@@ -15,14 +15,13 @@ import BlockNoteEditorSchema from './BlockNoteEditorSchema';
 import { useCallback, useEffect } from 'react';
 
 interface BlockNoteEditorProps {
-  label: string,
   id: string,
   initial?: any[];
   initialHTML?: string;
   onChange: (html: string) => void;
 }
 
-export default function BlockNoteEditor({ id, label, initialHTML, initial = [], onChange }: BlockNoteEditorProps) {
+export default function BlockNoteEditor({ id, initialHTML, initial = [], onChange }: BlockNoteEditorProps) {
 
   const editor = useCreateBlockNote({
     schema: BlockNoteEditorSchema,
@@ -84,9 +83,6 @@ export default function BlockNoteEditor({ id, label, initialHTML, initial = [], 
 
   return (
     <div>
-      <label className="block text-sm text-gray-900 font-medium leading-6" htmlFor={id}>
-        {label}
-      </label>
       <div className="prose prose-a:text-blue-400 prose-a:font-semibold prose-a:no-underline hover:prose-a:text-blue-300">
         <BlockNoteView
           id={id}

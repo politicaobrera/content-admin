@@ -6,6 +6,7 @@ import { BannerType } from "@/app/types/sitepage"
 import usePortada from "../hooks/usePortada";
 import Button from "@/app/components/Button";
 import Banner from "./Banner";
+import Separator from "@/app/components/layout/Separator";
 
 interface BannersSelectorProps {
   id: string
@@ -56,7 +57,7 @@ const BannersSelector = ({id, current, pageName}: BannersSelectorProps) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <h5>Banners</h5>
+      <Separator heading label="Banners" />
       <div className="flex flex-col gap-2">
         <div className="flex gap-4">
           {currentBanners.map((i, idx) => (

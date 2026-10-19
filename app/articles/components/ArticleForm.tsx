@@ -184,28 +184,27 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
               placeHolder="Título de la nota"
             />
           </div>
-          <Separator />
+          <Separator heading label="Imagen principal" />
           <MainImage
             ref={mainImageRef}
             id="main-image"
-            label="Imagen principal"
             // article.slug ya viene como "{articleId}-{titulo-sluggeado}" (lo arma el
             // backend en articles.controller.ts), así que ya es único por sí solo.
             fileName={article.slug}
             image={article.image}
           />
-          <Separator />
+          <Separator heading label="Sección" />
           <SectionSelector
             onChange={handleSectionChange}
             currentSection={currentSection}
           />
-          <Separator />
+          <Separator heading label="Autores" />
           <AuthorSelector
             authors={article.authors}
             descriptions={article.authorsDescriptions}
             onChange={handleAuthorChange}
           />
-          <Separator />
+          <Separator heading label="Volanta y bajada" />
           <Input
             label="Volanta"
             id="volanta"
@@ -226,7 +225,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Bajada"
             rows={3}
           />
-          <Separator />
+          <Separator heading label="Contenido" />
           {/* <Wysiwyg
             label="Contenido"
             id="content"
@@ -235,13 +234,12 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             required={true}
             placeHolder="Cuerpo de la nota..."
           /> */}
-          <BlockNoteEditor 
-            label="Contenido"
+          <BlockNoteEditor
             id="content"
             initialHTML={currentContent}
             onChange={(html:string) => setCurrentContent(html)}
           />
-          <Separator />
+          <Separator heading label="Notas y recursos relacionados" />
           <ContentLookupPanel
             excludeArticleId={article._id}
             relatedArticles={currentRelatedArticles}
@@ -249,7 +247,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             onChangeRelatedArticles={setCurrentRelatedArticles}
             onChangeRelatedResources={setCurrentRelatedResources}
           />
-          <Separator />
+          <Separator heading label="Etiquetas" />
           <TagSelector
             onChange={(newTags) => setCurrentTags(newTags)}
             currentTags={currentTags}

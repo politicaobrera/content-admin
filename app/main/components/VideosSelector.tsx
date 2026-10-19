@@ -8,6 +8,7 @@ import Input from "@/app/components/inputs/Input"
 import Button from "@/app/components/Button"
 import VideoPreviewPlayer from "./VideoPreviewPlayer"
 import usePortada from "../hooks/usePortada"
+import Separator from "@/app/components/layout/Separator"
 
 interface VideosSelectorProps {
   current: Video[]
@@ -80,7 +81,7 @@ const VideosSelector = ({id, current}: VideosSelectorProps) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <h5>Videos</h5>
+      <Separator heading label="Videos" />
       <p className="text-sm text-gray-500">
         Estos 4 videos se muestran en el carrousel de la portada del sitio público. El preview
         refleja exactamente cómo se va a ver cada video ahí.

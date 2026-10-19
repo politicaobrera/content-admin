@@ -57,7 +57,6 @@ const AuthorSelector = ({onChange, authors, descriptions}: AuthorSelectorProps) 
 
   return (
     <div className="flex flex-col gap-3">
-      <h4>Autores</h4>
       <div className="flex flex-col gap-2">
         <h6>Buscar</h6>
         <div>

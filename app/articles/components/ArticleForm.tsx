@@ -172,9 +172,9 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
                 Cancelar
               </Button>
             </ActionButtonsContainer>
+            <Separator heading label="Título" />
             <Input
               id="title"
-              label="Título"
               type="text"
               register={register}
               key={`article-title-${article._id}`}
@@ -182,6 +182,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
               disabled={loading}
               errors={errors}
               placeHolder="Título de la nota"
+              large
             />
           </div>
           <Separator heading label="Imagen principal" />
@@ -197,6 +198,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           <SectionSelector
             onChange={handleSectionChange}
             currentSection={currentSection}
+            showLabel={false}
           />
           <Separator heading label="Autores" />
           <AuthorSelector

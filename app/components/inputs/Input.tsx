@@ -16,6 +16,9 @@ export interface InputProps {
   required?: boolean,
   disabled?: boolean,
   placeHolder?: string,
+  // campo destacado por ser el más importante del formulario (ej. Título de una
+  // nota) — label y texto más grandes que el resto de los inputs estándar
+  large?: boolean,
 }
 // TODO aceptar un mensaje de error optativo, si lo hay, agregar el mensaje de error bajo el input ?
 // aceptar objeto validaciones y agregarlas en el register 
@@ -29,21 +32,19 @@ const Input: React.FC<InputProps> = ({
   required,
   disabled,
   placeHolder,
+  large,
 }) => {
-  
+
     const error = errors[id]
 
     return (
       <div>
         {label && (
         <label
-          className="
-            block
-            text-sm
-            text-gray-900
-            font-medium
-            leading-6
-          "
+          className={clsx(
+            "block font-medium leading-6 text-gray-900",
+            large ? "text-base mb-1" : "text-sm"
+          )}
           htmlFor={id}
         >
           {label}
@@ -66,7 +67,6 @@ const Input: React.FC<InputProps> = ({
               w-full
               rounded-md
               border-0
-              py-1.5
               text-black
               shadow-sm
               ring-1
@@ -75,9 +75,8 @@ const Input: React.FC<InputProps> = ({
               focus:ring-2
               focus:ring-inset
               focus:ring-gray-900
-              placeholder:text-gray-400
-              sm:text-sm
-              sm:leading-6`,
+              placeholder:text-gray-400`,
+              large ? 'py-2.5 text-lg font-semibold sm:text-lg' : 'py-1.5 sm:text-sm sm:leading-6',
               error && 'ring-rose-400 focus:ring-rose-500',
               disabled && 'opacity-50 cursor-default'
             )}

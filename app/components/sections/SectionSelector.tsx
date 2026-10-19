@@ -12,11 +12,14 @@ interface SectionSelectorProps {
   onChange: (section:Section|null) => void
   currentSection: Section | string | null
   isClearable?: boolean
+  // false cuando el formulario que lo embebe ya pone su propio heading de sección
+  // destacado arriba (ej. ArticleForm) — evita el label "Sección" duplicado
+  showLabel?: boolean
 }
 
 const extraOption = [{value: '', label: "Todas"}]
 
-const SectionSelector = ({onChange, currentSection, isClearable = false}: SectionSelectorProps) => {
+const SectionSelector = ({onChange, currentSection, isClearable = false, showLabel = true}: SectionSelectorProps) => {
   const { sections } = useContext(SectionsContext)
   const options = extraOption.concat(sections.map(sec => ({value: sec._id, label: sec.name})))
 
@@ -46,7 +49,7 @@ const SectionSelector = ({onChange, currentSection, isClearable = false}: Sectio
 
   return (
     <div className="flex flex-col gap-3">
-      <h5>Sección</h5>
+      {showLabel && <h5>Sección</h5>}
       <div>
         <Select
           options={options}

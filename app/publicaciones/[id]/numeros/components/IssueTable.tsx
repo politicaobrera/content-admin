@@ -7,6 +7,7 @@ import { IssueStatus, IssueType } from '@/app/types/issue';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useIssue from '../hooks/useIssue';
+import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 
 interface IssueTableProps {
   publicationId: string;
@@ -24,7 +25,7 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
   const searchParams = useSearchParams()
   const {remove} = useIssue()
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, any>>({
     status: searchParams.get('status') || '',
   })
   const [sort, setSort] = useState({
@@ -40,8 +41,10 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage)
 
   useEffect(() => {
-    handleFilterSubmit()
-  }, [sort, pagination, router, searchParams])
+    const timeout = setTimeout(() => handleFilterSubmit(), 350)
+    return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, pagination])
 
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString())
@@ -71,9 +74,14 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
     }))
   }
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleFilterChange = (name: string, value: any) => {
+    setPagination((prev) => ({ ...prev, page: 1 }))
     setFilters((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleClearFilters = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }))
+    setFilters({ status: '' })
   }
 
   const handleClickEdit = (numeroId: string) => {
@@ -101,6 +109,19 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
       router.refresh()
     }
   }
+
+  const filterFields: FilterField[] = [
+    {
+      type: 'select',
+      name: 'status',
+      label: 'Estado',
+      placeholder: 'Todos los estados',
+      options: [
+        { value: IssueStatus.Draft, label: 'Borrador' },
+        { value: IssueStatus.Published, label: 'Publicado' },
+      ],
+    },
+  ]
 
   return (
     <div className="space-y-4 w-full">
@@ -139,38 +160,12 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
           Volver a la publicación
         </Button>
       </div>
-      <div
-        className="
-          bg-white
-          p-4
-          rounded-lg
-          shadow
-        "
-      >
-        <div className="p-4 bg-gray-100 rounded shadow">
-          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <select
-              name="status"
-              value={filters.status}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            >
-              <option value="">Todos los estados</option>
-              <option value={IssueStatus.Draft}>Borrador</option>
-              <option value={IssueStatus.Published}>Publicado</option>
-            </select>
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <Button
-              type="button"
-              onClick={() => handleFilterSubmit()}
-            >
-              Filtrar
-            </Button>
-          </div>
-        </div>
-      </div>
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
       <div
         className="
           bg-white

@@ -2,6 +2,7 @@ import { BannerType, PageType, Video } from "@/app/types/sitepage";
 import editPage from "@/app/actions/data/pages/editPage";
 import { iResponseOne } from "@/app/types/responses";
 import { ArticleType } from "@/app/types/article";
+import { LayoutInstance } from "../layoutCatalog";
 
 export default function usePortada(){
   const saveArticles = async (articles: Partial<ArticleType>[], id:string) : Promise<iResponseOne<PageType>> => {
@@ -21,7 +22,7 @@ export default function usePortada(){
     return {data, error};
   }
 
-  const saveLayouts = async (layouts: string[], id:string) : Promise<iResponseOne<PageType>> => {
+  const saveLayouts = async (layouts: LayoutInstance[], id:string) : Promise<iResponseOne<PageType>> => {
     const {data, error} = await editPage({layouts, _id: id});
     return {data, error};
   }

@@ -1,9 +1,7 @@
 import getSections from "@/app/actions/data/sections/getSections"
 import { iResponseMany } from "@/app/types/responses"
 import ErrorMessage from "@/app/components/ErrorMessage"
-import SectionItem from "./SectionItem"
-import Button from "@/app/components/Button"
-import Link from "next/link"
+import SectionTable from "./SectionTable"
 import { Section } from "../../types/sections"
 
 const SectionsList:React.FC = async () => {
@@ -13,47 +11,7 @@ const SectionsList:React.FC = async () => {
     return <ErrorMessage error={error}/>
   }
 
-  return (
-    <>
-    {
-    data?.length === 0 ? 
-        <div>No hay Secciones</div>
-        :   
-      <div
-        className="
-          px-4
-          py-8
-          sm:px-6
-          lg:px-8
-          flex
-          justify-center
-          items-center
-          bg-gray-100
-        "
-      >
-        <div className="flex items-center text-center flex-col">     
-          <ul>
-          {    
-            data?.map((section:Section) => (
-              <SectionItem
-                key={section._id}
-                section={section}
-              />
-            ))
-          }
-          </ul>
-        </div>
-      </div>
-      }
-      <div>
-        <Link href={'sections/new'}>
-          <Button>
-              Crear Sección
-          </Button>
-        </Link>
-      </div>
-    </>
-  )
+  return <SectionTable sections={data ?? []} />
 }
 
 export default SectionsList

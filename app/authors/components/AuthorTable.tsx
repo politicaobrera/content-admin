@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthorType } from '@/app/types/author';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
+import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 
 interface AuthorTableProps {
   authors: AuthorType[];
@@ -16,7 +17,7 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
   const searchParams = useSearchParams();
 
   // TODO: useTable factor out
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, any>>({
     name: searchParams.get('name') || '',
     description: searchParams.get('description') || '',
   });
@@ -32,10 +33,13 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
   
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
 
-  // Actualiza los query params al cambiar filtros o sorting
+  // Actualiza los query params al cambiar filtros o sorting, con debounce para los
+  // campos de texto libre (no disparar una navegación por tecla tipeada)
   useEffect(() => {
-    handleFilterSubmit()
-  }, [sort, pagination, router, searchParams]);
+    const timeout = setTimeout(() => handleFilterSubmit(), 350);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, pagination]);
   
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -68,9 +72,14 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
     }));
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFilterChange = (name: string, value: any) => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
     setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleClearFilters = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setFilters({ name: '', description: '' });
   };
 
   const handleClickEdit = (id: string) => {
@@ -81,9 +90,12 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
     router.push(`/authors/new`);
   }
 
+  const filterFields: FilterField[] = [
+    { type: 'text', name: 'name', label: 'Nombre', placeholder: 'Filtrar por nombre' },
+    { type: 'text', name: 'description', label: 'Descripción', placeholder: 'Filtrar por descripción' },
+  ];
+
   return (
-    
-    // TODO: sacar a componente aparte de filtros
     <div className="space-y-4 w-full">
       <div
         className="
@@ -109,42 +121,12 @@ const AuthorTable = ({ authors, meta }: AuthorTableProps) => {
           </Button>
         </div>
       </div>
-      <div
-        className="
-          bg-white
-          p-4
-          rounded-lg
-          shadow
-        "
-      >
-        <div className="p-4 bg-gray-100 rounded shadow">
-          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              name="name"
-              placeholder="Filtrar por nombre"
-              value={filters.name}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="description"
-              placeholder="Filtrar por descripción"
-              value={filters.description}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <Button
-              type="button"
-              onClick={() => handleFilterSubmit()}
-            >
-              Filtrar
-            </Button>
-          </div>
-        </div>
-      </div>
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
       <div
         className="
           bg-white

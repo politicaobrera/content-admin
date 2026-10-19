@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from "react"
-import { LayoutCatalogEntry } from "../layoutCatalog"
+import { LAYOUT_CATALOG, LayoutInstance } from "../layoutCatalog"
 import { usePortadaDraft } from "../context/PortadaDraftContext"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 const PREVIEW_PATH = "/preview-portada"
 
 interface PortadaPreviewIframeProps {
-  layouts: LayoutCatalogEntry[]
+  layouts: LayoutInstance[]
 }
 
 // Manda el borrador actual (layouts elegidos + notas, en el orden en que están ahora
@@ -21,7 +21,10 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [iframeReady, setIframeReady] = useState(false)
 
-  const needed = layouts.reduce((sum, layout) => sum + layout.articleCount, 0)
+  const needed = layouts.reduce((sum, instance) => {
+    const catalogEntry = LAYOUT_CATALOG.find((entry) => entry.slug === instance.slug)
+    return sum + (catalogEntry?.articleCount ?? 0)
+  }, 0)
   const assigned = draftArticles.length
 
   const postDraft = () => {
@@ -29,7 +32,7 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
     iframeRef.current?.contentWindow?.postMessage(
       {
         source: "politicaobrera-admin-preview",
-        layouts: layouts.map((l) => l.slug),
+        layouts,
         articles: draftArticles,
       },
       SITE_URL,

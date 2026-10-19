@@ -2,18 +2,19 @@
 
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Select from 'react-select'
 import { toast } from "react-hot-toast"
 import { ArticleStatus, ArticleType } from "@/app/types/article";
 import Button from '@/app/components/Button';
-import { NumericKeyDown } from '@/app/utils/inputs';
 import { PaginationMeta } from '@/app/types/responses';
 import clsx from 'clsx';
 import SectionsContext from '@/app/context/SectionsContext';
-import { OptionType } from '@/app/types/select';
 import useArticle from '../hooks/useArticle';
+import useAuthor from '@/app/authors/hooks/useAuthor';
+import useTag from '@/app/tags/hooks/useTag';
 import { hasPendingChangesSincePublish } from '@/app/utils/articles';
 import { getArticleChangesSincePublish } from '@/app/utils/articleChanges';
+import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
+import { OptionType } from '@/app/types/select';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -25,14 +26,18 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const searchParams = useSearchParams();
   const { sections } = useContext(SectionsContext)
   const {remove} = useArticle();
-  const options = sections.map(sec => ({value: sec._id, label: sec.name}))
+  const {search: searchAuthors} = useAuthor();
+  const {searchByName: searchTags} = useTag();
+  const sectionOptions = sections.map(sec => ({value: sec._id, label: sec.name}))
   const [expandedArticleId, setExpandedArticleId] = useState<string | null>(null);
 
   // TODO: useTable factor out
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, any>>({
     articleId: searchParams.get('articleId') || '',
     title: searchParams.get('title') || '',
     section: searchParams.get('section') || '',
+    tags: searchParams.getAll('tags'),
+    authors: searchParams.getAll('authors'),
     changedSincePublish: searchParams.get('changedSincePublish') === 'true',
   });
   const [sort, setSort] = useState({
@@ -46,23 +51,31 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   });
   const totalPages = Math.ceil(meta?.total || 1 / pagination.perPage);
 
-  // Actualiza los query params al cambiar filtros o sorting
-
+  // Actualiza los query params al cambiar filtros o sorting — con debounce para los
+  // campos de texto libre (articleId/title), para no disparar una navegación por tecla
   useEffect(() => {
-    handleFilterSubmit()
-  }, [sort, pagination, router, searchParams]);
+    const timeout = setTimeout(() => handleFilterSubmit(), 350);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, pagination]);
 
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
 
+    params.delete('articleId');
     if (filters.articleId) params.set('articleId', filters.articleId);
-    else params.delete('articleId');
 
     if (filters.title) params.set('title', filters.title);
     else params.delete('title');
 
     if (filters.section) params.set('section', filters.section);
     else params.delete('section');
+
+    params.delete('tags');
+    (filters.tags || []).forEach((id: string) => params.append('tags', id));
+
+    params.delete('authors');
+    (filters.authors || []).forEach((id: string) => params.append('authors', id));
 
     if (filters.changedSincePublish) params.set('changedSincePublish', 'true');
     else params.delete('changedSincePublish');
@@ -80,7 +93,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     if (newQuery !== searchParams.toString()) {
       router.push(`?${newQuery}`);
     }
-  } 
+  }
 
   const handleSort = (field: string) => {
     setSort((prev) => ({
@@ -89,13 +102,21 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     }));
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFilterChange = (name: string, value: any) => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleChangedSincePublishToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev) => ({ ...prev, changedSincePublish: e.target.checked }));
+  const handleClearFilters = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setFilters({
+      articleId: '',
+      title: '',
+      section: '',
+      tags: [],
+      authors: [],
+      changedSincePublish: false,
+    });
   };
 
   const handleClickEdit = (id: string) => {
@@ -116,74 +137,53 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
     }
   }
 
-  const handleSectionChange = (val: OptionType|null) => {
-    if(val) {
-      const selectedSection = sections.find(sec => sec._id === val.value)
-      if (selectedSection) {
-        setFilters((prev) => ({ ...prev, section: selectedSection._id }));
-      }
-    }
-  }
+  const filterFields: FilterField[] = [
+    { type: 'text', name: 'articleId', label: 'ID', placeholder: 'Filtrar por ID', numeric: true },
+    { type: 'text', name: 'title', label: 'Título', placeholder: 'Filtrar por título' },
+    { type: 'select', name: 'section', label: 'Sección', options: sectionOptions, placeholder: 'Todas las secciones' },
+    {
+      type: 'asyncMultiSelect',
+      name: 'tags',
+      label: 'Tags',
+      placeholder: 'Buscar tags...',
+      loadOptions: async (query: string): Promise<OptionType[]> => {
+        if (query.length < 2) return []
+        const { data } = await searchTags(query)
+        return (data || []).map((tag: any) => ({ value: tag._id, label: tag.name }))
+      },
+    },
+    {
+      type: 'asyncMultiSelect',
+      name: 'authors',
+      label: 'Autores',
+      placeholder: 'Buscar autores...',
+      loadOptions: async (query: string): Promise<OptionType[]> => {
+        if (query.length < 2) return []
+        const { data } = await searchAuthors(query)
+        return (data || []).map((author: any) => ({ value: author._id, label: author.name }))
+      },
+    },
+  ];
 
   return (
-    // sacar a componente aparte de filtros
     <div className="space-y-4 w-full">
-      <div
-        className="
-          bg-white
-          p-4
-          rounded-lg
-          shadow
-        "
-      >
-        <div className="p-4 bg-gray-100 rounded shadow">
-          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-          <div className="grid grid-cols-2 gap-4">
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+        extra={
+          <label className="mt-4 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
             <input
-              name="articleId"
-              onKeyDown={NumericKeyDown}
-              placeholder="Filtrar por ID"
-              value={filters.articleId}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="title"
-              placeholder="Filtrar por título"
-              value={filters.title}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <div>
-              <span>Seccion: </span>
-              <Select
-                options={options}
-                defaultValue={null}
-                onChange={handleSectionChange}
-              />
-            </div>
-          </div>
-          <div className="mt-4 flex items-center gap-2">
-            <input
-              id="changedSincePublish"
               type="checkbox"
               checked={filters.changedSincePublish}
-              onChange={handleChangedSincePublishToggle}
+              onChange={(e) => handleFilterChange('changedSincePublish', e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
             />
-            <label htmlFor="changedSincePublish">
-              Publicadas con cambios pendientes (últimos 7 días)
-            </label>
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <Button
-              type="button"
-              onClick={() => handleFilterSubmit()}
-            >
-              Filtrar
-            </Button>
-          </div>
-        </div>
-      </div>
+            Publicadas con cambios pendientes (últimos 7 días)
+          </label>
+        }
+      />
       <div
         className="
           bg-white

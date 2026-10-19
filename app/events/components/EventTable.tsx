@@ -7,6 +7,7 @@ import { EventType } from '@/app/types/event';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useEvent from '../hooks/useEvent';
+import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 
 interface EventTableProps {
   events: EventType[];
@@ -18,7 +19,7 @@ const EventTable = ({ events, meta }: EventTableProps) => {
   const searchParams = useSearchParams();
   const {remove} = useEvent();
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, any>>({
     title: searchParams.get('title') || '',
     place: searchParams.get('place') || '',
     from: searchParams.get('from') || '',
@@ -36,9 +37,12 @@ const EventTable = ({ events, meta }: EventTableProps) => {
 
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
 
+  // debounce para los campos de texto libre (no disparar una navegación por tecla tipeada)
   useEffect(() => {
-    handleFilterSubmit()
-  }, [sort, pagination, router, searchParams]);
+    const timeout = setTimeout(() => handleFilterSubmit(), 350);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, pagination]);
 
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -77,9 +81,14 @@ const EventTable = ({ events, meta }: EventTableProps) => {
     }));
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFilterChange = (name: string, value: any) => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
     setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleClearFilters = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setFilters({ title: '', place: '', from: '', to: '' });
   };
 
   const handleClickEdit = (id: string) => {
@@ -103,6 +112,13 @@ const EventTable = ({ events, meta }: EventTableProps) => {
       router.refresh()
     }
   }
+
+  const filterFields: FilterField[] = [
+    { type: 'text', name: 'title', label: 'Título', placeholder: 'Filtrar por título' },
+    { type: 'text', name: 'place', label: 'Lugar', placeholder: 'Filtrar por lugar' },
+    { type: 'date', name: 'from', label: 'Desde' },
+    { type: 'date', name: 'to', label: 'Hasta' },
+  ];
 
   return (
     <div className="space-y-4 w-full">
@@ -130,58 +146,12 @@ const EventTable = ({ events, meta }: EventTableProps) => {
           </Button>
         </div>
       </div>
-      <div
-        className="
-          bg-white
-          p-4
-          rounded-lg
-          shadow
-        "
-      >
-        <div className="p-4 bg-gray-100 rounded shadow">
-          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              name="title"
-              placeholder="Filtrar por título"
-              value={filters.title}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="place"
-              placeholder="Filtrar por lugar"
-              value={filters.place}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="from"
-              type="date"
-              placeholder="Desde"
-              value={filters.from}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-            <input
-              name="to"
-              type="date"
-              placeholder="Hasta"
-              value={filters.to}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <Button
-              type="button"
-              onClick={() => handleFilterSubmit()}
-            >
-              Filtrar
-            </Button>
-          </div>
-        </div>
-      </div>
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
       <div
         className="
           bg-white

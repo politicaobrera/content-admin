@@ -2,22 +2,28 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { LayoutCatalogEntry } from "../layoutCatalog"
+import { LayoutCatalogEntry, LayoutInstance } from "../layoutCatalog"
 
 interface DraggableLayoutProps {
-  layout: LayoutCatalogEntry
+  instance: LayoutInstance
+  catalogEntry: LayoutCatalogEntry
   idx: number
   showIndex?: boolean
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-function DraggableLayout({ layout, idx, showIndex = true }: DraggableLayoutProps) {
+function DraggableLayout({ instance, catalogEntry, idx, showIndex = true, onContextMenu }: DraggableLayoutProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: layout.slug })
+    useSortable({ id: instance.instanceId })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   }
+
+  const paramValue = instance.params && catalogEntry.params?.[0]
+    ? instance.params[catalogEntry.params[0].key]
+    : undefined
 
   return (
     <div
@@ -25,6 +31,10 @@ function DraggableLayout({ layout, idx, showIndex = true }: DraggableLayoutProps
       ref={setNodeRef}
       {...attributes}
       {...listeners}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        onContextMenu?.(e)
+      }}
       className="
         relative
         bg-white
@@ -47,8 +57,11 @@ function DraggableLayout({ layout, idx, showIndex = true }: DraggableLayoutProps
         </div>
       )}
       <div className="flex flex-col">
-        <div className="font-bold text-md">{layout.label}</div>
-        <div className="text-sm text-gray-600">{layout.articleCount} notas</div>
+        <div className="font-bold text-md">{catalogEntry.label}</div>
+        <div className="text-sm text-gray-600">{catalogEntry.articleCount} notas</div>
+        {paramValue && (
+          <div className="text-xs text-gray-500 italic">&quot;{paramValue}&quot;</div>
+        )}
       </div>
     </div>
   )

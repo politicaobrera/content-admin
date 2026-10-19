@@ -8,6 +8,7 @@ import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useResource from '../hooks/useResource';
 import { useClipboard } from '@/app/hooks/useClipboard';
+import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 
 interface ResourceTableProps {
   resources: ResourceType[];
@@ -22,7 +23,7 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   const {remove} = useResource()
 
   // TODO: useTable factor out
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, any>>({
     title: searchParams.get('title') || '',
   })
   const [sort, setSort] = useState({
@@ -37,10 +38,13 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
   
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage)
 
-  // Actualiza los query params al cambiar filtros o sorting
+  // Actualiza los query params al cambiar filtros o sorting, con debounce para los
+  // campos de texto libre (no disparar una navegación por tecla tipeada)
   useEffect(() => {
-    handleFilterSubmit()
-  }, [sort, pagination, router, searchParams])
+    const timeout = setTimeout(() => handleFilterSubmit(), 350)
+    return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, pagination])
   
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString())
@@ -70,9 +74,14 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
     }))
   }
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFilterChange = (name: string, value: any) => {
+    setPagination((prev) => ({ ...prev, page: 1 }))
     setFilters((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleClearFilters = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }))
+    setFilters({ title: '' })
   }
 
   const handleClickEdit = (id: string) => {
@@ -103,9 +112,13 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
       console.log("Enlace al portapapeles:", text)
       toast.success("Enlace copiado al portapapeles!")
       return
-    } 
+    }
     toast.error("No se pudo copiar el enlace")
   }
+
+  const filterFields: FilterField[] = [
+    { type: 'text', name: 'title', label: 'Título', placeholder: 'Filtrar por título' },
+  ]
 
   return (
     <div className="space-y-4 w-full">
@@ -133,35 +146,12 @@ const ResourceTable = ({ resources, meta }: ResourceTableProps) => {
           </Button>
         </div>
       </div>
-      <div
-        className="
-          bg-white
-          p-4
-          rounded-lg
-          shadow
-        "
-      >
-        <div className="p-4 bg-gray-100 rounded shadow">
-          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              name="title"
-              placeholder="Filtrar por título"
-              value={filters.title}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <Button
-              type="button"
-              onClick={() => handleFilterSubmit()}
-            >
-              Filtrar
-            </Button>
-          </div>
-        </div>
-      </div>
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
       <div
         className="
           bg-white

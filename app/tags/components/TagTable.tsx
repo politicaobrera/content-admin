@@ -7,6 +7,7 @@ import { TagType } from '@/app/types/tag';
 import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useTag from '../hooks/useTag';
+import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 
 interface TagTableProps {
   tags: TagType[];
@@ -20,7 +21,7 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
   const {remove} = useTag();
 
   // TODO: useTable factor out
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, any>>({
     name: searchParams.get('name') || '',
   });
   const [sort, setSort] = useState({
@@ -35,10 +36,13 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
   
   const totalPages = Math.ceil(meta?.totalPages || 1 / pagination.perPage);
 
-  // Actualiza los query params al cambiar filtros o sorting
+  // Actualiza los query params al cambiar filtros o sorting, con debounce para los
+  // campos de texto libre (no disparar una navegación por tecla tipeada)
   useEffect(() => {
-    handleFilterSubmit()
-  }, [sort, pagination, router, searchParams]);
+    const timeout = setTimeout(() => handleFilterSubmit(), 350);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, pagination]);
   
   const handleFilterSubmit = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -68,9 +72,14 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
     }));
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFilterChange = (name: string, value: any) => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
     setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleClearFilters = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setFilters({ name: '' });
   };
 
   const handleClickEdit = (id: string) => {
@@ -95,9 +104,11 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
     }
   }
 
+  const filterFields: FilterField[] = [
+    { type: 'text', name: 'name', label: 'Nombre', placeholder: 'Filtrar por nombre' },
+  ];
+
   return (
-    
-    // TODO: sacar a componente aparte de filtros
     <div className="space-y-4 w-full">
       <div
         className="
@@ -123,35 +134,12 @@ const TagTable = ({ tags, meta }: TagTableProps) => {
           </Button>
         </div>
       </div>
-      <div
-        className="
-          bg-white
-          p-4
-          rounded-lg
-          shadow
-        "
-      >
-        <div className="p-4 bg-gray-100 rounded shadow">
-          <h2 className="text-lg font-semibold mb-2">Filtros</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              name="name"
-              placeholder="Filtrar por nombre"
-              value={filters.name}
-              onChange={handleFilterChange}
-              className="p-2 border rounded w-full"
-            />
-          </div>
-          <div className='mt-4 flex justify-end'>
-            <Button
-              type="button"
-              onClick={() => handleFilterSubmit()}
-            >
-              Filtrar
-            </Button>
-          </div>
-        </div>
-      </div>
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
       <div
         className="
           bg-white

@@ -191,14 +191,24 @@ const CampaignTable = ({ campaigns, meta }: CampaignTableProps) => {
                     const linkedCount = (campaign.relatedArticles?.length || 0)
                       + (campaign.relatedResources?.length || 0)
                       + (campaign.relatedEvents?.length || 0)
+
+                    const isLive = campaign.status === 'published' && campaign.isActive
                     return (
-                      <tr key={campaign._id} className="hover:bg-gray-50 border-b">
+                      <tr key={campaign._id} className={`hover:bg-gray-50 border-b ${isLive ? 'bg-green-50' : ''}`}>
                         <td className="px-4 py-2 text-sm text-gray-600">{campaign.title}</td>
                         <td className="px-4 py-2 text-sm text-gray-600">
                           {campaign.status === 'published' ? 'Publicada' : 'Borrador'}
                         </td>
                         <td className="px-4 py-2 text-sm text-gray-600">
-                          {campaign.status === 'published' ? (campaign.isActive ? 'Activa' : 'Finalizada') : '—'}
+                          {campaign.status === 'published' ? (
+                            campaign.isActive ? (
+                              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                Activa
+                              </span>
+                            ) : (
+                              'Inactiva'
+                            )
+                          ) : '—'}
                         </td>
                         <td className="px-4 py-2 text-sm text-gray-600">{linkedCount}</td>
                         <td className="px-4 py-2 text-sm text-gray-600 w-40">

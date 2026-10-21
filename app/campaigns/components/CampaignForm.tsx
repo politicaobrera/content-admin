@@ -164,9 +164,11 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign }) => {
                   disabled={false}
                   onChange={(val) => {
                     setCurrentStatus(val)
-                    // al volver a borrador, se desactiva junto con el status — no tiene
-                    // sentido una campaña activa que no está publicada
-                    if (!val) setCurrentIsActive(false)
+                    if (!val) {
+                      setCurrentIsActive(false)
+                    } else {
+                      setCurrentIsActive(true)
+                    }
                   }}
                 />
                 <ImportantMessage message="Recordá revisar bien la campaña antes de publicarla." />
@@ -176,7 +178,7 @@ const CampaignForm: React.FC<CampaignFormProps> = ({ campaign }) => {
               <h5>Actividad</h5>
               <div className="flex gap-3">
                 <Toggle
-                  labelConfig={{ isChecked: 'Activa', isNotChecked: 'Finalizada' }}
+                  labelConfig={{ isChecked: 'Activa', isNotChecked: 'Inactiva' }}
                   value={currentIsActive}
                   disabled={!currentStatus}
                   onChange={setCurrentIsActive}

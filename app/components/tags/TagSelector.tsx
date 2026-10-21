@@ -23,7 +23,13 @@ const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSe
       if (data) {
         setSearchResults(data)
       }
+    } else {
+      setSearchResults([])
     }
+  }
+
+  const handleSearchTagBlur = () => {
+    setSearchResults([])
   }
 
   const handleAddTag = async (tag:TagType) => {
@@ -60,13 +66,14 @@ const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSe
           className="w-full border-2"
           ref={searchTagRef}
           onChange={handleSearchTagChange}
+          onBlur={handleSearchTagBlur}
         />
         {
           searchResults.length > 0 && (
             <ul className="border-2 border-black mt-1">
               {searchResults.map((i, idx) => {
                 return (
-                <li key={"author-result-"+idx} onClick={() => handleAddTag(i)}>
+                <li key={"author-result-"+idx} onMouseDown={() => handleAddTag(i)}>
                   {i.name}
                 </li>
                 )

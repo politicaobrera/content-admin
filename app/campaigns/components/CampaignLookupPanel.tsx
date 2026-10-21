@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { toast } from "react-hot-toast"
 import getArticles from "@/app/actions/data/articles/getArticles"
 import getResources from "@/app/actions/data/resources/getResources"
 import getEvents from "@/app/actions/data/events/getEvents"
@@ -11,15 +10,14 @@ import { EventType } from "@/app/types/event"
 import { TagType } from "@/app/types/tag"
 import TagSelector from "@/app/components/tags/TagSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
-import { Section } from "@/app/types/sections"
-import { useClipboard } from "@/app/hooks/useClipboard"
 
-// Variante de app/articles/components/ContentLookupPanel.tsx con una tercera pestaña de
-// Eventos. Se mantiene aparte (en vez de extender el compartido) porque EventType no
-// tiene slug/section — "copiar enlace" no tiene sentido para eventos, y el resultado de
-// búsqueda se muestra distinto (fecha/lugar en vez de slug).
-type LookupEntity = 'articles' | 'resources' | 'events'
-type LookupResult = { _id: string, title: string, slug?: string, section?: Section, date?: string, place?: string }
+type LookupResult =
+  | { entity: 'articles'; data: Partial<ArticleType> }
+  | { entity: 'resources'; data: Partial<ResourceType> }
+  | { entity: 'events'; data: Partial<EventType> }
+
+type LookupEntity = LookupResult['entity']
+type RelatedItem = Partial<ArticleType> | Partial<ResourceType> | Partial<EventType>
 
 const MIN_TITLE_LENGTH = 2
 
@@ -32,6 +30,12 @@ interface CampaignLookupPanelProps {
   onChangeRelatedEvents: (items: Partial<EventType>[]) => void
 }
 
+function getThumbnailSrc(result: LookupResult): string | undefined {
+  if (result.entity === 'articles') return result.data.image?.src
+  if (result.entity === 'resources') return result.data.src
+  return result.data.image
+}
+
 const CampaignLookupPanel = ({
   relatedArticles,
   relatedResources,
@@ -40,7 +44,6 @@ const CampaignLookupPanel = ({
   onChangeRelatedResources,
   onChangeRelatedEvents,
 }: CampaignLookupPanelProps) => {
-  const { copyToClipboard } = useClipboard()
   const [entity, setEntity] = useState<LookupEntity>('articles')
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState<TagType[]>([])
@@ -49,7 +52,8 @@ const CampaignLookupPanel = ({
   const debouncedTitle = useDebouncedValue(title)
 
   const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || tags.length > 0
-  const currentRelated = entity === 'articles' ? relatedArticles : entity === 'resources' ? relatedResources : relatedEvents
+  const currentRelated: RelatedItem[] =
+    entity === 'articles' ? relatedArticles : entity === 'resources' ? relatedResources : relatedEvents
   // events.model no indexa por tags, así que ese filtro solo aplica a notas/recursos
   const supportsTagFilter = entity !== 'events'
 
@@ -68,49 +72,41 @@ const CampaignLookupPanel = ({
       perPage: '20',
     }
 
-    const search = entity === 'articles'
-      ? getArticles(params)
-      : entity === 'resources'
-        ? getResources(params)
-        : getEvents(params)
-
-    search.then((response) => {
-      if (cancelled) return
-      const { data, error } = response as { data?: (Partial<ArticleType> | Partial<ResourceType> | Partial<EventType>)[], error?: unknown }
-      if (error) {
-        console.log("error al buscar contenido para vincular", error)
+    async function search() {
+      if (entity === 'articles') {
+        const { data, error } = await getArticles(params)
+        if (error) console.log("error al buscar notas para vincular", error)
+        if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'articles' as const, data: item })))
+      } else if (entity === 'resources') {
+        const { data, error } = await getResources(params)
+        if (error) console.log("error al buscar recursos para vincular", error)
+        if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'resources' as const, data: item })))
+      } else {
+        const { data, error } = await getEvents(params)
+        if (error) console.log("error al buscar eventos para vincular", error)
+        if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'events' as const, data: item })))
       }
-      setResults((data ?? []) as LookupResult[])
-      setLoading(false)
-    })
+      if (!cancelled) setLoading(false)
+    }
+
+    search()
 
     return () => { cancelled = true }
   }, [debouncedTitle, tags, entity, hasFilter, supportsTagFilter])
 
-  const handleCopySlug = async (item: LookupResult) => {
-    if (!item.slug) return
-    const text = `${process.env.NEXT_PUBLIC_SITE_URL}${item?.section && item.section.slug === "revista" ? "/revista" : ""}/${item.slug}`
-    const success = await copyToClipboard(text)
-    if (success) {
-      toast.success("Enlace copiado al portapapeles!!")
-      return
-    }
-    toast.error("No se pudo copiar el enlace")
-  }
-
-  const handleLink = (item: LookupResult) => {
-    const alreadyLinked = currentRelated.some((i) => i._id === item._id)
+  const handleLink = (result: LookupResult) => {
+    const alreadyLinked = currentRelated.some((i) => i._id === result.data._id)
     if (alreadyLinked) return
-    if (entity === 'articles') {
-      onChangeRelatedArticles([...relatedArticles, item])
-    } else if (entity === 'resources') {
-      onChangeRelatedResources([...relatedResources, item])
+    if (result.entity === 'articles') {
+      onChangeRelatedArticles([...relatedArticles, result.data])
+    } else if (result.entity === 'resources') {
+      onChangeRelatedResources([...relatedResources, result.data])
     } else {
-      onChangeRelatedEvents([...relatedEvents, item])
+      onChangeRelatedEvents([...relatedEvents, result.data])
     }
   }
 
-  const handleUnlink = (item: Partial<ArticleType> | Partial<ResourceType> | Partial<EventType>) => {
+  const handleUnlink = (item: RelatedItem) => {
     if (entity === 'articles') {
       onChangeRelatedArticles(relatedArticles.filter((i) => i._id !== item._id))
     } else if (entity === 'resources') {
@@ -148,17 +144,19 @@ const CampaignLookupPanel = ({
       </div>
 
       {currentRelated.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
+        <ul className="flex flex-col gap-1">
           {currentRelated.map((item) => (
-            <div
+            <li
               key={item._id}
-              className="p-2 rounded-md bg-yellow-500 flex font-bold items-center gap-2"
+              className="flex items-center gap-2 border-l-4 border-black bg-gray-100 px-2 py-1"
             >
-              {item.title}
-              <button type="button" onClick={() => handleUnlink(item)}>✕</button>
-            </div>
+              <span className="font-semibold flex-1">{item.title}</span>
+              <button type="button" className="underline text-sm" onClick={() => handleUnlink(item)}>
+                Quitar
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       <input
@@ -173,34 +171,39 @@ const CampaignLookupPanel = ({
       {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}
       {!loading && results.length > 0 && (
         <ul className="flex flex-col gap-1 max-h-64 overflow-scroll">
-          {results.map((item) => {
-            const alreadyLinked = currentRelated.some((i) => i._id === item._id)
+          {results.map((result) => {
+            const { data } = result
+            const alreadyLinked = currentRelated.some((i) => i._id === data._id)
+            const thumbnailSrc = getThumbnailSrc(result)
             return (
               <li
-                key={item._id}
+                key={data._id}
                 className="flex items-center gap-2 border-2 border-black rounded-md p-1"
               >
-                <span className="font-semibold">{item.title}</span>
-                {item.slug && <span className="ml-auto text-sm text-gray-500">/{item.slug}</span>}
-                {item.date && (
-                  <span className="ml-auto text-sm text-gray-500">
-                    {new Date(item.date).toLocaleDateString()}{item.place ? ` · ${item.place}` : ''}
-                  </span>
+                {thumbnailSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={thumbnailSrc}
+                    alt=""
+                    className="w-10 h-10 object-cover rounded-sm flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-sm bg-gray-200 flex-shrink-0" />
                 )}
-                {item.slug && (
-                  <button
-                    type="button"
-                    className="underline text-sm"
-                    onClick={() => handleCopySlug(item)}
-                  >
-                    Copiar enlace
-                  </button>
+                <span className="font-semibold">{data.title}</span>
+                {result.entity !== 'events' && result.data.slug && (
+                  <span className="ml-auto text-sm text-gray-500">/{result.data.slug}</span>
+                )}
+                {result.entity === 'events' && result.data.date && (
+                  <span className="ml-auto text-sm text-gray-500">
+                    {new Date(result.data.date).toLocaleDateString()}{result.data.place ? ` · ${result.data.place}` : ''}
+                  </span>
                 )}
                 <button
                   type="button"
                   className="underline text-sm disabled:opacity-50"
                   disabled={alreadyLinked}
-                  onClick={() => handleLink(item)}
+                  onClick={() => handleLink(result)}
                 >
                   {alreadyLinked ? 'Vinculado' : 'Vincular'}
                 </button>

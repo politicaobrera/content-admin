@@ -195,22 +195,26 @@ const EventTable = ({ events, meta }: EventTableProps) => {
                 </thead>
                 <tbody>
                   {events.map((event) => {
-                    const isPast = new Date(event.date) < new Date()
+                    // lo que importa destacar es qué evento todavía está vigente
+                    // (requiere atención hoy) — los vencidos se ven con los datos
+                    // normales de la tabla, sin resaltar, mismo criterio que
+                    // CampaignTable con las campañas activas
+                    const isUpcoming = new Date(event.date) >= new Date()
                     return (
-                    <tr key={event._id} className={`hover:bg-gray-50 border-b ${isPast ? 'bg-gray-50 text-gray-400' : ''}`}>
+                    <tr key={event._id} className={`hover:bg-gray-50 border-b ${isUpcoming ? 'bg-green-50' : ''}`}>
                       <td className="px-4 py-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <span className={isPast ? 'text-gray-400' : 'text-gray-600'}>{event.title}</span>
-                          {isPast && (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
-                              Vencido
+                          <span className="text-gray-600">{event.title}</span>
+                          {isUpcoming && (
+                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                              Vigente
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className={`px-4 py-2 text-sm ${isPast ? 'text-gray-400' : 'text-gray-600'}`}>{new Date(event.date).toLocaleDateString()}</td>
-                      <td className={`px-4 py-2 text-sm ${isPast ? 'text-gray-400' : 'text-gray-600'}`}>{event.place}</td>
-                      <td className={`px-4 py-2 text-sm ${isPast ? 'text-gray-400' : 'text-gray-600'}`}>{event.schedule}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{new Date(event.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{event.place}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{event.schedule}</td>
                       <td className="px-4 py-2 text-sm text-gray-600 w-40">
                         <div className='flex gap-2'>
                           <Button

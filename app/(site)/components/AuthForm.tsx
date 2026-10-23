@@ -32,6 +32,7 @@ const AuthForm = () => {
   useEffect(() => {
     if (session?.status === 'authenticated') {
       router.push('/main')
+      router.refresh()
     }
   }, [session?.status, router])
 

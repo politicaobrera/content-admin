@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core"
+import { DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core"
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -123,7 +123,12 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
       />
       <div className="flex gap-10">
         <DndContext
-          collisionDetection={closestCenter}
+          // closestCenter compara centros geometricos -- con "Orden actual" vacio (area
+          // grande sin items propios) pierde contra los items de "Ultimas notas" que
+          // quedan mas cerca en distancia de centro, y la columna vacia nunca resuelve
+          // como target. pointerWithin detecta por posicion real del cursor dentro del
+          // area droppable, que es lo que hace falta para este caso.
+          collisionDetection={pointerWithin}
           onDragEnd={handleDragEnd}
           onDragStart={handleDragStart}
         >
@@ -131,7 +136,7 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
             <div className=" bg-gray-200 text-center border-gray-400 border-solid border-2 rounded-md">
               <h2 className="text-2xl font-bold">Orden actual</h2>
             </div>
-            <DroppableColumn id={CURRENT_COLUMN_ID} className="h-[75vh] overflow-scroll">
+            <DroppableColumn id={CURRENT_COLUMN_ID} className="min-h-[200px] h-[75vh] overflow-scroll">
               <SortableContext
                 id={CURRENT_COLUMN_ID}
                 items={currentArticles.map((article) => article.id)}

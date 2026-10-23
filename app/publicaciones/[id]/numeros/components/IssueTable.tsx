@@ -8,6 +8,7 @@ import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useIssue from '../hooks/useIssue';
 import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
+import ImageThumb from '@/app/components/image/ImageThumb';
 
 interface IssueTableProps {
   publicationId: string;
@@ -185,6 +186,7 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
               <table className="min-w-full border-collapse border border-gray-300 bg-white shadow-md">
                 <thead className="bg-gray-100">
                   <tr>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Imagen</th>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
                       onClick={() => handleSort('number')}
@@ -204,6 +206,9 @@ const IssueTable = ({ publicationId, issues, meta }: IssueTableProps) => {
                 <tbody>
                   {issues.map((issue) => (
                     <tr key={issue._id} className="hover:bg-gray-50 border-b">
+                      <td className="px-4 py-2">
+                        <ImageThumb image={issue.coverImage} />
+                      </td>
                       <td className="px-4 py-2 text-sm text-gray-600">{issue.number}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">{statusLabels[issue.status]}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">

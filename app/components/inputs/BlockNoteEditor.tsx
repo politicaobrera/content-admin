@@ -12,7 +12,7 @@ import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blockno
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
 import BlockNoteEditorSchema from './BlockNoteEditorSchema';
-import { useCallback, useEffect } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 
 interface BlockNoteEditorProps {
   id: string,
@@ -21,7 +21,20 @@ interface BlockNoteEditorProps {
   onChange: (html: string) => void;
 }
 
-export default function BlockNoteEditor({ id, initialHTML, initial = [], onChange }: BlockNoteEditorProps) {
+export type InsertableMediaBlockType = "image" | "video" | "audio";
+
+export interface BlockNoteEditorHandle {
+  // inserta despues del ultimo bloque donde el cursor estuvo parado (rastreado via
+  // onSelectionChange, porque el foco ya se perdio para cuando se hace click en el
+  // boton "insertar en el cuerpo" del panel de recursos) -- si nunca hubo foco
+  // registrado, inserta al final del documento.
+  insertMediaBlock: (type: InsertableMediaBlockType, url: string, caption?: string) => void;
+}
+
+const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(function BlockNoteEditor(
+  { id, initialHTML, initial = [], onChange },
+  ref,
+) {
 
   const editor = useCreateBlockNote({
     schema: BlockNoteEditorSchema,
@@ -31,6 +44,34 @@ export default function BlockNoteEditor({ id, initialHTML, initial = [], onChang
       },
     }
   });
+
+  // ultimo bloque donde el cursor estuvo parado dentro del editor -- se actualiza en
+  // cada cambio de seleccion, asi sigue disponible aunque el foco haya pasado al panel
+  // de recursos (de otro componente) para cuando se haga click en insertar
+  const lastFocusedBlockId = useRef<string | null>(null);
+
+  useEffect(() => {
+    return editor.onSelectionChange(() => {
+      lastFocusedBlockId.current = editor.getTextCursorPosition().block.id;
+    });
+  }, [editor]);
+
+  useImperativeHandle(ref, () => ({
+    insertMediaBlock: (type, url, caption) => {
+      const newBlock = { type, props: { url, caption: caption ?? "" } };
+      const targetBlockId = lastFocusedBlockId.current;
+      const blocks = editor.document;
+      const lastBlock = blocks[blocks.length - 1];
+
+      if (targetBlockId && blocks.some((b) => b.id === targetBlockId)) {
+        editor.insertBlocks([newBlock], targetBlockId, "after");
+      } else if (lastBlock) {
+        editor.insertBlocks([newBlock], lastBlock.id, "after");
+      } else {
+        editor.insertBlocks([newBlock], blocks[0]?.id ?? "");
+      }
+    },
+  }), [editor]);
 
   const insertIframe = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
     title: "Insertar embed",
@@ -116,4 +157,6 @@ export default function BlockNoteEditor({ id, initialHTML, initial = [], onChang
         `}</style>       */}
     </div>
   )
-}
+});
+
+export default BlockNoteEditor;

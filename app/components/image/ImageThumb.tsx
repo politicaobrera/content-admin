@@ -1,7 +1,7 @@
-import { MainImageType } from "@/app/types/image"
+import { ImageTpe } from "@/app/types/image"
 
 interface ImageThumbProps {
-  image: MainImageType | undefined
+  image: ImageTpe | undefined
 }
 
 const ImageThumb = ({image}: ImageThumbProps) => {

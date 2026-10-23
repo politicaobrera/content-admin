@@ -11,6 +11,7 @@ import {
 
 
 import dynamic from 'next/dynamic';
+import type { BlockNoteEditorHandle } from '@/app/components/inputs/BlockNoteEditor';
 const BlockNoteEditor = dynamic(() => import('@/app//components/inputs/BlockNoteEditor'), { ssr: false });
 const SectionSelector = dynamic(
   () => import('@/app/components/sections/SectionSelector'),
@@ -48,6 +49,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
   const mainImageRef = useRef<MainImageHandle>(null)
+  const editorRef = useRef<BlockNoteEditorHandle>(null)
   const [currentAuthors, setCurrentAuthors] = useState<AuthorType[]>(article.authors)
   const [currentDescriptions, setCurrentDescriptions] = useState<string[]>(article.authorsDescriptions)
   const [currentSection, setCurrentSection] = useState<Section|null>(article.section)
@@ -237,6 +239,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Cuerpo de la nota..."
           /> */}
           <BlockNoteEditor
+            ref={editorRef}
             id="content"
             initialHTML={currentContent}
             onChange={(html:string) => setCurrentContent(html)}
@@ -248,6 +251,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             relatedResources={currentRelatedResources}
             onChangeRelatedArticles={setCurrentRelatedArticles}
             onChangeRelatedResources={setCurrentRelatedResources}
+            editorRef={editorRef}
           />
           <Separator heading label="Etiquetas" />
           <TagSelector

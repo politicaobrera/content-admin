@@ -1,13 +1,14 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { RefObject, useEffect, useState } from "react"
 import getArticles from "@/app/actions/data/articles/getArticles"
 import getResources from "@/app/actions/data/resources/getResources"
 import { ArticleType } from "@/app/types/article"
-import { ResourceType } from "@/app/types/resource"
+import { ResourceSourceType, ResourceType } from "@/app/types/resource"
 import { TagType } from "@/app/types/tag"
 import TagSelector from "@/app/components/tags/TagSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
+import { BlockNoteEditorHandle, InsertableMediaBlockType } from "@/app/components/inputs/BlockNoteEditor"
 
 // Mismo patrón que app/campaigns/components/CampaignLookupPanel.tsx (ver ahí el porqué
 // de la union discriminada por `entity` en vez de un tipo aplanado). Este panel es para
@@ -28,6 +29,21 @@ interface ContentLookupPanelProps {
   relatedResources: Partial<ResourceType>[]
   onChangeRelatedArticles: (items: Partial<ArticleType>[]) => void
   onChangeRelatedResources: (items: Partial<ResourceType>[]) => void
+  editorRef?: RefObject<BlockNoteEditorHandle | null>
+}
+
+// solo imagen/video/audio con archivo propio mapean a un bloque nativo de BlockNote --
+// un recurso tipo "document" (PDF) o sin src (solo externalSources) no tiene a donde
+// insertarse como bloque de media
+const INSERTABLE_SOURCE_TYPES: Partial<Record<ResourceSourceType, InsertableMediaBlockType>> = {
+  [ResourceSourceType.Image]: "image",
+  [ResourceSourceType.Video]: "video",
+  [ResourceSourceType.Audio]: "audio",
+}
+
+function getInsertableBlockType(resource: Partial<ResourceType>): InsertableMediaBlockType | undefined {
+  if (!resource.src || !resource.sourceType) return undefined
+  return INSERTABLE_SOURCE_TYPES[resource.sourceType]
 }
 
 // miniatura del resultado de búsqueda: Article expone `image.src`, Resource expone
@@ -43,6 +59,7 @@ const ContentLookupPanel = ({
   relatedResources,
   onChangeRelatedArticles,
   onChangeRelatedResources,
+  editorRef,
 }: ContentLookupPanelProps) => {
   const [entity, setEntity] = useState<LookupEntity>('articles')
   const [title, setTitle] = useState("")
@@ -108,6 +125,12 @@ const ContentLookupPanel = ({
     }
   }
 
+  const handleInsertInBody = (resource: Partial<ResourceType>) => {
+    const blockType = getInsertableBlockType(resource)
+    if (!blockType || !resource.src || !editorRef?.current) return
+    editorRef.current.insertMediaBlock(blockType, resource.src, resource.caption)
+  }
+
   return (
     <div className="flex flex-col gap-3 border-2 border-gray-400 rounded-md p-3">
       <h3 className="font-bold text-lg">Notas / recursos relacionados</h3>
@@ -132,17 +155,30 @@ const ContentLookupPanel = ({
         // lista simple (no pills tipo tag) para no confundirse visualmente con el
         // selector de tags que aparece más abajo en el mismo panel
         <ul className="flex flex-col gap-1">
-          {currentRelated.map((item) => (
-            <li
-              key={item._id}
-              className="flex items-center gap-2 border-l-4 border-black bg-gray-100 px-2 py-1"
-            >
-              <span className="font-semibold flex-1">{item.title}</span>
-              <button type="button" className="underline text-sm" onClick={() => handleUnlink(item)}>
-                Quitar
-              </button>
-            </li>
-          ))}
+          {currentRelated.map((item) => {
+            const insertableType = entity === 'resources' ? getInsertableBlockType(item) : undefined
+            return (
+              <li
+                key={item._id}
+                className="flex items-center gap-2 border-l-4 border-black bg-gray-100 px-2 py-1"
+              >
+                <span className="font-semibold flex-1">{item.title}</span>
+                {insertableType && editorRef && (
+                  <button
+                    type="button"
+                    className="underline text-sm"
+                    onClick={() => handleInsertInBody(item)}
+                    title="Inserta este recurso en el cuerpo de la nota, en el punto donde estaba el cursor"
+                  >
+                    Insertar en el cuerpo
+                  </button>
+                )}
+                <button type="button" className="underline text-sm" onClick={() => handleUnlink(item)}>
+                  Quitar
+                </button>
+              </li>
+            )
+          })}
         </ul>
       )}
 

@@ -11,6 +11,7 @@ import Separator from "@/app/components/layout/Separator"
 import VideosSelector from "./VideosSelector"
 import LayoutsSorter from "./LayoutsSorter"
 import PortadaTabs from "./PortadaTabs"
+import FeaturedAgendaPanel from "./FeaturedAgendaPanel"
 import { PortadaDraftProvider } from "../context/PortadaDraftContext"
 
 interface PortadaProps {
@@ -34,6 +35,8 @@ const Portada = async ({searchParams}: PortadaProps) => {
     banners: currentBanners,
     videos: currentVideos,
     layouts: currentLayouts,
+    featuredEvents: currentFeaturedEvents,
+    featuredIssues: currentFeaturedIssues,
     name
   } = homePageData as PageType;
   
@@ -60,6 +63,12 @@ const Portada = async ({searchParams}: PortadaProps) => {
               <VideosSelector
                 id={id}
                 current={currentVideos}
+              />
+              <Separator />
+              <FeaturedAgendaPanel
+                id={id}
+                currentFeaturedEvents={currentFeaturedEvents ?? []}
+                currentFeaturedIssues={currentFeaturedIssues ?? []}
               />
             </div>
           }

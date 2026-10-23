@@ -1,4 +1,6 @@
 import { ArticleType } from "./article"
+import { EventType } from "./event"
+import { IssueType } from "./issue"
 
 export interface Video {
   src: string
@@ -23,4 +25,6 @@ export interface PageType {
   banners: BannerType[]
   articles: Partial<ArticleType>[]
   layouts: RawLayoutEntry[]
+  featuredEvents: Partial<EventType>[]
+  featuredIssues: Partial<IssueType>[]
 }

@@ -47,8 +47,6 @@ const AuthForm = () => {
       }
       if (callback?.ok && !callback.error) {
         toast.success("logged innnggg")
-        router.push('/main')
-        router.refresh()
       }
     }).finally(() => setLoading(false))
   }

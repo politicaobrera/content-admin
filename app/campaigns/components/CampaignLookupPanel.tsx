@@ -8,7 +8,9 @@ import { ArticleType } from "@/app/types/article"
 import { ResourceType } from "@/app/types/resource"
 import { EventType } from "@/app/types/event"
 import { TagType } from "@/app/types/tag"
+import { Section } from "@/app/types/sections"
 import TagSelector from "@/app/components/tags/TagSelector"
+import SectionSelector from "@/app/components/sections/SectionSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 
 type LookupResult =
@@ -47,11 +49,15 @@ const CampaignLookupPanel = ({
   const [entity, setEntity] = useState<LookupEntity>('articles')
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState<TagType[]>([])
+  const [section, setSection] = useState<Section | null>(null)
   const [results, setResults] = useState<LookupResult[]>([])
   const [loading, setLoading] = useState(false)
   const debouncedTitle = useDebouncedValue(title)
 
+  // sección solo tiene sentido para notas -- recursos/eventos no están seccionados
+  const supportsSectionFilter = entity === 'articles'
   const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || tags.length > 0
+    || (supportsSectionFilter && !!section)
   const currentRelated: RelatedItem[] =
     entity === 'articles' ? relatedArticles : entity === 'resources' ? relatedResources : relatedEvents
   // events.model no indexa por tags, así que ese filtro solo aplica a notas/recursos
@@ -69,6 +75,7 @@ const CampaignLookupPanel = ({
     const params = {
       ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
       ...(supportsTagFilter && tags.length > 0 ? { tags: tags.map(t => t._id) } : {}),
+      ...(supportsSectionFilter && section ? { section: section._id } : {}),
       perPage: '20',
     }
 
@@ -92,7 +99,7 @@ const CampaignLookupPanel = ({
     search()
 
     return () => { cancelled = true }
-  }, [debouncedTitle, tags, entity, hasFilter, supportsTagFilter])
+  }, [debouncedTitle, tags, section, entity, hasFilter, supportsTagFilter, supportsSectionFilter])
 
   const handleLink = (result: LookupResult) => {
     const alreadyLinked = currentRelated.some((i) => i._id === result.data._id)
@@ -166,6 +173,14 @@ const CampaignLookupPanel = ({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
+      {supportsSectionFilter && (
+        <SectionSelector
+          currentSection={section}
+          onChange={setSection}
+          isClearable
+          showLabel={false}
+        />
+      )}
       {supportsTagFilter && <TagSelector currentTags={tags} onChange={setTags} />}
       {loading && <p>Buscando...</p>}
       {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}

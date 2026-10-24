@@ -9,6 +9,7 @@ import {
   getDefaultReactSlashMenuItems,
 } from '@blocknote/react';
 import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions';
+import { TextSelection } from 'prosemirror-state';
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
 import BlockNoteEditorSchema from './BlockNoteEditorSchema';
@@ -29,6 +30,11 @@ export interface BlockNoteEditorHandle {
   // boton "insertar en el cuerpo" del panel de recursos) -- si nunca hubo foco
   // registrado, inserta al final del documento.
   insertMediaBlock: (type: InsertableMediaBlockType, url: string, caption?: string) => void;
+  // crea un link a `url` en el punto donde estaba el cursor/seleccion por ultima vez
+  // (rastreado via onSelectionChange, mismo motivo que arriba). Si habia texto
+  // seleccionado, ese texto se convierte en el link; si no, se usa `fallbackText`
+  // (el titulo de la nota vinculada) como texto del link.
+  insertArticleLink: (url: string, fallbackText: string) => void;
 }
 
 const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(function BlockNoteEditor(
@@ -50,9 +56,17 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
   // de recursos (de otro componente) para cuando se haga click en insertar
   const lastFocusedBlockId = useRef<string | null>(null);
 
+  // ultima seleccion de texto (posiciones ProseMirror), para poder restaurarla y
+  // convertirla en link despues de que el foco haya pasado al panel de notas
+  // relacionadas -- BlockNote no tiene un equivalente de seleccion por caracteres
+  // a nivel de su API de bloques, por eso se opera directo sobre prosemirrorView
+  const lastTextSelection = useRef<{ from: number; to: number } | null>(null);
+
   useEffect(() => {
     return editor.onSelectionChange(() => {
       lastFocusedBlockId.current = editor.getTextCursorPosition().block.id;
+      const { from, to } = editor.prosemirrorView.state.selection;
+      lastTextSelection.current = { from, to };
     });
   }, [editor]);
 
@@ -70,6 +84,34 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
       } else {
         editor.insertBlocks([newBlock], blocks[0]?.id ?? "");
       }
+    },
+    insertArticleLink: (url, fallbackText) => {
+      const selection = lastTextSelection.current;
+      const docSize = editor.prosemirrorView.state.doc.content.size;
+      const hasValidSelection = selection && selection.from !== selection.to
+        && selection.to <= docSize;
+
+      if (hasValidSelection) {
+        editor.transact((tr) => {
+          tr.setSelection(TextSelection.create(tr.doc, selection.from, selection.to));
+        });
+        editor.createLink(url);
+        return;
+      }
+
+      // sin seleccion de texto: paramos en el ultimo bloque enfocado (o el final del
+      // documento) e insertamos el titulo de la nota como texto del link
+      const targetBlockId = lastFocusedBlockId.current;
+      const blocks = editor.document;
+      const lastBlock = blocks[blocks.length - 1];
+      const placementBlock = targetBlockId && blocks.some((b) => b.id === targetBlockId)
+        ? targetBlockId
+        : lastBlock?.id;
+
+      if (placementBlock) {
+        editor.setTextCursorPosition(placementBlock, "end");
+      }
+      editor.createLink(url, fallbackText);
     },
   }), [editor]);
 

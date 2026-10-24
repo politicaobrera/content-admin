@@ -168,6 +168,13 @@ const ContentLookupPanel = ({
     editorRef.current.insertMediaBlock(blockType, resource.src, resource.caption)
   }
 
+  const handleInsertArticleLink = (article: Partial<ArticleType>) => {
+    if (!article.slug || !article.title || !editorRef?.current) return
+    // misma regla de ruteo que gatsby-node.js del sitio: la seccion "revista" vive bajo /revista/:slug
+    const path = article.section?.slug === 'revista' ? `/revista/${article.slug}` : `/${article.slug}`
+    editorRef.current.insertArticleLink(path, article.title)
+  }
+
   return (
     <div className="flex flex-col gap-3 border-2 border-gray-400 rounded-md p-3">
       <h3 className="font-bold text-lg">Notas / recursos relacionados</h3>
@@ -208,6 +215,16 @@ const ContentLookupPanel = ({
                     title="Inserta este recurso en el cuerpo de la nota, en el punto donde estaba el cursor"
                   >
                     Insertar en el cuerpo
+                  </button>
+                )}
+                {entity === 'articles' && editorRef && (
+                  <button
+                    type="button"
+                    className="underline text-sm"
+                    onClick={() => handleInsertArticleLink(item)}
+                    title="Convierte el texto seleccionado en un link a esta nota. Si no hay texto seleccionado, inserta el título como link."
+                  >
+                    Agregar como link
                   </button>
                 )}
                 <button type="button" className="underline text-sm" onClick={() => handleUnlink(item)}>

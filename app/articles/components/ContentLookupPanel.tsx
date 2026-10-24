@@ -6,7 +6,9 @@ import getResources from "@/app/actions/data/resources/getResources"
 import { ArticleType } from "@/app/types/article"
 import { ResourceSourceType, ResourceType } from "@/app/types/resource"
 import { TagType } from "@/app/types/tag"
+import { Section } from "@/app/types/sections"
 import TagSelector from "@/app/components/tags/TagSelector"
+import SectionSelector from "@/app/components/sections/SectionSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 import { BlockNoteEditorHandle, InsertableMediaBlockType } from "@/app/components/inputs/BlockNoteEditor"
 
@@ -64,11 +66,15 @@ const ContentLookupPanel = ({
   const [entity, setEntity] = useState<LookupEntity>('articles')
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState<TagType[]>([])
+  const [section, setSection] = useState<Section | null>(null)
   const [results, setResults] = useState<LookupResult[]>([])
   const [loading, setLoading] = useState(false)
   const debouncedTitle = useDebouncedValue(title)
 
+  // sección solo tiene sentido para notas -- recursos no están seccionados
+  const supportsSectionFilter = entity === 'articles'
   const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || tags.length > 0
+    || (supportsSectionFilter && !!section)
   const currentRelated: RelatedItem[] = entity === 'articles' ? relatedArticles : relatedResources
 
   useEffect(() => {
@@ -83,6 +89,7 @@ const ContentLookupPanel = ({
     const params = {
       ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
       ...(tags.length > 0 ? { tags: tags.map(t => t._id) } : {}),
+      ...(supportsSectionFilter && section ? { section: section._id } : {}),
       perPage: '20',
     }
 
@@ -105,7 +112,7 @@ const ContentLookupPanel = ({
     search()
 
     return () => { cancelled = true }
-  }, [debouncedTitle, tags, entity, excludeArticleId, hasFilter])
+  }, [debouncedTitle, tags, section, entity, excludeArticleId, hasFilter, supportsSectionFilter])
 
   const handleLink = (result: LookupResult) => {
     const alreadyLinked = currentRelated.some((i) => i._id === result.data._id)
@@ -189,6 +196,14 @@ const ContentLookupPanel = ({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
+      {supportsSectionFilter && (
+        <SectionSelector
+          currentSection={section}
+          onChange={setSection}
+          isClearable
+          showLabel={false}
+        />
+      )}
       <TagSelector currentTags={tags} onChange={setTags} />
       {loading && <p>Buscando...</p>}
       {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}

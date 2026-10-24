@@ -1,7 +1,12 @@
-import { ChangeEvent, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { ArticleType } from "@/app/types/article"
+import { Section } from "@/app/types/sections"
 import getArticles from "@/app/actions/data/articles/getArticles"
+import SectionSelector from "@/app/components/sections/SectionSelector"
+import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 import IssueArticleList from "./IssueArticleList"
+
+const MIN_TITLE_LENGTH = 2
 
 interface IssueArticleSelectorProps {
   onChange: (articles: Partial<ArticleType>[]) => void
@@ -9,28 +14,36 @@ interface IssueArticleSelectorProps {
 }
 
 const IssueArticleSelector = ({ onChange, currentArticles = [] }: IssueArticleSelectorProps) => {
-  const searchArticleRef = useRef<HTMLInputElement>(null)
+  const [title, setTitle] = useState("")
+  const [section, setSection] = useState<Section | null>(null)
   const [searchResults, setSearchResults] = useState<ArticleType[]>([])
+  const debouncedTitle = useDebouncedValue(title)
 
-  const handleSearchArticleChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const q = event.target.value
-    if (q && q.length > 1) {
-      const { data, error } = await getArticles({ title: q })
-      if (error) {
-        console.log("error al buscar", error)
-      }
-      if (data) {
-        setSearchResults(data)
-      }
-    } else {
+  const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || !!section
+
+  useEffect(() => {
+    if (!hasFilter) {
       setSearchResults([])
+      return
     }
+    let cancelled = false
+    const params = {
+      ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
+      ...(section ? { section: section._id } : {}),
+    }
+    getArticles(params).then(({ data, error }) => {
+      if (error) console.log("error al buscar", error)
+      if (!cancelled) setSearchResults(data ?? [])
+    })
+    return () => { cancelled = true }
+  }, [debouncedTitle, section, hasFilter])
+
+  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value)
   }
 
   const handleAddArticle = async (article: ArticleType) => {
-    if (searchArticleRef?.current?.value) {
-      searchArticleRef.current.value = ''
-    }
+    setTitle("")
     setSearchResults([])
     const alreadyAdded = currentArticles.find(a => a._id === article._id)
     if (!alreadyAdded) {
@@ -55,9 +68,16 @@ const IssueArticleSelector = ({ onChange, currentArticles = [] }: IssueArticleSe
         <h6>Buscar</h6>
         <input
           type="text"
+          placeholder="Buscar por título..."
           className="w-full border-2"
-          ref={searchArticleRef}
-          onChange={handleSearchArticleChange}
+          value={title}
+          onChange={handleTitleChange}
+        />
+        <SectionSelector
+          currentSection={section}
+          onChange={setSection}
+          isClearable
+          showLabel={false}
         />
         {
           searchResults.length > 0 && (

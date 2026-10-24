@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import getArticles from "@/app/actions/data/articles/getArticles"
 import getResources from "@/app/actions/data/resources/getResources"
 import getEvents from "@/app/actions/data/events/getEvents"
-import { ArticleType } from "@/app/types/article"
+import { ArticleStatus, ArticleType } from "@/app/types/article"
 import { ResourceType } from "@/app/types/resource"
 import { EventType } from "@/app/types/event"
 import { TagType } from "@/app/types/tag"
@@ -22,6 +22,9 @@ type LookupEntity = LookupResult['entity']
 type RelatedItem = Partial<ArticleType> | Partial<ResourceType> | Partial<EventType>
 
 const MIN_TITLE_LENGTH = 2
+// cuando el buscador recibe foco sin ningun filtro activo, se muestran resultados
+// recientes/proximos de esa entidad -- lo mas comun es querer vincular algo nuevo
+const RECENT_RESULTS_COUNT = 5
 
 interface CampaignLookupPanelProps {
   relatedArticles: Partial<ArticleType>[]
@@ -52,6 +55,7 @@ const CampaignLookupPanel = ({
   const [section, setSection] = useState<Section | null>(null)
   const [results, setResults] = useState<LookupResult[]>([])
   const [loading, setLoading] = useState(false)
+  const [showingRecent, setShowingRecent] = useState(false)
   const debouncedTitle = useDebouncedValue(title)
 
   // sección solo tiene sentido para notas -- recursos/eventos no están seccionados
@@ -65,10 +69,12 @@ const CampaignLookupPanel = ({
 
   useEffect(() => {
     if (!hasFilter) {
-      setResults([])
+      // sin filtro: no se pisa la lista de "recientes/proximos" que haya quedado
+      // cargada por el onFocus del input (ver handleInputFocus)
       return
     }
 
+    setShowingRecent(false)
     let cancelled = false
     setLoading(true)
 
@@ -81,7 +87,8 @@ const CampaignLookupPanel = ({
 
     async function search() {
       if (entity === 'articles') {
-        const { data, error } = await getArticles(params)
+        // no se puede vincular una nota que todavia no esta publicada
+        const { data, error } = await getArticles({ ...params, status: ArticleStatus.Published })
         if (error) console.log("error al buscar notas para vincular", error)
         if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'articles' as const, data: item })))
       } else if (entity === 'resources') {
@@ -100,6 +107,34 @@ const CampaignLookupPanel = ({
 
     return () => { cancelled = true }
   }, [debouncedTitle, tags, section, entity, hasFilter, supportsTagFilter, supportsSectionFilter])
+
+  const handleInputFocus = () => {
+    if (hasFilter) return
+    setShowingRecent(true)
+    setLoading(true)
+    if (entity === 'articles') {
+      // no se puede vincular una nota que todavia no esta publicada
+      getArticles({ perPage: String(RECENT_RESULTS_COUNT), sortField: 'articleId', sortOrder: 'desc', status: ArticleStatus.Published }).then(({ data, error }) => {
+        if (error) console.log("error al obtener notas recientes", error)
+        setResults((data ?? []).map((item) => ({ entity: 'articles' as const, data: item })))
+        setLoading(false)
+      })
+    } else if (entity === 'resources') {
+      getResources({ perPage: String(RECENT_RESULTS_COUNT), sortField: 'createdAt', sortOrder: 'desc' }).then(({ data, error }) => {
+        if (error) console.log("error al obtener recursos recientes", error)
+        setResults((data ?? []).map((item) => ({ entity: 'resources' as const, data: item })))
+        setLoading(false)
+      })
+    } else {
+      // eventos: proximos vigentes (misma logica que FeaturedAgendaPanel en portada),
+      // no "ultimos creados" -- mas probable querer vincular un evento que no paso
+      getEvents({ from: new Date().toISOString(), perPage: String(RECENT_RESULTS_COUNT) }).then(({ data, error }) => {
+        if (error) console.log("error al obtener proximos eventos", error)
+        setResults((data ?? []).map((item) => ({ entity: 'events' as const, data: item })))
+        setLoading(false)
+      })
+    }
+  }
 
   const handleLink = (result: LookupResult) => {
     const alreadyLinked = currentRelated.some((i) => i._id === result.data._id)
@@ -171,6 +206,7 @@ const CampaignLookupPanel = ({
         placeholder="Buscar por título..."
         className="w-full border-2 p-1"
         value={title}
+        onFocus={handleInputFocus}
         onChange={(e) => setTitle(e.target.value)}
       />
       {supportsSectionFilter && (
@@ -183,6 +219,11 @@ const CampaignLookupPanel = ({
       )}
       {supportsTagFilter && <TagSelector currentTags={tags} onChange={setTags} />}
       {loading && <p>Buscando...</p>}
+      {!loading && showingRecent && results.length > 0 && (
+        <p className="text-xs text-gray-500 italic">
+          {entity === 'articles' ? 'Últimas notas:' : entity === 'resources' ? 'Últimos recursos:' : 'Próximos eventos:'}
+        </p>
+      )}
       {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}
       {!loading && results.length > 0 && (
         <ul className="flex flex-col gap-1 max-h-64 overflow-scroll">

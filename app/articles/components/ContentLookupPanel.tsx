@@ -3,7 +3,7 @@
 import { RefObject, useEffect, useState } from "react"
 import getArticles from "@/app/actions/data/articles/getArticles"
 import getResources from "@/app/actions/data/resources/getResources"
-import { ArticleType } from "@/app/types/article"
+import { ArticleStatus, ArticleType } from "@/app/types/article"
 import { ResourceSourceType, ResourceType } from "@/app/types/resource"
 import { TagType } from "@/app/types/tag"
 import { Section } from "@/app/types/sections"
@@ -24,6 +24,9 @@ type LookupEntity = LookupResult['entity']
 type RelatedItem = Partial<ArticleType> | Partial<ResourceType>
 
 const MIN_TITLE_LENGTH = 2
+// cuando el buscador recibe foco sin ningun filtro activo, se muestran los ultimos
+// resultados de esa entidad -- lo mas comun es querer vincular algo recien creado
+const RECENT_RESULTS_COUNT = 5
 
 interface ContentLookupPanelProps {
   excludeArticleId?: string
@@ -69,6 +72,7 @@ const ContentLookupPanel = ({
   const [section, setSection] = useState<Section | null>(null)
   const [results, setResults] = useState<LookupResult[]>([])
   const [loading, setLoading] = useState(false)
+  const [showingRecent, setShowingRecent] = useState(false)
   const debouncedTitle = useDebouncedValue(title)
 
   // sección solo tiene sentido para notas -- recursos no están seccionados
@@ -79,10 +83,13 @@ const ContentLookupPanel = ({
 
   useEffect(() => {
     if (!hasFilter) {
-      setResults([])
+      // sin filtro: no se pisa la lista de "recientes" que haya quedado cargada por
+      // el onFocus del input (ver handleInputFocus) -- esa es la unica forma de tener
+      // resultados sin ningun filtro activo
       return
     }
 
+    setShowingRecent(false)
     let cancelled = false
     setLoading(true)
 
@@ -95,7 +102,8 @@ const ContentLookupPanel = ({
 
     async function search() {
       if (entity === 'articles') {
-        const { data, error } = await getArticles(params)
+        // no se puede vincular una nota que todavia no esta publicada
+        const { data, error } = await getArticles({ ...params, status: ArticleStatus.Published })
         if (error) console.log("error al buscar notas para vincular", error)
         if (!cancelled) {
           const filtered = (data ?? []).filter((item) => item._id !== excludeArticleId)
@@ -113,6 +121,28 @@ const ContentLookupPanel = ({
 
     return () => { cancelled = true }
   }, [debouncedTitle, tags, section, entity, excludeArticleId, hasFilter, supportsSectionFilter])
+
+  const handleInputFocus = () => {
+    if (hasFilter) return
+    setShowingRecent(true)
+    setLoading(true)
+    const recentParams = { perPage: String(RECENT_RESULTS_COUNT), sortField: entity === 'articles' ? 'articleId' : 'createdAt', sortOrder: 'desc' }
+    if (entity === 'articles') {
+      // no se puede vincular una nota que todavia no esta publicada
+      getArticles({ ...recentParams, status: ArticleStatus.Published }).then(({ data, error }) => {
+        if (error) console.log("error al obtener notas recientes", error)
+        const filtered = (data ?? []).filter((item) => item._id !== excludeArticleId)
+        setResults(filtered.map((item) => ({ entity: 'articles' as const, data: item })))
+        setLoading(false)
+      })
+    } else {
+      getResources(recentParams).then(({ data, error }) => {
+        if (error) console.log("error al obtener recursos recientes", error)
+        setResults((data ?? []).map((item) => ({ entity: 'resources' as const, data: item })))
+        setLoading(false)
+      })
+    }
+  }
 
   const handleLink = (result: LookupResult) => {
     const alreadyLinked = currentRelated.some((i) => i._id === result.data._id)
@@ -194,6 +224,7 @@ const ContentLookupPanel = ({
         placeholder="Buscar por título..."
         className="w-full border-2 p-1"
         value={title}
+        onFocus={handleInputFocus}
         onChange={(e) => setTitle(e.target.value)}
       />
       {supportsSectionFilter && (
@@ -206,6 +237,11 @@ const ContentLookupPanel = ({
       )}
       <TagSelector currentTags={tags} onChange={setTags} />
       {loading && <p>Buscando...</p>}
+      {!loading && showingRecent && results.length > 0 && (
+        <p className="text-xs text-gray-500 italic">
+          {entity === 'articles' ? 'Últimas notas:' : 'Últimos recursos:'}
+        </p>
+      )}
       {!loading && hasFilter && results.length === 0 && <p>Sin resultados</p>}
       {!loading && results.length > 0 && (
         <ul className="flex flex-col gap-1 max-h-64 overflow-scroll">

@@ -26,7 +26,7 @@ import Separator from "@/app/components/layout/Separator"
 import useArticle from "../hooks/useArticle"
 import MainImage, { MainImageHandle } from "@/app/components/image/MainImage"
 //import Wysiwyg from "@/app/components/inputs/Wysiwyg"
-import ArticlePreview from "./Preview/ArticlePreview"
+import ArticlePreviewIframe from "./Preview/ArticlePreviewIframe"
 import TextArea from "@/app/components/inputs/TextArea"
 import AuthorSelector from "@/app/components/authors/AuthorSelector"
 import { AuthorType } from "@/app/types/author"
@@ -58,7 +58,13 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentContent, setCurrentContent] = useState<string>(article.content)
   const [currentRelatedArticles, setCurrentRelatedArticles] = useState<Partial<ArticleType>[]>(article.relatedArticles || [])
   const [currentRelatedResources, setCurrentRelatedResources] = useState<Partial<ResourceType>[]>(article.relatedResources || [])
+  const [previewImage, setPreviewImage] = useState(article.image)
   const {edit} = useArticle();
+
+  const handleBeforePreview = async () => {
+    const resolvedImage = await mainImageRef.current?.resolveImage()
+    if (resolvedImage) setPreviewImage(resolvedImage)
+  }
 
   const {
     register,
@@ -286,9 +292,17 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             py-2
           "
         >Previsualizacion</h2>
-        <ArticlePreview
-          article={{...currentValues, section: currentSection!, authors: currentAuthors, authorsDescriptions: currentDescriptions, tags: currentTags, content: currentContent}}
-          mainImage={article.image}
+        <ArticlePreviewIframe
+          article={{
+            ...currentValues,
+            section: currentSection!,
+            authors: currentAuthors,
+            authorsDescriptions: currentDescriptions,
+            tags: currentTags,
+            content: currentContent,
+            image: previewImage,
+          }}
+          onBeforeShow={handleBeforePreview}
         />
         <Separator />
         <div className="my-5 flex flex-col gap-2 items-start flex-wrap">

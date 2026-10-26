@@ -1,14 +1,15 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import getArticles from "@/app/actions/data/articles/getArticles"
 import { ArticleStatus, ArticleType } from "@/app/types/article"
-import { Section } from "@/app/types/sections"
-import { TagType } from "@/app/types/tag"
-import SectionSelector from "@/app/components/sections/SectionSelector"
-import TagSelector from "@/app/components/tags/TagSelector"
+import SectionsContext from "@/app/context/SectionsContext"
+import { OptionType } from "@/app/types/select"
 import ImageThumb from "@/app/components/image/ImageThumb"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
+import useTag from "@/app/tags/hooks/useTag"
+import useAuthor from "@/app/authors/hooks/useAuthor"
+import FilterBar, { FilterField } from "@/app/components/table/FilterBar"
 
 interface ArticleSearchPanelProps {
   excludeArticleIds: number[]
@@ -21,16 +22,21 @@ const MIN_TITLE_LENGTH = 2
 // columnas) — en secciones muy activas, la mayoría de los últimos N ya están ahí
 const SEARCH_PER_PAGE = '50'
 
+const EMPTY_FILTERS: Record<string, any> = { title: '', section: '', tags: [], authors: [] }
+
 const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPanelProps) => {
-  const [title, setTitle] = useState("")
-  const [section, setSection] = useState<Section | null>(null)
-  const [tags, setTags] = useState<TagType[]>([])
+  const { sections } = useContext(SectionsContext)
+  const { searchByName: searchTags } = useTag()
+  const { search: searchAuthors } = useAuthor()
+  const [filters, setFilters] = useState<Record<string, any>>(EMPTY_FILTERS)
   const [results, setResults] = useState<Partial<ArticleType>[]>([])
   const [hiddenCount, setHiddenCount] = useState(0)
   const [loading, setLoading] = useState(false)
-  const debouncedTitle = useDebouncedValue(title)
+  const debouncedTitle = useDebouncedValue(filters.title)
 
-  const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || !!section || tags.length > 0
+  const sectionOptions = sections.map((sec) => ({ value: sec._id, label: sec.name }))
+
+  const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || !!filters.section || filters.tags.length > 0 || filters.authors.length > 0
 
   useEffect(() => {
     if (!hasFilter) {
@@ -44,8 +50,9 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
 
     getArticles({
       ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
-      ...(section ? { section: section._id } : {}),
-      ...(tags.length > 0 ? { tags: tags.map(t => t._id) } : {}),
+      ...(filters.section ? { section: filters.section } : {}),
+      ...(filters.tags.length > 0 ? { tags: filters.tags } : {}),
+      ...(filters.authors.length > 0 ? { authors: filters.authors } : {}),
       status: ArticleStatus.Published,
       perPage: SEARCH_PER_PAGE,
     }).then(({ data, error }) => {
@@ -61,22 +68,49 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
     })
 
     return () => { cancelled = true }
-  }, [debouncedTitle, section, tags, hasFilter, excludeArticleIds])
+  }, [debouncedTitle, filters.section, filters.tags, filters.authors, hasFilter, excludeArticleIds])
+
+  const handleFilterChange = (name: string, value: any) => {
+    setFilters((curr) => ({ ...curr, [name]: value }))
+  }
+
+  const handleClearFilters = () => setFilters(EMPTY_FILTERS)
+
+  const filterFields: FilterField[] = [
+    { type: 'text', name: 'title', label: 'Título', placeholder: 'Buscar por título...' },
+    { type: 'select', name: 'section', label: 'Sección', options: sectionOptions, placeholder: 'Todas las secciones' },
+    {
+      type: 'asyncMultiSelect',
+      name: 'tags',
+      label: 'Tags',
+      placeholder: 'Buscar tags...',
+      loadOptions: async (query: string): Promise<OptionType[]> => {
+        if (query.length < 2) return []
+        const { data } = await searchTags(query)
+        return (data || []).map((tag: any) => ({ value: tag._id, label: tag.name }))
+      },
+    },
+    {
+      type: 'asyncMultiSelect',
+      name: 'authors',
+      label: 'Autores',
+      placeholder: 'Buscar autores...',
+      loadOptions: async (query: string): Promise<OptionType[]> => {
+        if (query.length < 2) return []
+        const { data } = await searchAuthors(query)
+        return (data || []).map((author: any) => ({ value: author._id, label: author.name }))
+      },
+    },
+  ]
 
   return (
-    <div className="flex flex-col gap-3 border-2 border-gray-400 rounded-md p-3">
-      <h3 className="font-bold text-lg">Buscar nota para agregar</h3>
-      <input
-        type="text"
-        placeholder="Buscar por título..."
-        className="w-full border-2 p-1"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+    <div className="flex flex-col gap-3">
+      <FilterBar
+        fields={filterFields}
+        values={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-        <SectionSelector currentSection={section} onChange={setSection} isClearable />
-        <TagSelector currentTags={tags} onChange={setTags} dontShowSearch/>
-      </div>
       {loading && <p>Buscando...</p>}
       {!loading && hasFilter && results.length === 0 && hiddenCount === 0 && <p>Sin resultados</p>}
       {!loading && hasFilter && results.length === 0 && hiddenCount > 0 && (
@@ -90,7 +124,7 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
         </p>
       )}
       {!loading && results.length > 0 && (
-        <ul className="flex flex-col gap-1 max-h-64 overflow-scroll">
+        <ul className="flex flex-col gap-1 max-h-64 overflow-scroll border-2 border-gray-400 rounded-md p-3">
           {results.map(article => (
             <li
               key={article._id}

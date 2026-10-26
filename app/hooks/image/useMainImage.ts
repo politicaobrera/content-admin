@@ -27,11 +27,13 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const [imageSEOFileReadyToUpload, setImageSEOFileReadyToUpload] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>('')
   const [previewSEO, setPreviewSEO] = useState<string>('')
+  const [caption, setCaption] = useState<string>(image?.caption ?? '')
 
   useEffect(() => {
     if (image) {
       setCurrentImage(image)
       setUploadMode(false)
+      setCaption(image.caption ?? '')
       return
     }
     setUploadMode(true)
@@ -85,7 +87,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       await uploadBytesResumable(storageSEORef, imageSEOFileReadyToUpload)
       const imageSEOUrl = await getDownloadURL(storageSEORef)
       const uploaded: MainImageType = {
-        caption: currentImage?.caption || '',
+        caption,
         src: imageUrl,
         srcSEO: imageSEOUrl,
       }
@@ -101,10 +103,10 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
     }
   }
 
-  // uploads the pending file (if any) and returns the resulting image, or the current image if nothing changed
   const resolveImage = async (): Promise<MainImageType | null> => {
     const uploaded = await uploadPending()
-    return uploaded ?? currentImage
+    if (uploaded) return uploaded
+    return currentImage ? { ...currentImage, caption } : null
   }
 
   return {
@@ -115,12 +117,14 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       preview,
       previewSEO,
       uploading,
+      caption,
     },
     actions: {
       onToggleMode,
       onFileChange,
       cleanUploadTemps,
       resolveImage,
+      setCaption,
     },
   }
 }

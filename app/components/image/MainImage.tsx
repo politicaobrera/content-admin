@@ -33,6 +33,19 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 />
               </div>
             )}
+            <div className="mt-2">
+              <label htmlFor={`${id}-caption`} className="block text-sm font-semibold mb-1">
+                Epígrafe (pie de foto)
+              </label>
+              <input
+                id={`${id}-caption`}
+                type="text"
+                className="w-full border-2 p-1"
+                placeholder="Opcional"
+                value={mainImage.state.caption}
+                onChange={(event) => mainImage.actions.setCaption(event.target.value)}
+              />
+            </div>
           </section>
         )}
         {mainImage.state.uploadMode && (
@@ -53,6 +66,19 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 type="file"
                 accept="image/*"
                 onChange={event => mainImage.actions.onFileChange(event.target.files?.[0] ?? null)}
+              />
+            </div>
+            <div className="mt-2">
+              <label htmlFor={`${id}-caption`} className="block text-sm font-semibold mb-1">
+                Epígrafe (pie de foto)
+              </label>
+              <input
+                id={`${id}-caption`}
+                type="text"
+                className="w-full border-2 p-1"
+                placeholder="Opcional"
+                value={mainImage.state.caption}
+                onChange={(event) => mainImage.actions.setCaption(event.target.value)}
               />
             </div>
           </section>

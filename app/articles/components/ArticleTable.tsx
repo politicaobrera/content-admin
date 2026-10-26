@@ -15,6 +15,7 @@ import { getArticlePath, hasPendingChangesSincePublish } from '@/app/utils/artic
 import { getArticleChangesSincePublish } from '@/app/utils/articleChanges';
 import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 import { OptionType } from '@/app/types/select';
+import { useClipboard } from '@/app/hooks/useClipboard';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -24,6 +25,7 @@ interface ArticlesTableProps {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 
 const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
+  const { copyToClipboard } = useClipboard()
   const router = useRouter();
   const searchParams = useSearchParams();
   const { sections } = useContext(SectionsContext)
@@ -130,12 +132,12 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
       return
     }
     const url = `${SITE_URL}${getArticlePath(article)}`
-    try {
-      await navigator.clipboard.writeText(url)
+    const success = await copyToClipboard(url)
+    if (success) {
       toast.success("Link copiado")
-    } catch {
-      toast.error("No se pudo copiar el link")
+      return
     }
+    toast.error("No se pudo copiar el link")
   }
 
   const handleClickDelete = async (article: ArticleType) => {

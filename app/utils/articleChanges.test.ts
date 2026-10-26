@@ -9,6 +9,7 @@ const baseArticle: ArticleType = {
   articleId: 1,
   subhead: "Bajada original",
   volanta: "Volanta original",
+  keyIdeas: [],
   section: { _id: "sec-1", name: "Política", slug: "politica", style: { color: "#000", backgroundColor: "#fff" }, createdAt: "", lastModifiedBy: "" },
   authors: [{ _id: "a-1", name: "Autor Uno", slug: "autor-uno", descriptions: [], lastModifiedBy: "", createdAt: "" }],
   authorsDescriptions: [""],

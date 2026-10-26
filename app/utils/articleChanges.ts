@@ -49,6 +49,17 @@ export function getArticleChangesSincePublish(article: ArticleType): ArticleChan
     })
   }
 
+  const currentKeyIdeas = (article.keyIdeas || []).join(" | ")
+  const snapshotKeyIdeas = (snapshot.keyIdeas || []).join(" | ")
+  if (currentKeyIdeas !== snapshotKeyIdeas) {
+    fieldChanges.push({
+      field: "keyIdeas",
+      label: "Ideas principales",
+      from: snapshotKeyIdeas || NONE_PLACEHOLDER,
+      to: currentKeyIdeas || NONE_PLACEHOLDER,
+    })
+  }
+
   const currentSectionId = article.section?._id ?? null
   const snapshotSectionId = snapshot.section?._id ?? null
   if (currentSectionId !== snapshotSectionId) {

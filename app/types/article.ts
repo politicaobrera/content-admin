@@ -13,6 +13,7 @@ export type PublishedSnapshot = {
   title: string
   subhead?: string
   volanta?: string
+  keyIdeas?: string[]
   content: string
   section: { _id: string, name: string } | null
   tags: { _id: string, name: string }[]
@@ -27,6 +28,7 @@ export type ArticleType = {
   articleId: number
   subhead?: string
   volanta?: string
+  keyIdeas: string[]
   section: Section
   authors: AuthorType[]
   authorsDescriptions: string[]

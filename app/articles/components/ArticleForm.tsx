@@ -18,6 +18,7 @@ const SectionSelector = dynamic(
   { ssr: false }
 );
 const ContentLookupPanel = dynamic(() => import('@/app//articles/components/ContentLookupPanel'), { ssr: false });
+import KeyIdeasEditor from "./KeyIdeasEditor"
 
 import Button from "@/app/components/Button"
 import Input from "@/app/components/inputs/Input"
@@ -58,6 +59,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentContent, setCurrentContent] = useState<string>(article.content)
   const [currentRelatedArticles, setCurrentRelatedArticles] = useState<Partial<ArticleType>[]>(article.relatedArticles || [])
   const [currentRelatedResources, setCurrentRelatedResources] = useState<Partial<ResourceType>[]>(article.relatedResources || [])
+  const [currentKeyIdeas, setCurrentKeyIdeas] = useState<string[]>(article.keyIdeas || [])
   const [previewImage, setPreviewImage] = useState(article.image)
   const {edit} = useArticle();
 
@@ -106,6 +108,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
       {
         relatedArticles: currentRelatedArticles,
         relatedResources: currentRelatedResources
+      },
+      {
+        // se descartan las ideas vacias (el editor pudo agregar un item y dejarlo sin
+        // completar antes de guardar) para no publicar bullets en blanco en el sitio
+        keyIdeas: currentKeyIdeas.map((idea) => idea.trim()).filter(Boolean)
       },
       {
         status: currentStatus ? ArticleStatus.Published : ArticleStatus.Draft
@@ -250,6 +257,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             initialHTML={currentContent}
             onChange={(html:string) => setCurrentContent(html)}
           />
+          <Separator heading label="Ideas principales" />
+          <KeyIdeasEditor
+            ideas={currentKeyIdeas}
+            onChange={setCurrentKeyIdeas}
+          />
           <Separator heading label="Notas y recursos relacionados" />
           <ContentLookupPanel
             excludeArticleId={article._id}
@@ -300,6 +312,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             authorsDescriptions: currentDescriptions,
             tags: currentTags,
             content: currentContent,
+            keyIdeas: currentKeyIdeas.map((idea) => idea.trim()).filter(Boolean),
             image: previewImage,
           }}
           onBeforeShow={handleBeforePreview}

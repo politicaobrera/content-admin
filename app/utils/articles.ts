@@ -2,6 +2,12 @@ import { ArticleStatus, ArticleType } from "@/app/types/article"
 
 const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000
 
+// misma regla de ruteo que gatsby-node.js del sitio publico: la sección "revista" vive
+// bajo /revista/:slug, el resto bajo /:slug
+export function getArticlePath(article: { slug: string, section?: { slug?: string } | null }): string {
+  return article.section?.slug === "revista" ? `/revista/${article.slug}` : `/${article.slug}`
+}
+
 type ArticlePendingChangesFields = Pick<ArticleType, "status" | "publishedAt" | "lastSyncedAt" | "updatedAt">
 
 // Published article edited after its last sync (deploy), within the last week.

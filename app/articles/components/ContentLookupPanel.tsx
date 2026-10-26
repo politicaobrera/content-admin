@@ -11,11 +11,8 @@ import TagSelector from "@/app/components/tags/TagSelector"
 import SectionSelector from "@/app/components/sections/SectionSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 import { BlockNoteEditorHandle, InsertableMediaBlockType } from "@/app/components/inputs/BlockNoteEditor"
+import { getArticlePath } from "@/app/utils/articles"
 
-// Mismo patrón que app/campaigns/components/CampaignLookupPanel.tsx (ver ahí el porqué
-// de la union discriminada por `entity` en vez de un tipo aplanado). Este panel es para
-// VINCULAR contenido a la nota, no para compartirlo — no tiene sentido copiar enlaces
-// desde aquí.
 type LookupResult =
   | { entity: 'articles'; data: Partial<ArticleType> }
   | { entity: 'resources'; data: Partial<ResourceType> }
@@ -170,9 +167,7 @@ const ContentLookupPanel = ({
 
   const handleInsertArticleLink = (article: Partial<ArticleType>) => {
     if (!article.slug || !article.title || !editorRef?.current) return
-    // misma regla de ruteo que gatsby-node.js del sitio: la seccion "revista" vive bajo /revista/:slug
-    const path = article.section?.slug === 'revista' ? `/revista/${article.slug}` : `/${article.slug}`
-    editorRef.current.insertArticleLink(path, article.title)
+    editorRef.current.insertArticleLink(getArticlePath({ slug: article.slug, section: article.section }), article.title)
   }
 
   return (

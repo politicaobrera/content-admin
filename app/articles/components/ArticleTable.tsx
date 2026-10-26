@@ -11,7 +11,7 @@ import SectionsContext from '@/app/context/SectionsContext';
 import useArticle from '../hooks/useArticle';
 import useAuthor from '@/app/authors/hooks/useAuthor';
 import useTag from '@/app/tags/hooks/useTag';
-import { hasPendingChangesSincePublish } from '@/app/utils/articles';
+import { getArticlePath, hasPendingChangesSincePublish } from '@/app/utils/articles';
 import { getArticleChangesSincePublish } from '@/app/utils/articleChanges';
 import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 import { OptionType } from '@/app/types/select';
@@ -20,6 +20,8 @@ interface ArticlesTableProps {
   articles: ArticleType[];
   meta: PaginationMeta | undefined;
 }
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 
 const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const router = useRouter();
@@ -121,6 +123,20 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const handleClickEdit = (id: string) => {
     router.push(`/articles/${id}`);
   };
+
+  const handleClickCopyLink = async (article: ArticleType) => {
+    if (!SITE_URL) {
+      toast.error("Falta configurar NEXT_PUBLIC_SITE_URL para poder copiar el link")
+      return
+    }
+    const url = `${SITE_URL}${getArticlePath(article)}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success("Link copiado")
+    } catch {
+      toast.error("No se pudo copiar el link")
+    }
+  }
 
   const handleClickDelete = async (article: ArticleType) => {
     if (!window.confirm(`¿Eliminar el artículo "${article.title}"? Esta acción no se puede deshacer.`)) {
@@ -282,12 +298,19 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600 w-40">
-                        <div className='flex gap-2'>
+                        <div className='flex flex-wrap gap-2'>
                           <Button
                             type="button"
                             onClick={() => handleClickEdit(article._id)}
                           >
                             Editar
+                          </Button>
+                          <Button
+                            type="button"
+                            secondary
+                            onClick={() => handleClickCopyLink(article)}
+                          >
+                            Copiar link
                           </Button>
                           <Button
                             type="button"

@@ -16,19 +16,18 @@ import {
   LayoutCatalogEntry,
   LayoutInstance,
   createLayoutInstanceId,
-  normalizeLayoutInstances,
 } from "../layoutCatalog"
 import DraggableLayout from "./DraggableLayout"
 import DroppableColumn from "./DroppableColumn"
 import LayoutSchematicPreview from "./LayoutSchematicPreview"
 import PortadaPreviewIframe from "./PortadaPreviewIframe"
 import LayoutContextMenu from "./LayoutContextMenu"
+import { usePortadaDraft } from "../context/PortadaDraftContext"
 
 const CURRENT_COLUMN_ID = "sortable-layouts-current"
 const AVAILABLE_COLUMN_ID = "sortable-layouts-available"
 
 interface LayoutsSorterProps {
-  current: unknown[]
   id: string
 }
 
@@ -46,10 +45,13 @@ interface ContextMenuState {
   anchor: { x: number; y: number }
 }
 
-const LayoutsSorter = ({ current, id }: LayoutsSorterProps) => {
+const LayoutsSorter = ({ id }: LayoutsSorterProps) => {
   const { saveLayouts } = usePortada()
   const router = useRouter()
-  const [layouts, setLayouts] = useState<LayoutInstance[]>(normalizeLayoutInstances(current))
+  // layouts vive en el contexto compartido (PortadaDraftContext) en vez de un useState
+  // local, para que ArticlesSorter pueda mostrar el mismo contador de notas
+  // necesarias-vs-asignadas sin tener que guardar antes -- mismo patrón que currentArticles
+  const { draftLayouts: layouts, setDraftLayouts: setLayouts } = usePortadaDraft()
   // derivado de `layouts`, no estado propio, para no tener que sincronizarlo a mano
   const available = useMemo(() => resolveAvailable(layouts.map((l) => l.slug)), [layouts])
   const [activeId, setActiveId] = useState<string | null>(null)

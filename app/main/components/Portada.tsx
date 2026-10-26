@@ -13,6 +13,7 @@ import LayoutsSorter from "./LayoutsSorter"
 import PortadaTabs from "./PortadaTabs"
 import FeaturedAgendaPanel from "./FeaturedAgendaPanel"
 import { PortadaDraftProvider } from "../context/PortadaDraftContext"
+import { normalizeLayoutInstances } from "../layoutCatalog"
 
 interface PortadaProps {
   searchParams: Params;
@@ -42,9 +43,10 @@ const Portada = async ({searchParams}: PortadaProps) => {
   
   const ultimasCleaned = ultimas && ultimas.filter((item:ArticleType) => !isInArray(currentArticles, "_id", item._id))
   const initialDraftArticles = currentArticles.map((item) => ({ ...item, id: item?.articleId || 0 }))
+  const initialDraftLayouts = normalizeLayoutInstances(currentLayouts ?? [])
 
   return (
-    <PortadaDraftProvider initialArticles={initialDraftArticles}>
+    <PortadaDraftProvider initialArticles={initialDraftArticles} initialLayouts={initialDraftLayouts}>
       <section id="portada" className="flex flex-col gap-5 mt-5">
         <PortadaTabs
           articlesTab={
@@ -73,7 +75,7 @@ const Portada = async ({searchParams}: PortadaProps) => {
             </div>
           }
           layoutsTab={
-            <LayoutsSorter current={currentLayouts ?? []} id={id} />
+            <LayoutsSorter id={id} />
           }
         />
       </section>

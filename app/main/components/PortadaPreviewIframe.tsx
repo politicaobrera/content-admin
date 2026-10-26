@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import Button from "@/app/components/Button"
-import { LAYOUT_CATALOG, LayoutInstance } from "../layoutCatalog"
+import { LayoutInstance } from "../layoutCatalog"
 import { usePortadaDraft } from "../context/PortadaDraftContext"
+import ArticlesNeededBadge from "./ArticlesNeededBadge"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 const PREVIEW_PATH = "/preview-portada"
@@ -20,12 +21,6 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
   const [showPreview, setShowPreview] = useState(false)
   const [iframeReady, setIframeReady] = useState(false)
   const [isStale, setIsStale] = useState(false)
-
-  const needed = layouts.reduce((sum, instance) => {
-    const catalogEntry = LAYOUT_CATALOG.find((entry) => entry.slug === instance.slug)
-    return sum + (catalogEntry?.articleCount ?? 0)
-  }, 0)
-  const assigned = draftArticles.length
 
   const postDraft = () => {
     if (!SITE_URL) return
@@ -76,15 +71,7 @@ const PortadaPreviewIframe = ({ layouts }: PortadaPreviewIframeProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div
-        className={`p-2 rounded-md text-sm font-semibold text-center ${
-          assigned >= needed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-        }`}
-      >
-        {assigned} de {needed} notas necesarias asignadas
-        {assigned < needed && ` (faltan ${needed - assigned})`}
-        {assigned > needed && ` (sobran ${assigned - needed}, no se usarán)`}
-      </div>
+      <ArticlesNeededBadge />
 
       {!SITE_URL ? (
         <div className="p-3 text-sm text-gray-500 border-2 border-dashed border-gray-300 rounded-md">

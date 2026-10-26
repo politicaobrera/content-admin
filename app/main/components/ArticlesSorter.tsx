@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -16,6 +16,7 @@ import usePortada from "../hooks/usePortada"
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import { ArticleWithID, usePortadaDraft } from "../context/PortadaDraftContext"
+import ArticlesNeededBadge from "./ArticlesNeededBadge"
 
 const CURRENT_COLUMN_ID = "sortable-actual"
 const NEW_TO_ADD_COLUMN_ID = "sortable-ultimas"
@@ -37,17 +38,28 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
   // currentArticles vive en el contexto compartido (PortadaDraftContext) en vez de un
   // useState local, para que LayoutsSorter vea el orden actual sin tener que guardar antes
   const { draftArticles: currentArticles, setDraftArticles: setCurrentArticles } = usePortadaDraft()
-  const [newToAddArticles, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
+  const [newToAddArticlesRaw, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
   const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
 
   // newToAdd solo se usa para el mount inicial de useState -- sin este efecto, tras
   // guardar y hacer router.refresh() (que trae "últimas notas" ya recalculado contra
-  // el orden persistido), esta columna seguía mostrando el array viejo en memoria, que
-  // podía incluir notas que ya estaban (ahora) en "Orden actual" según el draft nuevo.
+  // el orden persistido), esta columna seguía mostrando el array viejo en memoria.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setNewToAddArticles(addIDToArticles(newToAdd));
   }, [newToAdd]);
+
+  // filtrado SIEMPRE contra el draft de "Orden actual" (no solo al sincronizar con la
+  // prop): el draft vive en PortadaDraftContext, un nivel arriba de las tabs, y
+  // sobrevive a que esta pestaña se desmonte/remonte al navegar a "Diseño de portada"
+  // sin guardar -- por eso newToAddArticlesRaw puede volver a traer (vía el efecto de
+  // arriba, con la prop newToAdd original del server) una nota que el draft ya tiene
+  // en "Orden actual", y sin este filtro quedaba duplicada entre ambas columnas.
+  const currentIds = useMemo(() => new Set(currentArticles.map((a) => a.id)), [currentArticles]);
+  const newToAddArticles = useMemo(
+    () => newToAddArticlesRaw.filter((a) => !currentIds.has(a.id)),
+    [newToAddArticlesRaw, currentIds],
+  );
 
   const handleSave = async () => {
     saveArticles(currentArticles.map(article => ({_id: article._id})), id).then(result => {
@@ -126,6 +138,7 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
 
   return (
     <div className="flex flex-col gap-2">
+      <ArticlesNeededBadge />
       <ArticleSearchPanel
         excludeArticleIds={[...currentArticles, ...newToAddArticles].map((article) => article.id)}
         onAddArticle={handleAddSearchedArticle}

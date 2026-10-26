@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react"
-import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 import { ResourceOrigin, ResourceSourceType } from "@/app/types/resource"
 import { sluged } from "@/app/utils/strings"
+import { compressImage, getFileExtension } from "@/app/utils/images"
 
 const compressOptions = {
   maxSizeMB: 1,
   maxWidthOrHeight: 800,
-  useWebWorker: true
+  useWebWorker: true,
+  fileType: 'image/webp',
 }
 
 const getFileAcceptType = (sourceType: ResourceSourceType) => {
@@ -77,7 +78,7 @@ const useResourceFile = (
       return
     }
     try {
-      let compressedFile = await imageCompression(file, compressOptions);
+      let compressedFile = await compressImage(file, compressOptions);
       const fileSrc = URL.createObjectURL(compressedFile);
       setPreview(fileSrc)
       setImageFileToUpload(compressedFile)
@@ -101,11 +102,10 @@ const useResourceFile = (
   const uploadFile = async (fileToUpload: File): Promise<string> => {
     setLoading(true)
     try {
-      const extension = fileToUpload.name.split('.').pop()
+      const extension = sourceType === ResourceSourceType.Image
+        ? getFileExtension(fileToUpload)
+        : fileToUpload.name.split('.').pop()
       const slug = sluged(fileName) || sluged(fileToUpload.name.replace(/\.[^/.]+$/, ''))
-      // el slug solo (p. ej. derivado del título) no es único: dos recursos con el
-      // mismo nombre pisaban el mismo path en Storage y uno terminaba apuntando al
-      // archivo del otro. El timestamp garantiza un path distinto en cada subida.
       const uniqueSlug = `${slug}-${Date.now()}`
       const originPath = origin === ResourceOrigin.Publications ? 'publications/' : ''
       const folder = getStorageFolder(sourceType)

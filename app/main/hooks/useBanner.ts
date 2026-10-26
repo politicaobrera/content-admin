@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
-import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage"
 import { BannerType } from "@/app/types/sitepage"
+import { compressImage, getFileExtension } from "@/app/utils/images"
 
 const compressOptions = {
   maxSizeMB: 1,
   maxWidthOrHeight: 800,
-  useWebWorker: true
+  useWebWorker: true,
+  fileType: 'image/webp',
 }
 
 const useBanner = (banner: BannerType | null, pageName?: string) => {
@@ -25,7 +26,7 @@ const useBanner = (banner: BannerType | null, pageName?: string) => {
   const processFile = async () => {
     if (file) {
       try {
-        let compressedFile = await imageCompression(file, compressOptions);
+        let compressedFile = await compressImage(file, compressOptions);
         const fileSrc = URL.createObjectURL(compressedFile);
         setPreview(fileSrc)
         setImageFileToUpload(compressedFile)
@@ -61,7 +62,9 @@ const useBanner = (banner: BannerType | null, pageName?: string) => {
     if (imageFileToUpload) {
       setLoading(true)
       try {
-        const storageRef = ref(storage, `/banners/${pageName ? `${pageName}/` : ''}${imageFileToUpload.name}`)
+        const extension = getFileExtension(imageFileToUpload)
+        const baseName = imageFileToUpload.name.replace(/\.[^/.]+$/, '')
+        const storageRef = ref(storage, `/banners/${pageName ? `${pageName}/` : ''}${baseName}.${extension}`)
         await uploadBytesResumable(storageRef, imageFileToUpload);
         url = await getDownloadURL(storageRef)
         console.log("url banner", url)

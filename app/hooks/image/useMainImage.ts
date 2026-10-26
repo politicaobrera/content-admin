@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react'
-import imageCompression from 'browser-image-compression'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 import { MainImageType } from '@/app/types/image'
+import { compressImage, getFileExtension } from '@/app/utils/images'
 
 const compressOptions = {
   maxSizeMB: 1,
   maxWidthOrHeight: 800,
-  useWebWorker: true
+  useWebWorker: true,
+  fileType: 'image/webp',
 }
 
 const compressOptionsSEO = {
-  maxSizeMB: 0.3,
-  maxWidthOrHeight: 300,
-  useWebWorker: true
+  maxSizeMB: 1,
+  maxWidthOrHeight: 1200,
+  useWebWorker: true,
+  fileType: 'image/jpeg',
 }
 
 const useMainImage = (image: MainImageType | undefined, fileName: string) => {
@@ -43,8 +45,8 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const processFile = async () => {
     if (!file) return
     try {
-      const compressedFile = await imageCompression(file, compressOptions)
-      const compressedFileSEO = await imageCompression(file, compressOptionsSEO)
+      const compressedFile = await compressImage(file, compressOptions)
+      const compressedFileSEO = await compressImage(file, compressOptionsSEO)
       setPreview(URL.createObjectURL(compressedFile))
       setPreviewSEO(URL.createObjectURL(compressedFileSEO))
       setImageFileReadyToUpload(compressedFile)
@@ -74,11 +76,12 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
     if (!imageFileReadyToUpload || !imageSEOFileReadyToUpload) return null
     setUploading(true)
     try {
-      const extension = imageFileReadyToUpload.name.split('.').pop()
+      const extension = getFileExtension(imageFileReadyToUpload)
+      const extensionSEO = getFileExtension(imageSEOFileReadyToUpload)
       const storageRef = ref(storage, `/imagenes/${fileName}.${extension}`)
       await uploadBytesResumable(storageRef, imageFileReadyToUpload)
       const imageUrl = await getDownloadURL(storageRef)
-      const storageSEORef = ref(storage, `/imagenes/seo/${fileName}.${extension}`)
+      const storageSEORef = ref(storage, `/imagenes/seo/${fileName}.${extensionSEO}`)
       await uploadBytesResumable(storageSEORef, imageSEOFileReadyToUpload)
       const imageSEOUrl = await getDownloadURL(storageSEORef)
       const uploaded: MainImageType = {

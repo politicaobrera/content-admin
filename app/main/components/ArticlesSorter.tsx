@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -39,6 +39,15 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
   const { draftArticles: currentArticles, setDraftArticles: setCurrentArticles } = usePortadaDraft()
   const [newToAddArticles, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
   const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
+
+  // newToAdd solo se usa para el mount inicial de useState -- sin este efecto, tras
+  // guardar y hacer router.refresh() (que trae "últimas notas" ya recalculado contra
+  // el orden persistido), esta columna seguía mostrando el array viejo en memoria, que
+  // podía incluir notas que ya estaban (ahora) en "Orden actual" según el draft nuevo.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    setNewToAddArticles(addIDToArticles(newToAdd));
+  }, [newToAdd]);
 
   const handleSave = async () => {
     saveArticles(currentArticles.map(article => ({_id: article._id})), id).then(result => {

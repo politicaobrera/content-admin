@@ -132,13 +132,13 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
   });
 
   const insertSocialEmbed = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
-    title: "Insertar post de X (Twitter)",
+    title: "Insertar post de red social",
     onItemClick: () => {
-      const url = window.prompt('Pegá el link del post de X (Twitter):');
+      const url = window.prompt('Pegá el link del post (X/Twitter, Facebook o Instagram):');
       if (!url) return; // cancelado
       const provider = detectSocialProvider(url);
       if (!provider) {
-        window.alert('Esa URL no parece ser de X (Twitter).');
+        window.alert('Esa URL no parece ser de X (Twitter), Facebook o Instagram.');
         return;
       }
       insertOrUpdateBlockForSlashMenu(editor, {
@@ -146,10 +146,10 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
         props: { provider, url },
       });
     },
-    aliases: ["twitter", "x", "tweet", "social"],
+    aliases: ["twitter", "x", "tweet", "facebook", "instagram", "social"],
     group: "Custom",
-    icon: <div style={{ width: 18, height: 18 }}>🐦</div>,
-    subtext: "Insertar un post de X (Twitter) embebido.",
+    icon: <div style={{ width: 18, height: 18 }}>📱</div>,
+    subtext: "Insertar un post de X/Twitter, Facebook o Instagram embebido.",
   });
 
   const getCustomSlashMenuItems = (

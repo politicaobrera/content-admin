@@ -95,22 +95,31 @@ export const iframeBlockSpec = createReactBlockSpec(
 // Detecta a qué red social pertenece la URL pegada, para un bloque `social-embed`
 // que sabe renderizar el snippet oficial de cada una (a diferencia de YouTube/Vimeo,
 // estas redes no exponen una URL de iframe embebible directa).
-export type SocialProvider = 'twitter';
+export type SocialProvider = 'twitter' | 'facebook' | 'instagram';
 
 export function detectSocialProvider(url: string): SocialProvider | null {
   try {
     const host = new URL(url).hostname.replace(/^www\./, '');
     if (host === 'twitter.com' || host === 'x.com') return 'twitter';
+    if (host === 'facebook.com' || host === 'fb.watch') return 'facebook';
+    if (host === 'instagram.com') return 'instagram';
     return null;
   } catch {
     return null;
   }
 }
 
+// App ID reusado del sitio legacy (ya autorizado para el dominio del sitio en Meta for
+// Developers, donde se usaba para fb-comments)
+const FACEBOOK_APP_ID = '199305801968053';
+
 declare global {
   interface Window {
     twttr?: {
       widgets: { load: (el?: HTMLElement) => void };
+    };
+    FB?: {
+      XFBML: { parse: (el?: HTMLElement) => void };
     };
   }
 }
@@ -129,6 +138,24 @@ function loadTwitterWidgets() {
   script.id = 'twitter-wjs';
   script.src = 'https://platform.twitter.com/widgets.js';
   script.async = true;
+  document.body.appendChild(script);
+}
+
+// El SDK de Meta hidrata tanto fb-post (Facebook) como instagram-media (Instagram)
+function loadMetaWidgets() {
+  if (window.FB) {
+    window.FB.XFBML.parse();
+    return;
+  }
+  const existing = document.getElementById('facebook-jssdk');
+  if (existing) return;
+
+  const script = document.createElement('script');
+  script.id = 'facebook-jssdk';
+  script.src = `https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v19.0&appId=${FACEBOOK_APP_ID}&autoLogAppEvents=1`;
+  script.async = true;
+  script.defer = true;
+  script.crossOrigin = 'anonymous';
   document.body.appendChild(script);
 }
 
@@ -155,6 +182,9 @@ export const socialEmbedBlockSpec = createReactBlockSpec(
         if (block.props.provider === 'twitter' && block.props.url) {
           loadTwitterWidgets();
         }
+        if ((block.props.provider === 'facebook' || block.props.provider === 'instagram') && block.props.url) {
+          loadMetaWidgets();
+        }
       }, [block.props.provider, block.props.url]);
 
       if (!block.props.url) {
@@ -174,6 +204,24 @@ export const socialEmbedBlockSpec = createReactBlockSpec(
               </blockquote>
             </div>
           );
+        case 'facebook':
+          return (
+            <div ref={containerRef} style={{ margin: '16px 0' }} contentEditable={false}>
+              <div className="fb-post" data-href={block.props.url} data-width="500" />
+            </div>
+          );
+        case 'instagram':
+          return (
+            <div ref={containerRef} style={{ margin: '16px 0' }} contentEditable={false}>
+              <blockquote
+                className="instagram-media"
+                data-instgrm-permalink={block.props.url}
+                data-instgrm-version="14"
+              >
+                <a href={block.props.url}>{block.props.url}</a>
+              </blockquote>
+            </div>
+          );
         default:
           return (
             <div style={{ padding: 16, textAlign: 'center', opacity: 0.6 }}>
@@ -182,21 +230,48 @@ export const socialEmbedBlockSpec = createReactBlockSpec(
           );
       }
     },
-    // El HTML persistido usa el formato de embed oficial de Twitter (data-provider/
-    // data-url permiten reconstruir el bloque al reabrir la nota, ver `parse` abajo).
+    // El HTML persistido usa el formato de embed oficial de cada red (data-provider permite
+    // reconstruir el bloque al reabrir la nota sin tener que re-detectar el provider, ver `parse`).
     toExternalHTML: (props) => {
       const { block } = props;
+      const { provider, url } = block.props;
+
+      if (provider === 'facebook') {
+        return <div className="fb-post" data-provider={provider} data-href={url} data-width="500" />;
+      }
+
+      if (provider === 'instagram') {
+        return (
+          <blockquote
+            className="instagram-media"
+            data-provider={provider}
+            data-instgrm-permalink={url}
+            data-instgrm-version="14"
+          >
+            <a href={url}>{url}</a>
+          </blockquote>
+        );
+      }
+
       return (
-        <blockquote
-          className="twitter-tweet"
-          data-provider={block.props.provider}
-          data-url={block.props.url}
-        >
-          <a href={block.props.url}>{block.props.url}</a>
+        <blockquote className="twitter-tweet" data-provider={provider} data-url={url}>
+          <a href={url}>{url}</a>
         </blockquote>
       );
     },
     parse: (element: HTMLElement) => {
+      if (element.classList.contains('fb-post')) {
+        const url = element.getAttribute('data-href') || '';
+        return { provider: 'facebook' as SocialProvider, url };
+      }
+
+      if (element.classList.contains('instagram-media')) {
+        const url = element.getAttribute('data-instgrm-permalink')
+          || element.querySelector('a')?.getAttribute('href')
+          || '';
+        return { provider: 'instagram' as SocialProvider, url };
+      }
+
       if (element.tagName === "BLOCKQUOTE" && element.classList.contains("twitter-tweet")) {
         const url = element.getAttribute("data-url")
           || element.querySelector("a")?.getAttribute("href")

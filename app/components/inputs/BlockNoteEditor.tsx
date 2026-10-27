@@ -12,7 +12,7 @@ import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blockno
 import { TextSelection } from 'prosemirror-state';
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
-import BlockNoteEditorSchema from './BlockNoteEditorSchema';
+import BlockNoteEditorSchema, { detectSocialProvider } from './BlockNoteEditorSchema';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 
 interface BlockNoteEditorProps {
@@ -131,11 +131,33 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
     subtext: "Insertar contenido embebido externo.",
   });
 
+  const insertSocialEmbed = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
+    title: "Insertar post de X (Twitter)",
+    onItemClick: () => {
+      const url = window.prompt('Pegá el link del post de X (Twitter):');
+      if (!url) return; // cancelado
+      const provider = detectSocialProvider(url);
+      if (!provider) {
+        window.alert('Esa URL no parece ser de X (Twitter).');
+        return;
+      }
+      insertOrUpdateBlockForSlashMenu(editor, {
+        type: "social-embed",
+        props: { provider, url },
+      });
+    },
+    aliases: ["twitter", "x", "tweet", "social"],
+    group: "Custom",
+    icon: <div style={{ width: 18, height: 18 }}>🐦</div>,
+    subtext: "Insertar un post de X (Twitter) embebido.",
+  });
+
   const getCustomSlashMenuItems = (
     editor: typeof BlockNoteEditorSchema.BlockNoteEditor,
   ): DefaultReactSuggestionItem[] => [
     ...getDefaultReactSlashMenuItems(editor),
     insertIframe(editor),
+    insertSocialEmbed(editor),
   ];
 
   useEffect(() => {

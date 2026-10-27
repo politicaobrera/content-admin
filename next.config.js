@@ -58,11 +58,13 @@ const nextConfig = {
                 https://platform.twitter.com 
                 https://www.facebook.com 
                 https://player.vimeo.com;
-              connect-src 
-                'self' 
-                https://firebasestorage.googleapis.com 
-                https://www.google-analytics.com 
-                https://stats.g.doubleclick.net 
+              connect-src
+                'self'
+                https://firebasestorage.googleapis.com
+                https://www.google-analytics.com
+                https://stats.g.doubleclick.net
+                https://syndication.twitter.com
+                https://syndication.twimg.com
                 wss://*.firebaseio.com;
               font-src 
                 'self' 

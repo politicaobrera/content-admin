@@ -121,6 +121,9 @@ declare global {
     FB?: {
       XFBML: { parse: (el?: HTMLElement) => void };
     };
+    instgrm?: {
+      Embeds: { process: (el?: HTMLElement) => void };
+    };
   }
 }
 
@@ -141,8 +144,9 @@ function loadTwitterWidgets() {
   document.body.appendChild(script);
 }
 
-// El SDK de Meta hidrata tanto fb-post (Facebook) como instagram-media (Instagram)
-function loadMetaWidgets() {
+// Pese a ser el mismo dueño (Meta), Facebook e Instagram usan SDKs de embed
+// completamente independientes -- uno NO hidrata los bloques del otro.
+function loadFacebookWidgets() {
   if (window.FB) {
     window.FB.XFBML.parse();
     return;
@@ -158,6 +162,97 @@ function loadMetaWidgets() {
   script.crossOrigin = 'anonymous';
   document.body.appendChild(script);
 }
+
+function loadInstagramWidgets() {
+  if (window.instgrm) {
+    window.instgrm.Embeds.process();
+    return;
+  }
+  const existing = document.getElementById('instagram-embed-js');
+  if (existing) return;
+
+  const script = document.createElement('script');
+  script.id = 'instagram-embed-js';
+  script.src = 'https://www.instagram.com/embed.js';
+  script.async = true;
+  document.body.appendChild(script);
+}
+
+// Dispara el SDK que corresponda según lo que reconozca en el HTML pegado. Usado por
+// raw-embed (ver abajo): cuando el modo "pegar URL" de social-embed no alcanza (la App
+// de Facebook en modo Development bloquea fb-post por URL, por ejemplo), el usuario
+// puede pegar directamente el snippet de embed oficial ("Insertar código de inserción")
+// que cada red ofrece, y este detecta cuál SDK hidratarlo.
+function loadWidgetsForRawEmbed(html: string) {
+  if (html.includes('twitter-tweet')) loadTwitterWidgets();
+  if (html.includes('fb-post') || html.includes('fb-video')) loadFacebookWidgets();
+  if (html.includes('instagram-media')) loadInstagramWidgets();
+}
+
+// Reconoce únicamente embeds de redes conocidas (o un <iframe> ya armado) -- no cualquier
+// HTML. No es una sanitización contra XSS (igual que el resto del `content` de la nota,
+// este HTML solo lo escriben editores autenticados del CMS, nunca visitantes públicos),
+// es solo para evitar que alguien pegue por error texto/HTML no relacionado y rompa el layout.
+function looksLikeKnownEmbed(html: string): boolean {
+  return /twitter-tweet|fb-post|fb-video|instagram-media|<iframe/i.test(html);
+}
+
+export const rawEmbedBlockSpec = createReactBlockSpec(
+  {
+    type: 'raw-embed',
+    propSchema: {
+      html: {
+        default: '',
+      },
+      ...defaultProps,
+    },
+    content: 'none',
+  },
+  {
+    render: (props) => {
+      const { block } = props;
+      const containerRef = React.useRef<HTMLDivElement>(null);
+
+      React.useEffect(() => {
+        if (block.props.html) {
+          loadWidgetsForRawEmbed(block.props.html);
+        }
+      }, [block.props.html]);
+
+      if (!block.props.html) {
+        return (
+          <div style={{ padding: 16, textAlign: 'center', opacity: 0.6 }}>
+            Sin código de embed configurado
+          </div>
+        );
+      }
+
+      return (
+        <div
+          ref={containerRef}
+          style={{ margin: '16px 0' }}
+          contentEditable={false}
+          dangerouslySetInnerHTML={{ __html: block.props.html }}
+        />
+      );
+    },
+    // Se persiste tal cual lo pegó el usuario, envuelto en un marcador propio para que
+    // `parse` pueda reconocer este bloque sin confundirlo con un social-embed/iframe sueltos
+    // insertados por los otros bloques.
+    toExternalHTML: (props) => (
+      <div
+        className="raw-embed"
+        dangerouslySetInnerHTML={{ __html: props.block.props.html }}
+      />
+    ),
+    parse: (element: HTMLElement) => {
+      if (element.classList.contains('raw-embed')) {
+        return { html: element.innerHTML };
+      }
+      return undefined;
+    },
+  }
+);
 
 export const socialEmbedBlockSpec = createReactBlockSpec(
   {
@@ -182,8 +277,11 @@ export const socialEmbedBlockSpec = createReactBlockSpec(
         if (block.props.provider === 'twitter' && block.props.url) {
           loadTwitterWidgets();
         }
-        if ((block.props.provider === 'facebook' || block.props.provider === 'instagram') && block.props.url) {
-          loadMetaWidgets();
+        if (block.props.provider === 'facebook' && block.props.url) {
+          loadFacebookWidgets();
+        }
+        if (block.props.provider === 'instagram' && block.props.url) {
+          loadInstagramWidgets();
         }
       }, [block.props.provider, block.props.url]);
 
@@ -291,6 +389,7 @@ const BlockNoteEditorSchema = BlockNoteSchema.create({
     ...defaultBlockSpecs,
     iframe: iframeBlockSpec(),
     'social-embed': socialEmbedBlockSpec(),
+    'raw-embed': rawEmbedBlockSpec(),
   },
 });
 

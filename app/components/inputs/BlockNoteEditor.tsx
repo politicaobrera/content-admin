@@ -116,9 +116,9 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
   }), [editor]);
 
   const insertIframe = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
-    title: "Insertar embed",
+    title: "Insertar video (YouTube/Vimeo)",
     onItemClick: () => {
-      const url = window.prompt('Pegá la URL a embeber (YouTube, Vimeo, etc.):');
+      const url = window.prompt('Pegá la URL del video (YouTube, Vimeo, etc.):');
       if (!url) return; // cancelado
       insertOrUpdateBlockForSlashMenu(editor, {
         type: "iframe",
@@ -128,11 +128,11 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
     aliases: ["iframe", "embed", "video", "youtube", "vimeo", "contenido"],
     group: "Custom",
     icon: <div style={{ width: 18, height: 18 }}>🎥</div>,
-    subtext: "Insertar contenido embebido externo.",
+    subtext: "Insertar un video embebido de YouTube, Vimeo u otra URL con iframe.",
   });
 
   const insertSocialEmbed = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
-    title: "Insertar post de red social",
+    title: "Insertar post de red social (por link)",
     onItemClick: () => {
       const url = window.prompt('Pegá el link del post (X/Twitter, Facebook o Instagram):');
       if (!url) return; // cancelado
@@ -146,10 +146,28 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
         props: { provider, url },
       });
     },
-    aliases: ["twitter", "x", "tweet", "facebook", "instagram", "social"],
+    aliases: ["twitter", "x", "tweet", "facebook", "instagram", "social", "link"],
     group: "Custom",
     icon: <div style={{ width: 18, height: 18 }}>📱</div>,
-    subtext: "Insertar un post de X/Twitter, Facebook o Instagram embebido.",
+    subtext: "Pegando solo el link del post. Si Facebook/Instagram no lo muestran (app en modo desarrollo), usar la otra opción de más abajo.",
+  });
+
+  const insertRawEmbed = (editor: typeof BlockNoteEditorSchema.BlockNoteEditor) => ({
+    title: "Insertar post de red social (código completo)",
+    onItemClick: () => {
+      const html = window.prompt(
+        'Pegá el código de inserción ("Embed") completo que te dio Facebook/Instagram/X al tocar "Insertar código" en el post:'
+      );
+      if (!html) return; // cancelado
+      insertOrUpdateBlockForSlashMenu(editor, {
+        type: "raw-embed",
+        props: { html },
+      });
+    },
+    aliases: ["embed", "codigo", "facebook", "instagram", "twitter", "social", "insertar codigo", "html"],
+    group: "Custom",
+    icon: <div style={{ width: 18, height: 18 }}>🧩</div>,
+    subtext: "Para cuando pegar solo el link no alcanza: pegá el snippet de embed oficial completo (botón 'Insertar código' del post).",
   });
 
   const getCustomSlashMenuItems = (
@@ -158,6 +176,7 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorHandle, BlockNoteEditorProps>(
     ...getDefaultReactSlashMenuItems(editor),
     insertIframe(editor),
     insertSocialEmbed(editor),
+    insertRawEmbed(editor),
   ];
 
   useEffect(() => {

@@ -11,6 +11,7 @@ import { IssueType } from "@/app/types/issue"
 import { PublicationType } from "@/app/types/publication"
 import ImageThumb from "@/app/components/image/ImageThumb"
 import usePortada from "../hooks/usePortada"
+import { formatArgDate } from "@/app/utils/dates"
 
 const MIN_TITLE_LENGTH = 2
 // cuando el campo de búsqueda está vacío pero tiene foco, se muestran los próximos
@@ -25,7 +26,7 @@ interface FeaturedAgendaPanelProps {
 }
 
 function formatEventLabel(event: Partial<EventType>): string {
-  const date = event.date ? new Date(event.date).toLocaleDateString('es-AR') : ''
+  const date = event.date ? formatArgDate(event.date) : ''
   return date ? `${event.title} (${date})` : event.title || ''
 }
 

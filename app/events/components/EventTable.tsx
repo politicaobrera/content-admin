@@ -8,6 +8,7 @@ import Button from '@/app/components/Button';
 import { PaginationMeta } from '@/app/types/responses';
 import useEvent from '../hooks/useEvent';
 import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
+import { formatArgDate, todayArgDateInput, toArgDateInput } from '@/app/utils/dates';
 
 interface EventTableProps {
   events: EventType[];
@@ -198,8 +199,10 @@ const EventTable = ({ events, meta }: EventTableProps) => {
                     // lo que importa destacar es qué evento todavía está vigente
                     // (requiere atención hoy) — los vencidos se ven con los datos
                     // normales de la tabla, sin resaltar, mismo criterio que
-                    // CampaignTable con las campañas activas
-                    const isUpcoming = new Date(event.date) >= new Date()
+                    // CampaignTable con las campañas activas. Se compara por día
+                    // calendario en Argentina, no por instante UTC, para que un
+                    // evento de "hoy" no aparezca vencido antes de medianoche real.
+                    const isUpcoming = toArgDateInput(event.date) >= todayArgDateInput()
                     return (
                     <tr key={event._id} className={`hover:bg-gray-50 border-b ${isUpcoming ? 'bg-green-50' : ''}`}>
                       <td className="px-4 py-2 text-sm">
@@ -212,7 +215,7 @@ const EventTable = ({ events, meta }: EventTableProps) => {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-600">{new Date(event.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{formatArgDate(event.date)}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">{event.place}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">{event.schedule}</td>
                       <td className="px-4 py-2 text-sm text-gray-600 w-40">

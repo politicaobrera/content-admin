@@ -12,6 +12,7 @@ import { Section } from "@/app/types/sections"
 import TagSelector from "@/app/components/tags/TagSelector"
 import SectionSelector from "@/app/components/sections/SectionSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
+import { formatArgDate } from "@/app/utils/dates"
 
 type LookupResult =
   | { entity: 'articles'; data: Partial<ArticleType> }
@@ -252,7 +253,7 @@ const CampaignLookupPanel = ({
                 )}
                 {result.entity === 'events' && result.data.date && (
                   <span className="ml-auto text-sm text-gray-500">
-                    {new Date(result.data.date).toLocaleDateString()}{result.data.place ? ` · ${result.data.place}` : ''}
+                    {formatArgDate(result.data.date)}{result.data.place ? ` · ${result.data.place}` : ''}
                   </span>
                 )}
                 <button

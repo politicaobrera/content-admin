@@ -11,9 +11,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@blocknote/core": "^0.51.4",
-    "@blocknote/mantine": "^0.51.4",
-    "@blocknote/react": "^0.51.4",
+    "@blocknote/core": "^0.56.0",
+    "@blocknote/mantine": "^0.56.0",
+    "@blocknote/react": "^0.56.0",
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
     "@hookform/resolvers": "^3.3.2",
@@ -33,9 +33,9 @@
     "lodash": "^4.17.21",
     "mammoth": "^1.11.0",
     "moment": "^2.30.1",
-    "next": "^16.2.10",
+    "next": "^16.4.3",
     "next-auth": "^4.24.14",
-    "postcss": "8.4.31",
+    "postcss": "^8.5.32",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.45.2",
@@ -54,5 +54,9 @@
     "@types/jest": "^30.0.0",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1"
+  },
+  "overrides": {
+    "postcss-selector-parser": "^6.1.5",
+    "@grpc/grpc-js": "^1.14.7"
   }
 }

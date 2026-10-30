@@ -42,5 +42,8 @@ export const config = {
     '/authors/:path*',
     '/resources/:path*',
     '/events/:path*',
+    '/campaigns/:path*',
+    '/deploy/:path*',
+    '/pruebas/:path*',
   ],
 }

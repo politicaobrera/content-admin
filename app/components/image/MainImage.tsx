@@ -31,6 +31,15 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 <img
                   src={mainImage.state.currentImage.src}
                 />
+                <span
+                  className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-semibold ${
+                    mainImage.state.currentImage.srcSEO
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-amber-100 text-amber-700'
+                  }`}
+                >
+                  {mainImage.state.currentImage.srcSEO ? 'Imagen SEO generada' : 'Sin imagen SEO'}
+                </span>
               </div>
             )}
             <div className="mt-2">

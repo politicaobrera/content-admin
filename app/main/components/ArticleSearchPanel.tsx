@@ -22,7 +22,7 @@ const MIN_TITLE_LENGTH = 2
 // columnas) — en secciones muy activas, la mayoría de los últimos N ya están ahí
 const SEARCH_PER_PAGE = '50'
 
-const EMPTY_FILTERS: Record<string, any> = { title: '', section: '', tags: [], authors: [] }
+const EMPTY_FILTERS: Record<string, any> = { title: '', articleId: '', section: '', tags: [], authors: [] }
 
 const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPanelProps) => {
   const { sections } = useContext(SectionsContext)
@@ -33,10 +33,11 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
   const [hiddenCount, setHiddenCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const debouncedTitle = useDebouncedValue(filters.title)
+  const debouncedArticleId = useDebouncedValue(filters.articleId)
 
   const sectionOptions = sections.map((sec) => ({ value: sec._id, label: sec.name }))
 
-  const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || !!filters.section || filters.tags.length > 0 || filters.authors.length > 0
+  const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || !!debouncedArticleId || !!filters.section || filters.tags.length > 0 || filters.authors.length > 0
 
   useEffect(() => {
     if (!hasFilter) {
@@ -50,6 +51,7 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
 
     getArticles({
       ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
+      ...(debouncedArticleId ? { articleId: debouncedArticleId } : {}),
       ...(filters.section ? { section: filters.section } : {}),
       ...(filters.tags.length > 0 ? { tags: filters.tags } : {}),
       ...(filters.authors.length > 0 ? { authors: filters.authors } : {}),
@@ -68,7 +70,7 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
     })
 
     return () => { cancelled = true }
-  }, [debouncedTitle, filters.section, filters.tags, filters.authors, hasFilter, excludeArticleIds])
+  }, [debouncedTitle, debouncedArticleId, filters.section, filters.tags, filters.authors, hasFilter, excludeArticleIds])
 
   const handleFilterChange = (name: string, value: any) => {
     setFilters((curr) => ({ ...curr, [name]: value }))
@@ -78,6 +80,7 @@ const ArticleSearchPanel = ({ excludeArticleIds, onAddArticle }: ArticleSearchPa
 
   const filterFields: FilterField[] = [
     { type: 'text', name: 'title', label: 'Título', placeholder: 'Buscar por título...' },
+    { type: 'text', name: 'articleId', label: 'ID', placeholder: 'Buscar por ID...', numeric: true },
     { type: 'select', name: 'section', label: 'Sección', options: sectionOptions, placeholder: 'Todas las secciones' },
     {
       type: 'asyncMultiSelect',

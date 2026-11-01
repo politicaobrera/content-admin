@@ -14,7 +14,8 @@ import{
   HiDocument,
   HiRectangleStack,
   HiOutlineCalendarDays,
-  HiOutlineMegaphone
+  HiOutlineMegaphone,
+  HiOutlineAcademicCap
 } from 'react-icons/hi2'
 
 const useRoutes = () => {
@@ -76,6 +77,12 @@ const useRoutes = () => {
       href: '/campaigns',
       icon: HiOutlineMegaphone,
       active: pathname === '/campaigns' || pathname.startsWith('/campaigns/'),
+    },
+    {
+      label: 'Obras',
+      href: '/works',
+      icon: HiOutlineAcademicCap,
+      active: pathname === '/works' || pathname.startsWith('/works/'),
     },
     {
       label: 'Desplegar',

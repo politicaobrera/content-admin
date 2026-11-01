@@ -1,13 +1,13 @@
 # Feature ideas / backlog
 
-Suggestions from a Claude Code session (2026-08-09), ranked by likely usefulness for this admin panel. Not committed to — just a starting backlog to groom.
+Suggestions from a Claude Code session (2026-08-09), ranked by likely usefulness for this admin panel. Not committed to — just a starting backlog to groom. Updated 2026-11-01.
 
 1. **Autosave / draft recovery for the article editor** — BlockNote content only lives in form state until submit; a crashed tab or accidental navigation loses work.
 2. **Scheduled publishing** — add a `publishAt` field + status filter so articles/issues can be queued instead of published immediately.
 4. **Revision history / rollback for articles** — safety net when an editor overwrites content; would need backend (`content-server`) support to store versions.
-5. **SEO fields + live preview** — meta description, og:image, slug editor with auto-slugify and a rendered preview.
+5. **SEO fields + live preview** — meta description, og:image, slug editor with auto-slugify and a rendered preview. Note: the public site's `og:image` already derives from the article's `image.srcSEO` (backfilled separately), and per-page `Head` metadata now exists on the public site (2026-11-01) — what's still missing here specifically is an editable meta-description field + live preview *in the admin UI itself*, which this item is still about.
 6. **Bulk actions in tables** — bulk publish/unpublish, bulk section/tag assignment on top of the existing generic table.
 7. **Deploy failure notifications** — `app/deploy/` already polls GitHub Actions run status; surface failures via toast/email instead of requiring someone to check.
 8. **Audit log** ("who edited what, when") — useful once more than one editor uses the panel; needs backend support.
 9. **Duplicate/clone article** — productivity feature for templated/recurring content (e.g. publication issues).
-10. **Image alt-text enforcement** — accessibility + SEO, low effort on top of existing `useMainImage`/`useResourceFile` hooks.
+10. **Image alt-text enforcement** — accessibility + SEO, low effort on top of existing `useMainImage`/`useResourceFile` hooks. Note: a separate `credit` (photo source/author) field was added 2026-11-01, alongside `caption` — different purpose (copyright attribution, not alt text), but related UI area if tackling this.

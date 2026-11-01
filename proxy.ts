@@ -45,5 +45,6 @@ export const config = {
     '/campaigns/:path*',
     '/deploy/:path*',
     '/pruebas/:path*',
+    '/works/:path*',
   ],
 }

@@ -55,6 +55,19 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 onChange={(event) => mainImage.actions.setCaption(event.target.value)}
               />
             </div>
+            <div className="mt-2">
+              <label htmlFor={`${id}-credit`} className="block text-sm font-semibold mb-1">
+                Crédito (fuente/autor de la foto)
+              </label>
+              <input
+                id={`${id}-credit`}
+                type="text"
+                className="w-full border-2 p-1"
+                placeholder="Opcional, ej: Foto: Juan Pérez"
+                value={mainImage.state.credit}
+                onChange={(event) => mainImage.actions.setCredit(event.target.value)}
+              />
+            </div>
           </section>
         )}
         {mainImage.state.uploadMode && (
@@ -88,6 +101,19 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 placeholder="Opcional"
                 value={mainImage.state.caption}
                 onChange={(event) => mainImage.actions.setCaption(event.target.value)}
+              />
+            </div>
+            <div className="mt-2">
+              <label htmlFor={`${id}-credit`} className="block text-sm font-semibold mb-1">
+                Crédito (fuente/autor de la foto)
+              </label>
+              <input
+                id={`${id}-credit`}
+                type="text"
+                className="w-full border-2 p-1"
+                placeholder="Opcional, ej: Foto: Juan Pérez"
+                value={mainImage.state.credit}
+                onChange={(event) => mainImage.actions.setCredit(event.target.value)}
               />
             </div>
           </section>

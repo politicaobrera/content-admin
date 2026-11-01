@@ -28,12 +28,14 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const [preview, setPreview] = useState<string>('')
   const [previewSEO, setPreviewSEO] = useState<string>('')
   const [caption, setCaption] = useState<string>(image?.caption ?? '')
+  const [credit, setCredit] = useState<string>(image?.credit ?? '')
 
   useEffect(() => {
     if (image) {
       setCurrentImage(image)
       setUploadMode(false)
       setCaption(image.caption ?? '')
+      setCredit(image.credit ?? '')
       return
     }
     setUploadMode(true)
@@ -88,6 +90,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       const imageSEOUrl = await getDownloadURL(storageSEORef)
       const uploaded: MainImageType = {
         caption,
+        credit,
         src: imageUrl,
         srcSEO: imageSEOUrl,
       }
@@ -106,7 +109,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const resolveImage = async (): Promise<MainImageType | null> => {
     const uploaded = await uploadPending()
     if (uploaded) return uploaded
-    return currentImage ? { ...currentImage, caption } : null
+    return currentImage ? { ...currentImage, caption, credit } : null
   }
 
   return {
@@ -118,6 +121,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       previewSEO,
       uploading,
       caption,
+      credit,
     },
     actions: {
       onToggleMode,
@@ -125,6 +129,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       cleanUploadTemps,
       resolveImage,
       setCaption,
+      setCredit,
     },
   }
 }

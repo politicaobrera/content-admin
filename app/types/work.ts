@@ -18,6 +18,7 @@ export type WorkType = {
   year?: string
   kind: WorkKind
   description?: string
+  pdfUrl?: string
   chapters: WorkChapterType[]
   tags: TagType[]
   sourceUrl: string

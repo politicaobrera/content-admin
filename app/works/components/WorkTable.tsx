@@ -12,9 +12,9 @@ interface WorkTableProps {
   meta: PaginationMeta | undefined;
 }
 
-// Read-only por ahora: las obras se crean/actualizan vía el scraper
-// (content-server/scripts/import-marxists-works.ts), no desde el CMS todavía --
-// acá solo se listan y se puede ver el detalle de cada una.
+// Las obras se crean vía el scraper (content-server/scripts/import-marxists-works.ts)
+// o desde "+ Nueva obra" acá mismo (ver NewWorkForm) -- se editan desde WorkForm en
+// /works/:id, al que lleva el botón "Editar".
 const WorkTable = ({ works, meta }: WorkTableProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -147,7 +147,7 @@ const WorkTable = ({ works, meta }: WorkTableProps) => {
                           type="button"
                           onClick={() => handleClickView(work._id)}
                         >
-                          Ver
+                          Editar
                         </Button>
                       </td>
                     </tr>

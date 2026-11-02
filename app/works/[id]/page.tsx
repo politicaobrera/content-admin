@@ -2,7 +2,7 @@ import MainContainer from "@/app/components/layout/MainContainer"
 import { iResponseOne } from "@/app/types/responses"
 import getWork from "@/app/actions/data/works/getWork"
 import ErrorMessage from "@/app/components/ErrorMessage"
-import WorkDetail from "../components/WorkDetail"
+import WorkForm from "../components/WorkForm"
 import { WorkType } from "@/app/types/work"
 
 const WorkPage = async ({
@@ -24,7 +24,7 @@ const WorkPage = async ({
 
   return (
     <MainContainer>
-      <WorkDetail work={data} />
+      <WorkForm work={data} />
     </MainContainer>
   )
 }

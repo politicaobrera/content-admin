@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import MainContainer from "../components/layout/MainContainer"
 import Works from "./components/Works"
 import Loading from "../components/Loading"
+import NewWorkForm from "./components/NewWorkForm"
 import { Params } from "../types/requests";
 
 const WorksPage = async ({
@@ -25,6 +26,7 @@ const WorksPage = async ({
         >
           Obras
         </h1>
+        <NewWorkForm />
         <Suspense fallback={<Loading />}>
           <Works searchParams={paramas} />
         </Suspense>

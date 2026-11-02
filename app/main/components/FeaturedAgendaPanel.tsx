@@ -30,6 +30,12 @@ function formatEventLabel(event: Partial<EventType>): string {
   return date ? `${event.title} (${date})` : event.title || ''
 }
 
+// mismo criterio que el filtro de portada en gatsby-node.js (politicaobrera-reloaded):
+// un evento ya pasado no se publica en el sitio aunque siga en featuredEvents acá
+function isEventExpired(event: Partial<EventType>): boolean {
+  return !!event.date && new Date(event.date) < new Date()
+}
+
 function formatIssueLabel(issue: Partial<IssueType>): string {
   const publication = typeof issue.publicationId === 'object' ? issue.publicationId?.name : undefined
   return publication ? `${publication} N.º ${issue.number}` : `N.º ${issue.number}`
@@ -162,6 +168,11 @@ const FeaturedAgendaPanel = ({ id, currentFeaturedEvents, currentFeaturedIssues 
               >
                 <ImageThumb image={event.image ? { src: event.image } : undefined} />
                 <span className="font-semibold flex-1 text-gray-900">{formatEventLabel(event)}</span>
+                {isEventExpired(event) && (
+                  <span className="text-xs font-bold text-red-700 bg-red-100 rounded px-1.5 py-0.5 shrink-0">
+                    Vencido
+                  </span>
+                )}
                 <button type="button" className="underline text-sm text-gray-900" onClick={() => handleRemoveEvent(event)}>
                   Quitar
                 </button>

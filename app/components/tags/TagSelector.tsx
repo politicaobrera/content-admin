@@ -9,12 +9,16 @@ interface TagSelectorProps {
   currentTags: TagType[]
   dontShowSearch?: boolean
   // false cuando el formulario ya pone su propio heading/label arriba (ej. un
-  // Separator "Etiquetas") o cuando este selector es un filtro auxiliar dentro de un
+  // Separator "Tags") o cuando este selector es un filtro auxiliar dentro de un
   // panel más grande que ya tiene su propio título -- mismo criterio que
   // SectionSelector.showLabel
   showTitle?: boolean
+  // "Buscar" por defecto -- un panel con varios filtros juntos (título, sección, tag)
+  // se beneficia de un label más específico, ej. "Buscar por tag", para que no haga
+  // falta inferir qué busca este input en particular por el contexto
+  searchLabel?: string
 }
-const TagSelector = ({onChange, currentTags = [], dontShowSearch = false, showTitle = true}: TagSelectorProps) => {
+const TagSelector = ({onChange, currentTags = [], dontShowSearch = false, showTitle = true, searchLabel = "Buscar"}: TagSelectorProps) => {
   const searchTagRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const [searchResults, setSearchResults] = useState<TagType[]>([])
@@ -66,7 +70,7 @@ const TagSelector = ({onChange, currentTags = [], dontShowSearch = false, showTi
       )}
       <div className="relative" ref={searchContainerRef}>
         <div className="flex items-center gap-2">
-          {!dontShowSearch && <label className="text-sm text-gray-600 shrink-0">Buscar</label>}
+          {!dontShowSearch && <label className="text-sm text-gray-600 shrink-0">{searchLabel}</label>}
           <input
             type="text"
             className="w-full border-2 border-gray-400 rounded-md p-1.5 text-gray-900"

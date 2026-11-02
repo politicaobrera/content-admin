@@ -191,7 +191,7 @@ const WorkForm: React.FC<WorkFormProps> = ({ work }) => {
             onChange={setCurrentChapters}
           />
 
-          <Separator heading label="Etiquetas" />
+          <Separator heading label="Tags" />
           <TagSelector
             onChange={setCurrentTags}
             currentTags={currentTags}

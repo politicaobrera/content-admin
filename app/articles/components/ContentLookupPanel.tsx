@@ -7,8 +7,10 @@ import { ArticleStatus, ArticleType } from "@/app/types/article"
 import { ResourceSourceType, ResourceType } from "@/app/types/resource"
 import { TagType } from "@/app/types/tag"
 import { Section } from "@/app/types/sections"
+import { AuthorType } from "@/app/types/author"
 import TagSelector from "@/app/components/tags/TagSelector"
 import SectionSelector from "@/app/components/sections/SectionSelector"
+import AuthorFilterSelector from "@/app/components/authors/AuthorFilterSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 import { BlockNoteEditorHandle, InsertableMediaBlockType } from "@/app/components/inputs/BlockNoteEditor"
 import { getArticlePath } from "@/app/utils/articles"
@@ -67,15 +69,18 @@ const ContentLookupPanel = ({
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState<TagType[]>([])
   const [section, setSection] = useState<Section | null>(null)
+  const [author, setAuthor] = useState<AuthorType | null>(null)
   const [results, setResults] = useState<LookupResult[]>([])
   const [loading, setLoading] = useState(false)
   const [showingRecent, setShowingRecent] = useState(false)
   const debouncedTitle = useDebouncedValue(title)
 
-  // sección solo tiene sentido para notas -- recursos no están seccionados
+  // sección y autor solo tienen sentido para notas -- recursos no están seccionados
+  // ni firmados
   const supportsSectionFilter = entity === 'articles'
+  const supportsAuthorFilter = entity === 'articles'
   const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || tags.length > 0
-    || (supportsSectionFilter && !!section)
+    || (supportsSectionFilter && !!section) || (supportsAuthorFilter && !!author)
   const currentRelated: RelatedItem[] = entity === 'articles' ? relatedArticles : relatedResources
 
   useEffect(() => {
@@ -94,6 +99,7 @@ const ContentLookupPanel = ({
       ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
       ...(tags.length > 0 ? { tags: tags.map(t => t._id) } : {}),
       ...(supportsSectionFilter && section ? { section: section._id } : {}),
+      ...(supportsAuthorFilter && author ? { authors: author._id } : {}),
       perPage: '20',
     }
 
@@ -117,7 +123,7 @@ const ContentLookupPanel = ({
     search()
 
     return () => { cancelled = true }
-  }, [debouncedTitle, tags, section, entity, excludeArticleId, hasFilter, supportsSectionFilter])
+  }, [debouncedTitle, tags, section, author, entity, excludeArticleId, hasFilter, supportsSectionFilter, supportsAuthorFilter])
 
   const handleInputFocus = () => {
     if (hasFilter) return
@@ -246,7 +252,10 @@ const ContentLookupPanel = ({
           showLabel={false}
         />
       )}
-      <TagSelector currentTags={tags} onChange={setTags} showTitle={false} />
+      {supportsAuthorFilter && (
+        <AuthorFilterSelector currentAuthor={author} onChange={setAuthor} />
+      )}
+      <TagSelector currentTags={tags} onChange={setTags} showTitle={false} searchLabel="Buscar por tag" />
       {loading && <p>Buscando...</p>}
       {!loading && showingRecent && results.length > 0 && (
         <p className="text-xs text-gray-500 italic">

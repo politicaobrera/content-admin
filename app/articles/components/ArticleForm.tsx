@@ -271,7 +271,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             onChangeRelatedResources={setCurrentRelatedResources}
             editorRef={editorRef}
           />
-          <Separator heading label="Etiquetas" />
+          <Separator heading label="Tags" />
           <TagSelector
             onChange={(newTags) => setCurrentTags(newTags)}
             currentTags={currentTags}

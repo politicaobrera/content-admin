@@ -218,7 +218,7 @@ const CampaignLookupPanel = ({
           showLabel={false}
         />
       )}
-      {supportsTagFilter && <TagSelector currentTags={tags} onChange={setTags} />}
+      {supportsTagFilter && <TagSelector currentTags={tags} onChange={setTags} searchLabel="Buscar por tag" />}
       {loading && <p>Buscando...</p>}
       {!loading && showingRecent && results.length > 0 && (
         <p className="text-xs text-gray-500 italic">

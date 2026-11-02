@@ -122,7 +122,7 @@ const WorkTable = ({ works, meta }: WorkTableProps) => {
                     >
                       Título {sort.field === 'title' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
                     </th>
-                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Autor</th>
+                    <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Autor(es)</th>
                     <th
                       className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
                       onClick={() => handleSort('year')}
@@ -138,7 +138,7 @@ const WorkTable = ({ works, meta }: WorkTableProps) => {
                   {works.map((work) => (
                     <tr key={work._id} className="hover:bg-gray-50 border-b">
                       <td className="px-4 py-2 text-sm text-gray-600">{work.title}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600">{work.author?.name}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{work.authors?.map((author) => author.name).join(" y ")}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">{work.year}</td>
                       <td className="px-4 py-2 text-sm text-gray-600 capitalize">{work.kind}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">{work.chapters?.length ?? 0}</td>

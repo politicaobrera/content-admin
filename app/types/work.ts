@@ -14,7 +14,7 @@ export type WorkType = {
   _id: string
   title: string
   slug: string
-  author: AuthorType
+  authors: AuthorType[]
   year?: string
   kind: WorkKind
   description?: string

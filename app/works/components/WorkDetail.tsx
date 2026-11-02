@@ -28,7 +28,7 @@ const WorkDetail: React.FC<WorkDetailProps> = ({ work }) => {
 
       <div className="bg-white rounded-lg shadow p-4 flex flex-col gap-2 text-sm text-gray-700">
         <div className="flex flex-wrap gap-x-6 gap-y-1">
-          <span><strong>Autor:</strong> {work.author?.name}</span>
+          <span><strong>{work.authors.length > 1 ? "Autores:" : "Autor:"}</strong> {work.authors.map((author) => author.name).join(" y ")}</span>
           {work.year && <span><strong>Año:</strong> {work.year}</span>}
           <span className="capitalize"><strong>Tipo:</strong> {work.kind}</span>
         </div>

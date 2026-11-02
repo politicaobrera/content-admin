@@ -1,17 +1,14 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import getArticles from "@/app/actions/data/articles/getArticles"
 import getResources from "@/app/actions/data/resources/getResources"
 import getEvents from "@/app/actions/data/events/getEvents"
-import { ArticleStatus, ArticleType } from "@/app/types/article"
+import { ArticleType } from "@/app/types/article"
 import { ResourceType } from "@/app/types/resource"
 import { EventType } from "@/app/types/event"
-import { TagType } from "@/app/types/tag"
-import { Section } from "@/app/types/sections"
-import TagSelector from "@/app/components/tags/TagSelector"
-import SectionSelector from "@/app/components/sections/SectionSelector"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
+import useArticleSearch from "@/app/articles/hooks/useArticleSearch"
+import ArticleSearchFilters from "@/app/articles/components/ArticleSearchFilters"
 import { formatArgDate } from "@/app/utils/dates"
 
 type LookupResult =
@@ -51,88 +48,70 @@ const CampaignLookupPanel = ({
   onChangeRelatedEvents,
 }: CampaignLookupPanelProps) => {
   const [entity, setEntity] = useState<LookupEntity>('articles')
-  const [title, setTitle] = useState("")
-  const [tags, setTags] = useState<TagType[]>([])
-  const [section, setSection] = useState<Section | null>(null)
-  const [results, setResults] = useState<LookupResult[]>([])
-  const [loading, setLoading] = useState(false)
-  const [showingRecent, setShowingRecent] = useState(false)
-  const debouncedTitle = useDebouncedValue(title)
 
-  // sección solo tiene sentido para notas -- recursos/eventos no están seccionados
-  const supportsSectionFilter = entity === 'articles'
-  const hasFilter = debouncedTitle.trim().length >= MIN_TITLE_LENGTH || tags.length > 0
-    || (supportsSectionFilter && !!section)
+  // búsqueda de notas (título + sección + autor + tag) compartida con
+  // ContentLookupPanel e IssueArticleSelector -- ver useArticleSearch
+  const articleSearch = useArticleSearch()
+
+  const [otherTitle, setOtherTitle] = useState("")
+  const [otherResults, setOtherResults] = useState<Partial<ResourceType | EventType>[]>([])
+  const [otherLoading, setOtherLoading] = useState(false)
+  const [otherShowingRecent, setOtherShowingRecent] = useState(false)
+  const debouncedOtherTitle = useDebouncedValue(otherTitle)
+  const hasOtherFilter = debouncedOtherTitle.trim().length >= MIN_TITLE_LENGTH
+
   const currentRelated: RelatedItem[] =
     entity === 'articles' ? relatedArticles : entity === 'resources' ? relatedResources : relatedEvents
-  // events.model no indexa por tags, así que ese filtro solo aplica a notas/recursos
-  const supportsTagFilter = entity !== 'events'
+
+  const results: LookupResult[] = entity === 'articles'
+    ? articleSearch.state.results.map((item) => ({ entity: 'articles' as const, data: item }))
+    : entity === 'resources'
+      ? otherResults.map((item) => ({ entity: 'resources' as const, data: item as Partial<ResourceType> }))
+      : otherResults.map((item) => ({ entity: 'events' as const, data: item as Partial<EventType> }))
+  const loading = entity === 'articles' ? articleSearch.state.loading : otherLoading
+  const showingRecent = entity === 'articles' ? articleSearch.state.showingRecent : otherShowingRecent
+  const hasFilter = entity === 'articles' ? articleSearch.state.hasFilter : hasOtherFilter
 
   useEffect(() => {
-    if (!hasFilter) {
-      // sin filtro: no se pisa la lista de "recientes/proximos" que haya quedado
-      // cargada por el onFocus del input (ver handleInputFocus)
-      return
-    }
+    setOtherTitle("")
+    setOtherResults([])
+    setOtherShowingRecent(false)
+  }, [entity])
 
-    setShowingRecent(false)
+  useEffect(() => {
+    if (entity === 'articles' || !hasOtherFilter) return
+    setOtherShowingRecent(false)
     let cancelled = false
-    setLoading(true)
-
-    const params = {
-      ...(debouncedTitle.trim().length >= MIN_TITLE_LENGTH ? { title: debouncedTitle.trim() } : {}),
-      ...(supportsTagFilter && tags.length > 0 ? { tags: tags.map(t => t._id) } : {}),
-      ...(supportsSectionFilter && section ? { section: section._id } : {}),
-      perPage: '20',
-    }
-
-    async function search() {
-      if (entity === 'articles') {
-        // no se puede vincular una nota que todavia no esta publicada
-        const { data, error } = await getArticles({ ...params, status: ArticleStatus.Published })
-        if (error) console.log("error al buscar notas para vincular", error)
-        if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'articles' as const, data: item })))
-      } else if (entity === 'resources') {
-        const { data, error } = await getResources(params)
-        if (error) console.log("error al buscar recursos para vincular", error)
-        if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'resources' as const, data: item })))
-      } else {
-        const { data, error } = await getEvents(params)
-        if (error) console.log("error al buscar eventos para vincular", error)
-        if (!cancelled) setResults((data ?? []).map((item) => ({ entity: 'events' as const, data: item })))
+    setOtherLoading(true)
+    const params = { title: debouncedOtherTitle.trim(), perPage: '20' }
+    const request = entity === 'resources' ? getResources(params) : getEvents(params)
+    request.then(({ data, error }) => {
+      if (error) console.log(`error al buscar ${entity} para vincular`, error)
+      if (!cancelled) {
+        setOtherResults(data ?? [])
+        setOtherLoading(false)
       }
-      if (!cancelled) setLoading(false)
-    }
-
-    search()
-
+    })
     return () => { cancelled = true }
-  }, [debouncedTitle, tags, section, entity, hasFilter, supportsTagFilter, supportsSectionFilter])
+  }, [entity, debouncedOtherTitle, hasOtherFilter])
 
-  const handleInputFocus = () => {
-    if (hasFilter) return
-    setShowingRecent(true)
-    setLoading(true)
-    if (entity === 'articles') {
-      // no se puede vincular una nota que todavia no esta publicada
-      getArticles({ perPage: String(RECENT_RESULTS_COUNT), sortField: 'articleId', sortOrder: 'desc', status: ArticleStatus.Published }).then(({ data, error }) => {
-        if (error) console.log("error al obtener notas recientes", error)
-        setResults((data ?? []).map((item) => ({ entity: 'articles' as const, data: item })))
-        setLoading(false)
-      })
-    } else if (entity === 'resources') {
+  const handleOtherFocus = () => {
+    if (hasOtherFilter) return
+    setOtherShowingRecent(true)
+    setOtherLoading(true)
+    if (entity === 'resources') {
       getResources({ perPage: String(RECENT_RESULTS_COUNT), sortField: 'createdAt', sortOrder: 'desc' }).then(({ data, error }) => {
         if (error) console.log("error al obtener recursos recientes", error)
-        setResults((data ?? []).map((item) => ({ entity: 'resources' as const, data: item })))
-        setLoading(false)
+        setOtherResults(data ?? [])
+        setOtherLoading(false)
       })
-    } else {
+    } else if (entity === 'events') {
       // eventos: proximos vigentes (misma logica que FeaturedAgendaPanel en portada),
       // no "ultimos creados" -- mas probable querer vincular un evento que no paso
       getEvents({ from: new Date().toISOString(), perPage: String(RECENT_RESULTS_COUNT) }).then(({ data, error }) => {
         if (error) console.log("error al obtener proximos eventos", error)
-        setResults((data ?? []).map((item) => ({ entity: 'events' as const, data: item })))
-        setLoading(false)
+        setOtherResults(data ?? [])
+        setOtherLoading(false)
       })
     }
   }
@@ -202,23 +181,28 @@ const CampaignLookupPanel = ({
         </ul>
       )}
 
-      <input
-        type="text"
-        placeholder="Buscar por título..."
-        className="w-full border-2 p-1"
-        value={title}
-        onFocus={handleInputFocus}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      {supportsSectionFilter && (
-        <SectionSelector
-          currentSection={section}
-          onChange={setSection}
-          isClearable
-          showLabel={false}
+      {entity === 'articles' ? (
+        <ArticleSearchFilters
+          title={articleSearch.state.title}
+          onTitleChange={articleSearch.actions.setTitle}
+          onTitleFocus={articleSearch.actions.handleFocus}
+          section={articleSearch.state.section}
+          onSectionChange={articleSearch.actions.setSection}
+          author={articleSearch.state.author}
+          onAuthorChange={articleSearch.actions.setAuthor}
+          tags={articleSearch.state.tags}
+          onTagsChange={articleSearch.actions.setTags}
+        />
+      ) : (
+        <input
+          type="text"
+          placeholder="Buscar por título..."
+          className="w-full border-2 border-gray-400 rounded-md p-1.5 text-gray-900"
+          value={otherTitle}
+          onFocus={handleOtherFocus}
+          onChange={(e) => setOtherTitle(e.target.value)}
         />
       )}
-      {supportsTagFilter && <TagSelector currentTags={tags} onChange={setTags} searchLabel="Buscar por tag" />}
       {loading && <p>Buscando...</p>}
       {!loading && showingRecent && results.length > 0 && (
         <p className="text-xs text-gray-500 italic">

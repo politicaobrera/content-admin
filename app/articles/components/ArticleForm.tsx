@@ -275,6 +275,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           <TagSelector
             onChange={(newTags) => setCurrentTags(newTags)}
             currentTags={currentTags}
+            showTitle={false}
           />
           <ActionButtonsContainer>
             <Button

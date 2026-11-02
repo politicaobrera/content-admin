@@ -172,7 +172,6 @@ const ContentLookupPanel = ({
 
   return (
     <div className="flex flex-col gap-3 border-2 border-gray-400 rounded-md p-3">
-      <h3 className="font-bold text-lg">Notas / recursos relacionados</h3>
       <div className="flex gap-4">
         <button
           type="button"
@@ -247,7 +246,7 @@ const ContentLookupPanel = ({
           showLabel={false}
         />
       )}
-      <TagSelector currentTags={tags} onChange={setTags} />
+      <TagSelector currentTags={tags} onChange={setTags} showTitle={false} />
       {loading && <p>Buscando...</p>}
       {!loading && showingRecent && results.length > 0 && (
         <p className="text-xs text-gray-500 italic">

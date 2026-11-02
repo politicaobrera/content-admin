@@ -1,17 +1,26 @@
-import { ChangeEvent, useRef, useState } from "react"
+import { ChangeEvent, useCallback, useRef, useState } from "react"
 import { TagType } from "@/app/types/tag"
 import useTag from "@/app/tags/hooks/useTag"
 import TagList from "./TagList"
+import useClickOutside from "@/app/hooks/useClickOutside"
 
 interface TagSelectorProps {
   onChange: (tags:TagType[]) => void
   currentTags: TagType[]
   dontShowSearch?: boolean
+  // false cuando el formulario ya pone su propio heading/label arriba (ej. un
+  // Separator "Etiquetas") o cuando este selector es un filtro auxiliar dentro de un
+  // panel más grande que ya tiene su propio título -- mismo criterio que
+  // SectionSelector.showLabel
+  showTitle?: boolean
 }
-const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSelectorProps) => {
+const TagSelector = ({onChange, currentTags = [], dontShowSearch = false, showTitle = true}: TagSelectorProps) => {
   const searchTagRef = useRef<HTMLInputElement>(null)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
   const [searchResults, setSearchResults] = useState<TagType[]>([])
   const {searchByName} = useTag()
+
+  useClickOutside(searchContainerRef, useCallback(() => setSearchResults([]), []))
 
   const handleSearchTagChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const q = event.target.value
@@ -26,10 +35,6 @@ const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSe
     } else {
       setSearchResults([])
     }
-  }
-
-  const handleSearchTagBlur = () => {
-    setSearchResults([])
   }
 
   const handleAddTag = async (tag:TagType) => {
@@ -51,23 +56,24 @@ const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSe
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <h5>Tags</h5>
-      <div>
+    <div className="flex flex-col gap-2">
+      {showTitle && <h5>Tags</h5>}
+      {currentTags.length > 0 && (
         <TagList
           tags={currentTags}
           onRemove={handleRemoveTag}
         />
-      </div>
-      <div className="flex flex-col gap-2">
-        {!dontShowSearch && (<h6>Buscar</h6>)}
-        <input
-          type="text"
-          className="w-full border-2 border-gray-400 rounded-md p-1.5 text-gray-900"
-          ref={searchTagRef}
-          onChange={handleSearchTagChange}
-          onBlur={handleSearchTagBlur}
-        />
+      )}
+      <div className="relative" ref={searchContainerRef}>
+        <div className="flex items-center gap-2">
+          {!dontShowSearch && <label className="text-sm text-gray-600 shrink-0">Buscar</label>}
+          <input
+            type="text"
+            className="w-full border-2 border-gray-400 rounded-md p-1.5 text-gray-900"
+            ref={searchTagRef}
+            onChange={handleSearchTagChange}
+          />
+        </div>
         {
           searchResults.length > 0 && (
             <ul className="border-2 border-black rounded-md mt-1 overflow-hidden">

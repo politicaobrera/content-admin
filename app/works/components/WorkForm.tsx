@@ -195,6 +195,7 @@ const WorkForm: React.FC<WorkFormProps> = ({ work }) => {
           <TagSelector
             onChange={setCurrentTags}
             currentTags={currentTags}
+            showTitle={false}
           />
 
           <Separator heading label="Fuente y licencia" />

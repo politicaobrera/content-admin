@@ -16,7 +16,7 @@ const TagList = ({tags, onRemove}: TagListProps) => {
         tags.map((i, idx) => (
           <div
             key={"tag-item-"+idx}
-            className="p-2 rounded-md bg-yellow-500 flex font-bold align-middle gap-2"
+            className="px-2.5 py-1.5 rounded-md border-2 border-black bg-white text-gray-900 flex font-bold align-middle gap-2"
           >
             {i.name}
             {onRemove && (

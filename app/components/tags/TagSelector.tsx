@@ -63,17 +63,21 @@ const TagSelector = ({onChange, currentTags = [], dontShowSearch = false}: TagSe
         {!dontShowSearch && (<h6>Buscar</h6>)}
         <input
           type="text"
-          className="w-full border-2"
+          className="w-full border-2 border-gray-400 rounded-md p-1.5 text-gray-900"
           ref={searchTagRef}
           onChange={handleSearchTagChange}
           onBlur={handleSearchTagBlur}
         />
         {
           searchResults.length > 0 && (
-            <ul className="border-2 border-black mt-1">
+            <ul className="border-2 border-black rounded-md mt-1 overflow-hidden">
               {searchResults.map((i, idx) => {
                 return (
-                <li key={"author-result-"+idx} onMouseDown={() => handleAddTag(i)}>
+                <li
+                  key={"author-result-"+idx}
+                  onMouseDown={() => handleAddTag(i)}
+                  className="px-3 py-2 cursor-pointer text-gray-900 border-b border-gray-200 last:border-b-0 hover:bg-gray-100"
+                >
                   {i.name}
                 </li>
                 )

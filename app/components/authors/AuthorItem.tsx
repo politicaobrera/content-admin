@@ -22,8 +22,8 @@ const AuthorItem = ({author, selectedDescription, onChange}: AuthorItemProps) =>
   }
 
   return (
-    <div className="grid grid-cols-2 mb-2">
-      <span>{author.name}</span>
+    <div className="grid grid-cols-2 gap-2 items-center border-2 border-gray-400 rounded-md p-2 mb-2">
+      <span className="font-semibold text-gray-900">{author.name}</span>
       <Select
         options={options}
         ref={selectRef}

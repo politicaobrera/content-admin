@@ -59,19 +59,23 @@ const AuthorSelector = ({onChange, authors, descriptions}: AuthorSelectorProps) 
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-2">
         <h6>Buscar</h6>
-        <div>
+        <div className="relative">
           <input
-            className="border-2 w-full"
+            className="border-2 border-gray-400 rounded-md p-1.5 w-full text-gray-900"
             type="text"
             ref={searchAuthorRef}
             onChange={handleSearchAuthorChange}
           />
           {
             searchResults.length > 0 && (
-              <ul className="border-2 border-black">
+              <ul className="border-2 border-black rounded-md mt-1 overflow-hidden">
                 {searchResults.map((i, idx) => {
                   return (
-                  <li key={"author-result-"+idx} onClick={() => handleAddAuthor(i)}>
+                  <li
+                    key={"author-result-"+idx}
+                    onClick={() => handleAddAuthor(i)}
+                    className="px-3 py-2 cursor-pointer text-gray-900 border-b border-gray-200 last:border-b-0 hover:bg-gray-100"
+                  >
                     {i.name}
                   </li>
                   )

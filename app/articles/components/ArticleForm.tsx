@@ -39,6 +39,7 @@ import TagSelector from "@/app/components/tags/TagSelector"
 import { TagType } from "@/app/types/tag"
 import Toggle from "@/app/components/inputs/Toggle"
 import ImportantMessage from "@/app/components/ImportantMessage"
+import { formatArgDate } from "@/app/utils/dates"
 //import BlockNoteEditor from "@/app/components/inputs/BlockNoteEditor"
 
 interface ArticleFormProps {
@@ -187,6 +188,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
                 Cancelar
               </Button>
             </ActionButtonsContainer>
+            {article.createdAt && (
+              <p className="mt-2 text-sm text-gray-500">
+                Fecha de la nota: <span className="font-semibold text-gray-700">{formatArgDate(article.createdAt)}</span>
+              </p>
+            )}
             <Separator heading label="Título" />
             <Input
               id="title"

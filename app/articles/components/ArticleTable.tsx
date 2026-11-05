@@ -12,6 +12,7 @@ import useArticle from '../hooks/useArticle';
 import useAuthor from '@/app/authors/hooks/useAuthor';
 import useTag from '@/app/tags/hooks/useTag';
 import { getArticlePath, hasPendingChangesSincePublish } from '@/app/utils/articles';
+import { formatArgDate } from '@/app/utils/dates';
 import { getArticleChangesSincePublish } from '@/app/utils/articleChanges';
 import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 import { OptionType } from '@/app/types/select';
@@ -241,6 +242,12 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                     </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 w-20">Bajada</th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Volanta</th>
+                    <th
+                      className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700 cursor-pointer"
+                      onClick={() => handleSort('createdAt')}
+                    >
+                      Fecha {sort.field === 'createdAt' && (sort.order === 'asc' ? '⬆️' : '⬇️')}
+                    </th>
                     <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-700">Acciones</th>
                   </tr>
                 </thead>
@@ -299,6 +306,9 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.section?.name || "-"}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.subhead}</td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">{article.volanta}</td>
+                      <td className="px-4 py-2 border-b text-sm text-gray-600 whitespace-nowrap">
+                        {article.createdAt ? formatArgDate(article.createdAt) : '-'}
+                      </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600 w-40">
                         <div className='flex flex-wrap gap-2'>
                           <Button
@@ -326,7 +336,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                     </tr>
                     {isExpanded && changes && (
                       <tr key={`${article.articleId}-changes`} className="bg-yellow-50">
-                        <td colSpan={7} className="px-4 py-3 border-b text-sm text-gray-700">
+                        <td colSpan={8} className="px-4 py-3 border-b text-sm text-gray-700">
                           <p className="font-semibold mb-1">
                             Cambios desde la última publicación
                             {article.lastModifiedBy && ` (por ${article.lastModifiedBy})`}:

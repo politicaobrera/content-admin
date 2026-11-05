@@ -53,9 +53,12 @@ function LayoutBoxes({ slug }: { slug: string }) {
       return (
         <div className="flex flex-col gap-1 w-full">
           <div className="flex gap-1">
-            <div className={clsx(BOX, "h-10 w-2/3")} />
-            <div className="flex flex-col gap-1 w-1/3">
+            <div className="flex flex-col gap-1 w-1/2">
+              <div className={clsx(BOX, "h-8 w-full")} />
               <div className={clsx(BOX, "h-[18px] w-full")} />
+            </div>
+            <div className="flex flex-col gap-1 w-1/2">
+              <div className={clsx(BOX, "h-8 w-full")} />
               <div className={clsx(BOX, "h-[18px] w-full")} />
             </div>
           </div>

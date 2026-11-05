@@ -1,7 +1,50 @@
 import { forwardRef, useImperativeHandle } from 'react'
+import clsx from 'clsx'
 import useMainImage from '@/app/hooks/image/useMainImage'
-import { MainImageType } from '@/app/types/image'
+import { ImageFocalPoint, MainImageType } from '@/app/types/image'
 import Button from '../Button'
+
+const FOCAL_POINT_OPTIONS: { value: ImageFocalPoint; label: string }[] = [
+  { value: 'top', label: 'Arriba' },
+  { value: 'center', label: 'Centro' },
+  { value: 'bottom', label: 'Abajo' },
+]
+
+interface FocalPointPickerProps {
+  value: ImageFocalPoint | undefined
+  onChange: (value: ImageFocalPoint | undefined) => void
+}
+
+// selector del punto vertical de la foto que no se debe recortar al encuadrarla en una
+// card (object-position en el front) -- optativo, por eso "Automático" permite volver a
+// undefined en vez de forzar siempre un valor
+const FocalPointPicker = ({ value, onChange }: FocalPointPickerProps) => (
+  <div className="mt-2">
+    <span className="block text-sm font-semibold mb-1">
+      Foco de la imagen (qué no recortar en las tarjetas)
+    </span>
+    <div className="flex gap-2">
+      {FOCAL_POINT_OPTIONS.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          onClick={() => onChange(value === option.value ? undefined : option.value)}
+          className={clsx(
+            'px-3 py-1 rounded-md text-sm font-semibold border-2',
+            value === option.value
+              ? 'bg-gray-900 text-white border-gray-900'
+              : 'bg-white text-gray-900 border-gray-300 hover:border-gray-500'
+          )}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+    <p className="text-xs text-gray-500 mt-1">
+      Opcional. Sin elegir, se recorta desde el centro.
+    </p>
+  </div>
+)
 
 export interface MainImageHandle {
   // uploads the pending file (if any was selected) and returns the resulting image, or the current image if nothing changed
@@ -68,6 +111,10 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 onChange={(event) => mainImage.actions.setCredit(event.target.value)}
               />
             </div>
+            <FocalPointPicker
+              value={mainImage.state.focalPoint}
+              onChange={mainImage.actions.setFocalPoint}
+            />
           </section>
         )}
         {mainImage.state.uploadMode && (
@@ -116,6 +163,10 @@ const MainImage = forwardRef<MainImageHandle, MainImageProps>(({id, image, fileN
                 onChange={(event) => mainImage.actions.setCredit(event.target.value)}
               />
             </div>
+            <FocalPointPicker
+              value={mainImage.state.focalPoint}
+              onChange={mainImage.actions.setFocalPoint}
+            />
           </section>
         )}
         <div className="space-y-2">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import storage from '@/app/services/firebase/storage'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
-import { MainImageType } from '@/app/types/image'
+import { ImageFocalPoint, MainImageType } from '@/app/types/image'
 import { compressImage, getFileExtension } from '@/app/utils/images'
 
 const compressOptions = {
@@ -29,6 +29,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const [previewSEO, setPreviewSEO] = useState<string>('')
   const [caption, setCaption] = useState<string>(image?.caption ?? '')
   const [credit, setCredit] = useState<string>(image?.credit ?? '')
+  const [focalPoint, setFocalPoint] = useState<ImageFocalPoint | undefined>(image?.focalPoint)
 
   useEffect(() => {
     if (image) {
@@ -36,6 +37,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       setUploadMode(false)
       setCaption(image.caption ?? '')
       setCredit(image.credit ?? '')
+      setFocalPoint(image.focalPoint)
       return
     }
     setUploadMode(true)
@@ -91,6 +93,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       const uploaded: MainImageType = {
         caption,
         credit,
+        focalPoint,
         src: imageUrl,
         srcSEO: imageSEOUrl,
       }
@@ -109,7 +112,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const resolveImage = async (): Promise<MainImageType | null> => {
     const uploaded = await uploadPending()
     if (uploaded) return uploaded
-    return currentImage ? { ...currentImage, caption, credit } : null
+    return currentImage ? { ...currentImage, caption, credit, focalPoint } : null
   }
 
   return {
@@ -122,6 +125,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       uploading,
       caption,
       credit,
+      focalPoint,
     },
     actions: {
       onToggleMode,
@@ -130,6 +134,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       resolveImage,
       setCaption,
       setCredit,
+      setFocalPoint,
     },
   }
 }

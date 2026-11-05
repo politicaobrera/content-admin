@@ -60,29 +60,30 @@ const AuthorForm:React.FC<AuthorFormProps> = ({author}) => {
       console.log("old author", author)
       const merged:AuthorType = Object.assign(author, cleanPayload)
       console.log("merged", merged)
-  
+
       edit(merged).then(result => {
         if (result.error){
           toast.error(result.error.message)
-        } 
+        }
         if(result.data){
           toast.success("Autor editada correctamente")
           router.push('/authors')
         }
+        setLoading(false)
       })
+      return
     }
 
     create(cleanPayload as AuthorType).then(result => {
       if (result.error){
         toast.error(result.error.message)
-      } 
+      }
       if(result.data){
         toast.success("Autor creado correctamente")
         router.push('/authors')
       }
+      setLoading(false)
     })
-
-    setLoading(false)
   }
 
   const handleCancel = () => {

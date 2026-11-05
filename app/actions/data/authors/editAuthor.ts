@@ -19,12 +19,17 @@ const editAuthor = async function (data:AuthorType):Promise<iResponseOne<AuthorT
   })
 
   if(!response.ok) {
-    console.log(`Error al editar el autor ${data._id} (${response.status}): ${response.statusText}`)
+    // el backend devuelve un `messaje` específico en el body (ej. choque de nombre/slug
+    // duplicado) -- sin leerlo, el toast siempre mostraba el statusText genérico
+    // ("Bad Request"/"Conflict") sin decir la causa real.
+    const body = await response.json().catch(() => null)
+    const specificMessage = body?.messaje
+    console.log(`Error al editar el autor ${data._id} (${response.status}): ${response.statusText}`, body)
     return {
       error: {
         status: response.status,
         statusText: response.statusText,
-        message: `Error al editar el autor ${data._id}(${response.status}): ${response.statusText}`,
+        message: specificMessage || `Error al editar el autor ${data._id}(${response.status}): ${response.statusText}`,
       },
     }
   }

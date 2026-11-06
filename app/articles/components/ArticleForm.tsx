@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { 
@@ -40,6 +40,8 @@ import { TagType } from "@/app/types/tag"
 import Toggle from "@/app/components/inputs/Toggle"
 import ImportantMessage from "@/app/components/ImportantMessage"
 import { formatArgDate } from "@/app/utils/dates"
+import useArticleDraft, { ArticleDraftFields } from "../hooks/useArticleDraft"
+import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 //import BlockNoteEditor from "@/app/components/inputs/BlockNoteEditor"
 
 interface ArticleFormProps {
@@ -63,6 +65,11 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [currentKeyIdeas, setCurrentKeyIdeas] = useState<string[]>(article.keyIdeas || [])
   const [previewImage, setPreviewImage] = useState(article.image)
   const {edit} = useArticle();
+  const { pendingDraft, savedAt, save: saveDraft, discardDraft, clearAfterSave } = useArticleDraft(article._id, article.updatedAt)
+  const [draftRestored, setDraftRestored] = useState(false)
+  // fuerza el remount de BlockNoteEditor al restaurar un draft: el editor solo lee
+  // `initialHTML` una vez al montarse, no reacciona a cambios posteriores del prop
+  const [editorInstanceKey, setEditorInstanceKey] = useState(0)
 
   const handleBeforePreview = async () => {
     const resolvedImage = await mainImageRef.current?.resolveImage()
@@ -74,9 +81,10 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: {
       errors,
-    } 
+    }
   } = useForm<FieldValues>({
     defaultValues:{
       title: article.title,
@@ -87,6 +95,15 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   })
 
   const onSubmit:SubmitHandler<FieldValues> = async (payload) => {
+    // una nota publicada no puede quedar sin título/sección/contenido -- el server
+    // también lo valida, pero se corta aquí para no esperar el roundtrip
+    const isPublished = article.status === ArticleStatus.Published
+    const missingRequiredFields = !currentSection?._id || payload.title.trim() === "" || currentContent.trim() === ""
+    if (isPublished && missingRequiredFields) {
+      toast.error("Esta nota está publicada: no se le puede quitar título, sección o contenido")
+      return
+    }
+
     setLoading(true)
     const resolvedImage = await mainImageRef.current?.resolveImage() ?? article.image ?? undefined
     const merged:ArticleType = Object.assign(
@@ -125,6 +142,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     }
     if(result.data){
       toast.success("Nota editada correctamente")
+      clearAfterSave()
     }
     setLoading(false)
     router.refresh()
@@ -145,9 +163,51 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   };
 
   const currentValues = watch() as ArticleType
-  const isNotReadyForPublish = !currentSection?._id || currentValues.title.trim() === "" ? true : false //currentValues.content.trim() === ""
+  const isNotReadyForPublish = !currentSection?._id || currentValues.title.trim() === "" || currentContent.trim() === ""
 
-  //console.log("currentContent", currentContent)
+  const draftSnapshot: ArticleDraftFields = {
+    title: currentValues.title ?? "",
+    volanta: currentValues.volanta ?? "",
+    subhead: currentValues.subhead ?? "",
+    content: currentContent,
+    section: currentSection,
+    authors: currentAuthors,
+    authorsDescriptions: currentDescriptions,
+    tags: currentTags,
+    keyIdeas: currentKeyIdeas,
+    relatedArticles: currentRelatedArticles,
+    relatedResources: currentRelatedResources,
+    status: currentStatus,
+  }
+  const debouncedDraftSnapshot = useDebouncedValue(draftSnapshot, 2000)
+
+  useEffect(() => {
+    // no autoguardamos hasta que el editor resuelva el banner de "restaurar
+    // borrador" (si no, pisaríamos el draft viejo con los defaults del server)
+    if (pendingDraft) return
+    saveDraft(debouncedDraftSnapshot)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDraftSnapshot, pendingDraft])
+
+  const handleRestoreDraft = () => {
+    if (!pendingDraft) return
+    const { fields } = pendingDraft
+    setCurrentContent(fields.content)
+    setCurrentSection(fields.section)
+    setCurrentAuthors(fields.authors)
+    setCurrentDescriptions(fields.authorsDescriptions)
+    setCurrentTags(fields.tags)
+    setCurrentKeyIdeas(fields.keyIdeas)
+    setCurrentRelatedArticles(fields.relatedArticles)
+    setCurrentRelatedResources(fields.relatedResources)
+    setCurrentStatus(fields.status)
+    setValue("title", fields.title)
+    setValue("volanta", fields.volanta)
+    setValue("subhead", fields.subhead)
+    setDraftRestored(true)
+    setEditorInstanceKey((key) => key + 1)
+    discardDraft()
+  }
 
   return (
     <div
@@ -168,6 +228,22 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           xl:max-w-screen-2xl
         "
       >
+        {pendingDraft && (
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <ImportantMessage
+              message={`Hay un borrador sin guardar de esta nota (${new Date(pendingDraft.savedAt).toLocaleString("es-AR")}). ¿Querés recuperarlo?`}
+            />
+            <div className="flex gap-2 shrink-0">
+              <Button onClick={handleRestoreDraft}>Recuperar</Button>
+              <Button danger onClick={discardDraft}>Descartar</Button>
+            </div>
+          </div>
+        )}
+        {draftRestored && (
+          <div className="mb-6">
+            <ImportantMessage message="Borrador recuperado. Revisá los campos y guardá cuando estés listo." />
+          </div>
+        )}
         <form
           className="space-y-6"
           onSubmit={handleSubmit(onSubmit)}
@@ -258,6 +334,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
             placeHolder="Cuerpo de la nota..."
           /> */}
           <BlockNoteEditor
+            key={editorInstanceKey}
             ref={editorRef}
             id="content"
             initialHTML={currentContent}
@@ -330,11 +407,17 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           <div className="flex gap-3">
             <Toggle
               labelConfig={{isChecked: 'Publicada', isNotChecked: 'Borrador'}}
-              value={article.status === "published"}
+              value={currentStatus}
               disabled={article.status === ArticleStatus.Published || isNotReadyForPublish}
               onChange={(val) => setCurrentStatus(val)}
             />
-            <ImportantMessage message="Recuerda siempre revisar bien la nota antes de publicar!" />
+            <ImportantMessage
+              message={
+                article.status === ArticleStatus.Published
+                  ? "Esta nota ya está publicada y no se puede volver a borrador. Si está mal, hay que borrarla."
+                  : "Recuerda siempre revisar bien la nota antes de publicar!"
+              }
+            />
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { 
@@ -50,7 +50,6 @@ interface ArticleFormProps {
 }
 
 const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
-  console.log("articulo con data", article)
   const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false)
   const mainImageRef = useRef<MainImageHandle>(null)
@@ -181,7 +180,18 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
     relatedResources: currentRelatedResources,
     status: currentStatus,
   }
-  const debouncedDraftSnapshot = useDebouncedValue(draftSnapshot, 2000)
+  // useDebouncedValue sólo resetea su timer cuando el VALOR cambia -- pero draftSnapshot
+  // es un objeto literal nuevo en cada render, así que comparado por referencia "cambia"
+  // aunque el contenido sea idéntico, reiniciando el debounce sin fin en cuanto algo
+  // ajeno (ej. el polling de presencia) dispara aunque sea un solo re-render extra.
+  // Serializando a string antes de debouncear, useMemo sólo genera una referencia nueva
+  // cuando el contenido realmente cambió.
+  const draftSnapshotKey = JSON.stringify(draftSnapshot)
+  const debouncedDraftSnapshotKey = useDebouncedValue(draftSnapshotKey, 2000)
+  const debouncedDraftSnapshot = useMemo(
+    () => JSON.parse(debouncedDraftSnapshotKey) as ArticleDraftFields,
+    [debouncedDraftSnapshotKey]
+  )
 
   useEffect(() => {
     // no autoguardamos hasta que el editor resuelva el banner de "restaurar

@@ -17,6 +17,7 @@ import { getArticleChangesSincePublish } from '@/app/utils/articleChanges';
 import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 import { OptionType } from '@/app/types/select';
 import { useClipboard } from '@/app/hooks/useClipboard';
+import ContentDiffModal from './ContentDiffModal';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -35,6 +36,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const {searchByName: searchTags} = useTag();
   const sectionOptions = sections.map(sec => ({value: sec._id, label: sec.name}))
   const [expandedArticleId, setExpandedArticleId] = useState<string | null>(null);
+  const [diffArticle, setDiffArticle] = useState<ArticleType | null>(null);
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState<Record<string, any>>({
@@ -351,7 +353,16 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                               </li>
                             ))}
                             {changes.contentChanged && (
-                              <li><span className="font-medium">Contenido:</span> cambió</li>
+                              <li>
+                                <span className="font-medium">Contenido:</span> cambió{' '}
+                                <button
+                                  type="button"
+                                  className="text-blue-600 underline hover:text-blue-800"
+                                  onClick={() => setDiffArticle(article)}
+                                >
+                                  Ver cambios
+                                </button>
+                              </li>
                             )}
                           </ul>
                         </td>
@@ -402,6 +413,12 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
           </>
         )}
       </div>
+      <ContentDiffModal
+        open={!!diffArticle}
+        onClose={() => setDiffArticle(null)}
+        from={diffArticle?.publishedSnapshot?.content}
+        to={diffArticle?.content}
+      />
     </div>
   );
 };

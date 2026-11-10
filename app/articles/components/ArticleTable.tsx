@@ -19,6 +19,7 @@ import { OptionType } from '@/app/types/select';
 import { useClipboard } from '@/app/hooks/useClipboard';
 import ContentDiffModal from './ContentDiffModal';
 import EditingPresenceBadge from './EditingPresenceBadge';
+import useArticlesEditingSessions from '../hooks/useArticlesEditingSessions';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -38,6 +39,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
   const sectionOptions = sections.map(sec => ({value: sec._id, label: sec.name}))
   const [expandedArticleId, setExpandedArticleId] = useState<string | null>(null);
   const [diffArticle, setDiffArticle] = useState<ArticleType | null>(null);
+  const editingSessions = useArticlesEditingSessions(articles.map((a) => a._id));
 
   // TODO: useTable factor out
   const [filters, setFilters] = useState<Record<string, any>>({
@@ -296,7 +298,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                       </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">
                         {article.title}
-                        <EditingPresenceBadge articleId={article._id} />
+                        <EditingPresenceBadge editor={editingSessions[article._id]} />
                         {pendingChanges && (
                           <button
                             type="button"

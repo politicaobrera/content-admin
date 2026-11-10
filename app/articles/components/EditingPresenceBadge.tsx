@@ -1,13 +1,12 @@
 'use client'
 
-import useArticleEditingObserver from '../hooks/useArticleEditingObserver'
+import type { ArticleEditingSession } from '@/app/types/articleEditingSession'
 
 interface EditingPresenceBadgeProps {
-  articleId: string
+  editor: ArticleEditingSession | null | undefined
 }
 
-const EditingPresenceBadge: React.FC<EditingPresenceBadgeProps> = ({ articleId }) => {
-  const editor = useArticleEditingObserver(articleId)
+const EditingPresenceBadge: React.FC<EditingPresenceBadgeProps> = ({ editor }) => {
   if (!editor) return null
 
   return (

@@ -18,6 +18,7 @@ import FilterBar, { FilterField } from '@/app/components/table/FilterBar';
 import { OptionType } from '@/app/types/select';
 import { useClipboard } from '@/app/hooks/useClipboard';
 import ContentDiffModal from './ContentDiffModal';
+import EditingPresenceBadge from './EditingPresenceBadge';
 
 interface ArticlesTableProps {
   articles: ArticleType[];
@@ -295,6 +296,7 @@ const ArticlesTable = ({ articles, meta }: ArticlesTableProps) => {
                       </td>
                       <td className="px-4 py-2 border-b text-sm text-gray-600">
                         {article.title}
+                        <EditingPresenceBadge articleId={article._id} />
                         {pendingChanges && (
                           <button
                             type="button"

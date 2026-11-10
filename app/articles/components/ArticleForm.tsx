@@ -41,6 +41,7 @@ import Toggle from "@/app/components/inputs/Toggle"
 import ImportantMessage from "@/app/components/ImportantMessage"
 import { formatArgDate } from "@/app/utils/dates"
 import useArticleDraft, { ArticleDraftFields } from "../hooks/useArticleDraft"
+import useArticleEditingPresence from "../hooks/useArticleEditingPresence"
 import useDebouncedValue from "@/app/hooks/useDebouncedValue"
 //import BlockNoteEditor from "@/app/components/inputs/BlockNoteEditor"
 
@@ -66,6 +67,7 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
   const [previewImage, setPreviewImage] = useState(article.image)
   const {edit} = useArticle();
   const { pendingDraft, savedAt, save: saveDraft, discardDraft, clearAfterSave } = useArticleDraft(article._id, article.updatedAt)
+  const otherEditor = useArticleEditingPresence(article._id)
   const [draftRestored, setDraftRestored] = useState(false)
   // fuerza el remount de BlockNoteEditor al restaurar un draft: el editor solo lee
   // `initialHTML` una vez al montarse, no reacciona a cambios posteriores del prop
@@ -228,6 +230,14 @@ const ArticleForm:React.FC<ArticleFormProps> = ({article}) => {
           xl:max-w-screen-2xl
         "
       >
+        {otherEditor && (
+          <div className="mb-6">
+            <ImportantMessage
+              warning
+              message={`⚠️ ${otherEditor.username} está editando esta nota ahora mismo. Si guardás, podrías pisar sus cambios.`}
+            />
+          </div>
+        )}
         {pendingDraft && (
           <div className="mb-6 flex items-center justify-between gap-4">
             <ImportantMessage

@@ -17,6 +17,8 @@ import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import { ArticleWithID, usePortadaDraft } from "../context/PortadaDraftContext"
 import ArticlesNeededBadge from "./ArticlesNeededBadge"
+import ArticleContextMenu from "./ArticleContextMenu"
+import { LAYOUT_CATALOG } from "../layoutCatalog"
 
 const CURRENT_COLUMN_ID = "sortable-actual"
 const NEW_TO_ADD_COLUMN_ID = "sortable-ultimas"
@@ -37,9 +39,10 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
   const router = useRouter()
   // currentArticles vive en el contexto compartido (PortadaDraftContext) en vez de un
   // useState local, para que LayoutsSorter vea el orden actual sin tener que guardar antes
-  const { draftArticles: currentArticles, setDraftArticles: setCurrentArticles } = usePortadaDraft()
+  const { draftArticles: currentArticles, setDraftArticles: setCurrentArticles, draftLayouts } = usePortadaDraft()
   const [newToAddArticlesRaw, setNewToAddArticles] = useState(addIDToArticles(newToAdd));
   const [activeItem, setActiveItem] = useState<ArticleWithID|null>(null);
+  const [contextMenu, setContextMenu] = useState<{ articleId: number; anchor: { x: number; y: number } } | null>(null);
 
   // newToAdd solo se usa para el mount inicial de useState -- sin este efecto, tras
   // guardar y hacer router.refresh() (que trae "últimas notas" ya recalculado contra
@@ -62,16 +65,65 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
   );
 
   const handleSave = async () => {
-    saveArticles(currentArticles.map(article => ({_id: article._id})), id).then(result => {
+    // descarta las notas sobrantes al final de la lista -- los layouts elegidos solo
+    // consumen `needed` notas en orden, así que cualquier nota más allá de ese punto
+    // nunca se iba a mostrar igual; se recortan acá para no arrastrar en el guardado
+    // (y en el próximo scroll) notas que ya se sabía que no se iban a usar
+    const needed = draftLayouts.reduce((sum, instance) => {
+      const catalogEntry = LAYOUT_CATALOG.find((entry) => entry.slug === instance.slug)
+      return sum + (catalogEntry?.articleCount ?? 0)
+    }, 0)
+    // needed=0 significa "todavía no se eligió ningún layout" -- en ese caso no hay
+    // nada que recortar de verdad (truncar a 0 borraría todo el orden sin querer)
+    const articlesToSave = needed > 0 ? currentArticles.slice(0, needed) : currentArticles
+
+    saveArticles(articlesToSave.map(article => ({_id: article._id})), id).then(result => {
       if (result.error){
         toast.error(result.error.message)
-      } 
+      }
       if(result.data){
         toast.success("Articulos de portada actualizada correctamente")
       }
     })
     router.refresh()
   }
+
+  const handleOpenArticle = (article: ArticleWithID) => {
+    if (!article._id) return;
+    window.open(`/articles/${article._id}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleMoveToTop = (articleId: number) => {
+    if (currentArticles.some((item) => item.id === articleId)) {
+      setCurrentArticles((curr) => {
+        const item = curr.find((a) => a.id === articleId);
+        if (!item) return curr;
+        return [item, ...curr.filter((a) => a.id !== articleId)];
+      });
+    } else {
+      setNewToAddArticles((curr) => {
+        const item = curr.find((a) => a.id === articleId);
+        if (!item) return curr;
+        return [item, ...curr.filter((a) => a.id !== articleId)];
+      });
+    }
+  };
+
+  const handleMoveToBottom = (articleId: number) => {
+    if (currentArticles.some((item) => item.id === articleId)) {
+      setCurrentArticles((curr) => {
+        const item = curr.find((a) => a.id === articleId);
+        if (!item) return curr;
+        return [...curr.filter((a) => a.id !== articleId), item];
+      });
+    } else {
+      setNewToAddArticles((curr) => {
+        const item = curr.find((a) => a.id === articleId);
+        if (!item) return curr;
+        return [...curr.filter((a) => a.id !== articleId), item];
+      });
+    }
+  };
 
   const handleAddSearchedArticle = (article: Partial<ArticleType>) => {
     const [withId] = addIDToArticles([article])
@@ -165,7 +217,12 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
                 strategy={verticalListSortingStrategy}
               >
                 {currentArticles.map((article, idx) => (
-                  <DraggableArticle key={article.id} article={article} idx={idx} />
+                  <DraggableArticle
+                    key={article.id}
+                    article={article}
+                    idx={idx}
+                    onContextMenu={(e) => setContextMenu({ articleId: article.id, anchor: { x: e.clientX, y: e.clientY } })}
+                  />
                 ))}
               </SortableContext>
             </DroppableColumn>
@@ -181,7 +238,13 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
                 strategy={verticalListSortingStrategy}
               >
                 {newToAddArticles.map((article, idx) => (
-                  <DraggableArticle key={article.id} article={article} idx={idx} showIndex={false}/>
+                  <DraggableArticle
+                    key={article.id}
+                    article={article}
+                    idx={idx}
+                    showIndex={false}
+                    onContextMenu={(e) => setContextMenu({ articleId: article.id, anchor: { x: e.clientX, y: e.clientY } })}
+                  />
                 ))}
               </SortableContext>
             </DroppableColumn>
@@ -202,6 +265,20 @@ const ArticlesSorter = ({ newToAdd, id }: ArticlesSorterProps) => {
           Guardar Orden
         </Button>
       </div>
+      {contextMenu && (() => {
+        const article = [...currentArticles, ...newToAddArticles].find((a) => a.id === contextMenu.articleId);
+        if (!article) return null;
+        return (
+          <ArticleContextMenu
+            anchor={contextMenu.anchor}
+            articleId={contextMenu.articleId}
+            onClose={() => setContextMenu(null)}
+            onOpenArticle={() => handleOpenArticle(article)}
+            onMoveToTop={() => handleMoveToTop(contextMenu.articleId)}
+            onMoveToBottom={() => handleMoveToBottom(contextMenu.articleId)}
+          />
+        );
+      })()}
     </div>
   );
 };

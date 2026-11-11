@@ -10,9 +10,10 @@ interface DraggableArticleProps {
   article: ArticleWithID
   idx: number
   showIndex?: boolean
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-function DraggableArticle({ article, idx, showIndex = true }: DraggableArticleProps) {
+function DraggableArticle({ article, idx, showIndex = true, onContextMenu }: DraggableArticleProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: article.id });
 
@@ -22,9 +23,8 @@ function DraggableArticle({ article, idx, showIndex = true }: DraggableArticlePr
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    if (!article._id) return;
     e.preventDefault();
-    window.open(`/articles/${article._id}`, '_blank', 'noopener,noreferrer');
+    onContextMenu?.(e);
   };
 
   return (

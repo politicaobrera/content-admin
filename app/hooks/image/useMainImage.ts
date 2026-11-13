@@ -18,6 +18,13 @@ const compressOptionsSEO = {
   fileType: 'image/jpeg',
 }
 
+const compressOptionsMobile = {
+  maxSizeMB: 1,
+  maxWidthOrHeight: 480,
+  useWebWorker: true,
+  fileType: 'image/webp',
+}
+
 const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const [uploadMode, setUploadMode] = useState<boolean>(!image)
   const [uploading, setUploading] = useState<boolean>(false)
@@ -25,8 +32,10 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
   const [file, setFile] = useState<File | null>(null) // archivo que suben desde la pc temporal
   const [imageFileReadyToUpload, setImageFileReadyToUpload] = useState<File | null>(null)
   const [imageSEOFileReadyToUpload, setImageSEOFileReadyToUpload] = useState<File | null>(null)
+  const [imageMobileFileReadyToUpload, setImageMobileFileReadyToUpload] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>('')
   const [previewSEO, setPreviewSEO] = useState<string>('')
+  const [previewMobile, setPreviewMobile] = useState<string>('')
   const [caption, setCaption] = useState<string>(image?.caption ?? '')
   const [credit, setCredit] = useState<string>(image?.credit ?? '')
   const [focalPoint, setFocalPoint] = useState<ImageFocalPoint | undefined>(image?.focalPoint)
@@ -53,10 +62,13 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
     try {
       const compressedFile = await compressImage(file, compressOptions)
       const compressedFileSEO = await compressImage(file, compressOptionsSEO)
+      const compressedFileMobile = await compressImage(file, compressOptionsMobile)
       setPreview(URL.createObjectURL(compressedFile))
       setPreviewSEO(URL.createObjectURL(compressedFileSEO))
+      setPreviewMobile(URL.createObjectURL(compressedFileMobile))
       setImageFileReadyToUpload(compressedFile)
       setImageSEOFileReadyToUpload(compressedFileSEO)
+      setImageMobileFileReadyToUpload(compressedFileMobile)
     } catch (error) {
       console.log("error procesando imagen principal", error)
     }
@@ -74,28 +86,35 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
     setFile(null)
     setPreview('')
     setPreviewSEO('')
+    setPreviewMobile('')
     setImageFileReadyToUpload(null)
     setImageSEOFileReadyToUpload(null)
+    setImageMobileFileReadyToUpload(null)
   }
 
   const uploadPending = async (): Promise<MainImageType | null> => {
-    if (!imageFileReadyToUpload || !imageSEOFileReadyToUpload) return null
+    if (!imageFileReadyToUpload || !imageSEOFileReadyToUpload || !imageMobileFileReadyToUpload) return null
     setUploading(true)
     try {
       const extension = getFileExtension(imageFileReadyToUpload)
       const extensionSEO = getFileExtension(imageSEOFileReadyToUpload)
+      const extensionMobile = getFileExtension(imageMobileFileReadyToUpload)
       const storageRef = ref(storage, `/imagenes/${fileName}.${extension}`)
       await uploadBytesResumable(storageRef, imageFileReadyToUpload)
       const imageUrl = await getDownloadURL(storageRef)
       const storageSEORef = ref(storage, `/imagenes/seo/${fileName}.${extensionSEO}`)
       await uploadBytesResumable(storageSEORef, imageSEOFileReadyToUpload)
       const imageSEOUrl = await getDownloadURL(storageSEORef)
+      const storageMobileRef = ref(storage, `/imagenes/mobile/${fileName}.${extensionMobile}`)
+      await uploadBytesResumable(storageMobileRef, imageMobileFileReadyToUpload)
+      const imageMobileUrl = await getDownloadURL(storageMobileRef)
       const uploaded: MainImageType = {
         caption,
         credit,
         focalPoint,
         src: imageUrl,
         srcSEO: imageSEOUrl,
+        srcMobile: imageMobileUrl,
       }
       setCurrentImage(uploaded)
       cleanUploadTemps()
@@ -122,6 +141,7 @@ const useMainImage = (image: MainImageType | undefined, fileName: string) => {
       file,
       preview,
       previewSEO,
+      previewMobile,
       uploading,
       caption,
       credit,

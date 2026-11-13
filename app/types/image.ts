@@ -11,4 +11,10 @@ export type ImageTpe = {
   focalPoint?: ImageFocalPoint
 }
 
-export type MainImageType = ImageTpe & {srcSEO: string}
+export type MainImageType = ImageTpe & {
+  srcSEO: string
+  // variante más chica (≈480px) para mobile -- optativo, a diferencia de srcSEO: las
+  // notas existentes no la tienen hasta correr scripts/backfill-mobile-image.ts en
+  // content-server, y tanto el CMS como el sitio público caen a src cuando falta
+  srcMobile?: string
+}

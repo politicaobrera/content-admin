@@ -7,23 +7,33 @@ import getAuthorizationHeader from "../../getAuthorizationHeader"
 const sectionsApi = process.env.CONTENT_SERVER_URL + '/sections'
 
 const getSections = async function ():Promise<iResponseMany<Section>> {
-  // await setAuthCookie()
-  const headers = await getAuthorizationHeader()
-  const response = await fetch(sectionsApi, {headers: headers, cache: 'no-store'})
+  try {
+    // await setAuthCookie()
+    const headers = await getAuthorizationHeader()
+    const response = await fetch(sectionsApi, {headers: headers, cache: 'no-store'})
 
-  if(!response.ok) {
-    console.log(`Error al obtener las secciones (${response.status}): ${response.statusText}`)
+    if(!response.ok) {
+      console.log(`Error al obtener las secciones (${response.status}): ${response.statusText}`)
+      return {
+        error: {
+          status: response.status,
+          statusText: response.statusText,
+          message: `Error al obtener las secciones (${response.status}): ${response.statusText}`,
+        },
+      }
+    }
+
+    return {
+      data: await response.json()
+    }
+  } catch (error) {
     return {
       error: {
-        status: response.status,
-        statusText: response.statusText,
-        message: `Error al obtener las secciones (${response.status}): ${response.statusText}`,
+        status: 401,
+        statusText: "Unauthorized",
+        message: error instanceof Error ? error.message : "No autenticado",
       },
     }
-  }
-  
-  return {
-    data: await response.json()
   }
 }
 

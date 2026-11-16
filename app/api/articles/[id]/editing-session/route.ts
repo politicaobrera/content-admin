@@ -10,27 +10,35 @@ const articlesApi = process.env.CONTENT_SERVER_URL + '/articles'
 
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const headers = await getAuthorizationHeader()
-  await fetch(`${articlesApi}/${id}/editing-session`, {
-    headers,
-    cache: 'no-store',
-    method: 'POST',
-  })
-  return new NextResponse(null, { status: 204 })
+  try {
+    const headers = await getAuthorizationHeader()
+    await fetch(`${articlesApi}/${id}/editing-session`, {
+      headers,
+      cache: 'no-store',
+      method: 'POST',
+    })
+    return new NextResponse(null, { status: 204 })
+  } catch (error) {
+    return new NextResponse(null, { status: 401 })
+  }
 }
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const headers = await getAuthorizationHeader()
-  const response = await fetch(`${articlesApi}/${id}/editing-session`, {
-    headers: { ...headers, 'Accept': 'application/json' },
-    cache: 'no-store',
-  })
+  try {
+    const headers = await getAuthorizationHeader()
+    const response = await fetch(`${articlesApi}/${id}/editing-session`, {
+      headers: { ...headers, 'Accept': 'application/json' },
+      cache: 'no-store',
+    })
 
-  if (!response.ok) {
-    return NextResponse.json(null, { status: response.status })
+    if (!response.ok) {
+      return NextResponse.json(null, { status: response.status })
+    }
+
+    const data = await response.json()
+    return NextResponse.json(data)
+  } catch (error) {
+    return NextResponse.json(null, { status: 401 })
   }
-
-  const data = await response.json()
-  return NextResponse.json(data)
 }

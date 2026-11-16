@@ -8,26 +8,35 @@ import { buildQueryString } from "@/app/utils/query"
 
 const resourcesApi = process.env.CONTENT_SERVER_URL + '/resources'
 
-// TODO DO TRY CATCH IN THIS ACTIONS FUNCTIONS
 const getResources = async function (searchParams:Params):Promise<iResponseMany<ResourceType>> {
-  console.log("searchParams", searchParams)
-  const query = buildQueryString(searchParams)
-  console.log("query", query)
-  const headers = await getAuthorizationHeader()
-  const response = await fetch(`${resourcesApi}?${query}`, {headers: headers, cache: 'no-store'})
+  try {
+    console.log("searchParams", searchParams)
+    const query = buildQueryString(searchParams)
+    console.log("query", query)
+    const headers = await getAuthorizationHeader()
+    const response = await fetch(`${resourcesApi}?${query}`, {headers: headers, cache: 'no-store'})
 
-  if(!response.ok) {
-    console.log(`Error al obtener los recursos (${response.status}): ${response.statusText}`)
+    if(!response.ok) {
+      console.log(`Error al obtener los recursos (${response.status}): ${response.statusText}`)
+      return {
+        error: {
+          status: response.status,
+          statusText: response.statusText,
+          message: `Error al obtener los recursos (${response.status}): ${response.statusText}`,
+        },
+      }
+    }
+    const res = await response.json()
+    return res
+  } catch (error) {
     return {
       error: {
-        status: response.status,
-        statusText: response.statusText,
-        message: `Error al obtener los recursos (${response.status}): ${response.statusText}`,
+        status: 401,
+        statusText: "Unauthorized",
+        message: error instanceof Error ? error.message : "No autenticado",
       },
     }
   }
-  const res = await response.json()
-  return res
 }
 
 export default getResources

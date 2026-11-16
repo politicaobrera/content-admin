@@ -78,6 +78,18 @@ describe("getArticleChangesSincePublish", () => {
     expect(result?.fieldChanges).toEqual([])
   })
 
+  // bug real: content era "<p class=\"x\">contenido</p>" vs snapshot "<p>contenido</p>" --
+  // el HTML crudo difiere, pero el texto visible es igual. Antes del fix, esto marcaba
+  // contentChanged:true y el modal "Ver cambios" (que sí normaliza con htmlToPlainText)
+  // mostraba un diff vacío, contradiciendo lo que decía la fila de la tabla.
+  it("does not flag contentChanged for markup-only differences with identical visible text", () => {
+    const result = getArticleChangesSincePublish({
+      ...baseArticle,
+      content: '<p class="x">contenido</p>',
+    })
+    expect(result?.contentChanged).toBe(false)
+  })
+
   it("uses placeholders for empty subhead/volanta", () => {
     const result = getArticleChangesSincePublish({ ...baseArticle, subhead: "" })
     expect(result?.fieldChanges).toEqual([

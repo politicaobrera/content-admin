@@ -1,4 +1,5 @@
 import { ArticleType } from "@/app/types/article"
+import { htmlToPlainText } from "./htmlToPlainText"
 
 export type ArticleFieldChange = {
   field: string
@@ -93,8 +94,16 @@ export function getArticleChangesSincePublish(article: ArticleType): ArticleChan
     })
   }
 
+  // texto normalizado, no HTML crudo: mismo criterio que ContentDiffModal (que ya
+  // convierte con htmlToPlainText antes de mostrar el diff). Comparar el HTML tal cual
+  // marcaba "cambió" ante diferencias de marcado invisibles para el usuario (un atributo
+  // distinto que dejó el editor, un espacio entre tags, etc.) -- el modal mostraba
+  // "Contenido: cambió" pero el diff salía vacío porque, una vez normalizado a texto
+  // plano, no había ninguna diferencia real que resaltar.
+  const contentChanged = htmlToPlainText(article.content) !== htmlToPlainText(snapshot.content)
+
   return {
     fieldChanges,
-    contentChanged: article.content !== snapshot.content,
+    contentChanged,
   }
 }
